@@ -1,0 +1,29 @@
+#Function
+x ^ 3 * ( y * z ) - ( 5.5 * x ^ 3 ) * y ^ 3 + x * y ^ 6 * ( z ^ 2 )
+
+#Evaluation
+Max
+
+#The number of variables
+3
+
+#Upper and lower bound limit
+x=[-1,1];
+y=[10,20];
+z=[0.5,2.7];
+
+#Size of population
+24
+
+#The number of generations
+1000
+
+#Probability of crossover
+0.30
+
+#Probability of mutation
+0.04
+
+#Decimal precision (Integer)
+4
+
