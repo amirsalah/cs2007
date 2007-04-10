@@ -1,0 +1,12 @@
+This skeleton is provided to help you focus on the task of managing page
+tables and implementing different replacement strategies.
+
+You don't need to modify Memsim.java or MMU.java, only to implement the
+ 3 replacement strategies by EscMMU.java, LruMMU.java, RandMMU.java
+
+If you feel you  need to, you can do minor changes to the MMU.java interface 
+ and modify Memsim.java accordingly. Please, do not modify the output
+of the quiet mode, as this will be used for testing.
+
+Cruz
+
