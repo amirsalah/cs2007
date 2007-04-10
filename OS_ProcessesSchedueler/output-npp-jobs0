@@ -1,0 +1,14 @@
+Using NppDispatcher
+name	start	end	ready	running	blocked
+s1 	0	169	51	100	18
+s2 	0	438	243	100	95
+s3 	50	465	23	200	192
+s4 	60	671	81	50	480
+
+Tasks completed= 4
+Max turnaround time= 611
+Average turnaround time= 408
+Max waiting time= 243
+Average waiting time= 99
+CPU utilisation= 67%
+

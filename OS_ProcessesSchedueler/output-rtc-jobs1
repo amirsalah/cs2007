@@ -1,0 +1,12 @@
+Using RtcDispatcher
+name	start	end	ready	running	blocked
+s2 	0	54	0	50	4
+s1 	0	112	54	50	8
+
+Tasks completed= 2
+Max turnaround time= 112
+Average turnaround time= 83
+Max waiting time= 54
+Average waiting time= 27
+CPU utilisation= 89%
+

@@ -1,0 +1,12 @@
+Using PpDispatcher
+name	start	end	ready	running	blocked
+s2 	0	54	0	50	4
+s1 	0	108	50	50	8
+
+Tasks completed= 2
+Max turnaround time= 108
+Average turnaround time= 81
+Max waiting time= 50
+Average waiting time= 25
+CPU utilisation= 92%
+

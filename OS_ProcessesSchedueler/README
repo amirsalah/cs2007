@@ -1,0 +1,140 @@
+Operating systems simulator
+===========================
+
+
+The Osim is a program that schedules jobs, which are defined as a 
+alternating sequence of CPU Burst and I/O burst. 
+The Gui of  Osim may not work properly in some machines, so it is disabled by default.
+It works fine on a Mac laptop, but when run on the Linux machines, the GUI
+stuff does wierd things (som much for Java's run-anywhere claim...).
+
+If anyone out there can figure out where the bug is, I'd be pleased to hear
+from them.  You can enable the gui by calling osim with parameter -gui.
+ If you crack it, come and see me...
+
+FORTUNATELY, the news is not all bad, the non-gui part of the program appears 
+to be fine.  So, read on...
+
+Command line interface
+======================
+
+You can run the program in non-gui mode by typing:
+
+java Osim -rtc < jobs1 
+
+The -rtc means use the "runToCompletion" dispatcher, and the < job1 asks the 
+unix shell to pipe the contents of the file jobs1 into Osim's standard input.
+  If you do this, you will get:
+
+Using RtcDispatcher
+name    start   end     ready   running blocked
+s1      0       58      0       50      8
+s2      0       112     58      50      4
+
+Tasks completed= 2
+Max turnaround time= 112
+Average turnaround time= 85
+Max waiting time= 58
+Average waiting time= 29
+
+The report shows when the two jobs (s1 and s2) started, and ended.  It also
+shows the amount of time spent ready, running, and blocked.  Summary statistics at the end display useful information.
+
+Format of a jobs file
+=====================
+
+Each line in the file describes on job.  There are two basic choices:
+
+A simple task (fixed compute and I/O time), or a random task (randomly chosen 
+compute and I/O times).  Each line shows
+
+For a simple task, the line says:
+
+START PRI simple NAME COMPUTE IO END
+This task will be given to the operating system at time START, with priority
+PRI.  The task will be named NAME.  When it runs, it will perform computation 
+for COMPUTE ticks, then input/output for IO ticks.  It repeats these steps 
+alternately, until the total amount of computation time (excludingI/O) equals 
+END.  Then it terminates.
+
+For a random task, the line says:
+
+START PRI random NAME COMPUTE IO END
+This task will be given to the operating system at time START, with priority
+PRI.  The task will be named NAME.  When it runs, it will perform computation 
+for a random number of ticks (between 1 and COMPUTE) , then it performs 
+input/output for a random number of ticks (between 1 and IO).  It repeats 
+these steps alternately (using different random numbers on each occasion), 
+until the total amount of computation time (excludingI/O) equals END.  Then 
+it terminates.
+
+For example, the file jobs1 contains these two lines:
+
+0 3 simple s1 10 2 50
+0 2 simple s2 10 1 50
+
+There are two task, named s1 and s2, with priority 3 and 2 respectively.  
+Both tasks will be submitted to the operating system at time 0.
+
+Task s1  computes for 10 ticks, does I/O for 2, and repeats this until 50 
+ticks of computation.  (We therefore expect 5 burst of compute separated by 
+4 bursts of I/O, for a total time of 58 ticks)
+
+
+Task s2  computes for 10 ticks, does I/O for 1, and repeats this until 50 
+ticks of computation.  (We therefore expect 5 burst of compute separated by 
+4 bursts of I/O, for a total time of 54 ticks)
+
+Both these expectations are confirmed by the simulation results, shown 
+earlier.
+
+
+
+Structure of the program
+========================
+
+The main part of the program is Osim.  Its job is to process command-line 
+parameters, read in the jobs, and manage the overall simulation.
+
+There are a few main classes: 
+The Cpu implements the behaviour of the Cpu (file CPu.java), and there is 
+an observer for the Cpu called CpuFrame.java.
+
+The Operating system (Os.java), models the central parts of an operating system
+ (it contains the interrupt vectors, and the Os trap handler).
+
+All I/O devices are represented by a timer delay unit (called IoDevice.java),
+The task waiting for I/O completion can be observed on-screen (through
+IoFrame.java).
+
+There two kinds of task in the system:
+SimpleTask.java implements a task that alternately computes and performs I/O, 
+each phase always taking a constant amount of time.
+
+RandomTask allows is similar, except that the amount of computation and I/O 
+time is chosen randomly within user-specified limits.
+
+Task.java is an interface definition that defines the facilities of a task.
+
+Dispatcher.java is an interface that defines the common behaviour of all
+dispatchers.
+
+RtcDispatcher.java is the default (stupid) run-to-completion dispatcher.
+FcfsDispatcher.java is the First Come First Serve dispatcher.
+
+Tcb.java is a class to represent the insides of a "task control block".
+
+State.java implements the mechanism to follow the state of a task, and to record the times that it changes.
+
+GUI facilities
+==============
+The GUI part of the program (when it works), allows you to execute a stream of
+jobs one clock-tick at a time, or continuously at various cloc-rates, and see 
+what happens.
+
+You can observe the state of the dispatcher queue, the ioDevice queue, and the 
+CPU, through on-screen windows.  On the Sun systems, the CPU window contains 
+wierd drawing artefacts that muck up the picture.  Everything else seems ok.
+
+David Knight
+August 2003

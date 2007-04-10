@@ -1,0 +1,13 @@
+Using CbDispatcher
+name	start	end	ready	running	blocked
+s1 	0	575	0	100	475
+s2 	2	614	144	240	228
+s3 	4	765	191	250	320
+
+Tasks completed= 3
+Max turnaround time= 761
+Average turnaround time= 649
+Max waiting time= 191
+Average waiting time= 111
+CPU utilisation= 77%
+

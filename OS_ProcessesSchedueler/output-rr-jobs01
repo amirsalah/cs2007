@@ -1,0 +1,13 @@
+Using RrDispatcher
+name	start	end	ready	running	blocked
+s1 	0	193	75	100	18
+s2 	0	355	160	100	95
+s3 	50	494	52	200	192
+
+Tasks completed= 3
+Max turnaround time= 444
+Average turnaround time= 330
+Max waiting time= 160
+Average waiting time= 95
+CPU utilisation= 80%
+
