@@ -1,0 +1,37 @@
+Index: E:/Java/workspace/cg_06_s2_assign1/.project
+===================================================================
+--- E:/Java/workspace/cg_06_s2_assign1/.project	(revision 0)
++++ E:/Java/workspace/cg_06_s2_assign1/.project	(revision 0)
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>cg_06_s2_assign1</name>
++	<comment></comment>
++	<projects>
++	</projects>
++	<buildSpec>
++	</buildSpec>
++	<natures>
++	</natures>
++</projectDescription>
+Index: E:/Java/workspace/cg_06_s2_assign1/patch.txt
+===================================================================
+--- E:/Java/workspace/cg_06_s2_assign1/patch.txt	(revision 0)
++++ E:/Java/workspace/cg_06_s2_assign1/patch.txt	(revision 0)
+@@ -0,0 +1,16 @@
++Index: E:/Java/workspace/cg_06_s2_assign1/.project
++===================================================================
++--- E:/Java/workspace/cg_06_s2_assign1/.project	(revision 0)
+++++ E:/Java/workspace/cg_06_s2_assign1/.project	(revision 0)
++@@ -0,0 +1,11 @@
+++<?xml version="1.0" encoding="UTF-8"?>
+++<projectDescription>
+++	<name>cg_06_s2_assign1</name>
+++	<comment></comment>
+++	<projects>
+++	</projects>
+++	<buildSpec>
+++	</buildSpec>
+++	<natures>
+++	</natures>
+++</projectDescription>
