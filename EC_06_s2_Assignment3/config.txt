@@ -1,0 +1,26 @@
+#Test case selection (Options: 1, 2, 3, 4, 7, 9, 12):
+1
+
+#Use the default parameters? (Options: 'Yes' or 'No')
+Yes
+
+#Mutation method (Options: 1.NonUniformMutation; 2.BoundaryMutation)
+1
+
+#Size of population:
+90
+
+#The number of generation:
+1000
+
+#Probability of crossover
+0.2
+
+#Probability of mutation
+0.02
+
+#Selection pressure (b>=0) used in the NonUniformMutation
+0.2
+
+#Number of iterations (used in the GENOCOP II system. vailid for test case 2, 3 and 4)
+3
