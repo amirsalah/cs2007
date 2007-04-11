@@ -162,6 +162,7 @@ public class GeneticAlgorithm
     if(crossoverType.equals("partially_matched")){
     	Map<Integer, Integer> swapQueens = new HashMap<Integer, Integer>();
     	ArrayList<Integer> keyQueens = new ArrayList<Integer>(); // The partial queens that being swapped
+    	ArrayList<Integer> valueQueens = new ArrayList<Integer>();
     	int cutPoint1 = random.nextInt(gridSize - 1);
     	int cutPoint2 = random.nextInt(gridSize - 1);
     	
@@ -191,12 +192,18 @@ public class GeneticAlgorithm
     	for(int i=cutPoint1+1; i<cutPoint2+1; i++){ 		
     		child.chromosome[i] = p2.chromosome[i];
     		keyQueens.add(p2.chromosome[i]);
+    		valueQueens.add(p1.chromosome[i]);
     	}
     	
     	for(int i=cutPoint1+1; i<cutPoint2+1; i++){
     		int matchedQueen = p1.chromosome[i];
     		while(keyQueens.contains(matchedQueen)){
-    			matchedQueen = p1.chromosome[keyQueens.indexOf(matchedQueen)];
+    			// Make sure p2[i] != p1[i], or the loop will be infinite
+    			if(matchedQueen != p2.chromosome[i]){
+    				matchedQueen = valueQueens.get(keyQueens.indexOf(matchedQueen));
+    			}else{
+    				break;
+    			}
     		}
     		
     		swapQueens.put(p2.chromosome[i], matchedQueen);
@@ -205,7 +212,6 @@ public class GeneticAlgorithm
     	// Add remaining elements to the child and replace the duplicated elements    	
     	for(int i=0; i<cutPoint1+1; i++){
     		if(swapQueens.containsKey(p1.chromosome[i])){
-    			while(swapQueens.containsKey(swapQueens.get(p1.chromosome[i])) )
     			child.chromosome[i] = swapQueens.get(p1.chromosome[i]);
     		}else{
     			child.chromosome[i] = p1.chromosome[i];
