@@ -57,7 +57,7 @@ public class GeneticAlgorithm
     {
       ; // TODO: Insert your selection method here!
       /* Increase the tournamentSize will increase the selection pressure */
-      int tournamentSize = 40;  
+      int tournamentSize = 4;  
       int bestSeed = random.nextInt(populationSize);
       int randomSeed = random.nextInt(populationSize);
       Set<Integer> seeds = new HashSet<Integer>();
@@ -74,13 +74,14 @@ public class GeneticAlgorithm
     		  if(population[randomSeed].fitness > population[bestSeed].fitness){
     			  bestSeed = randomSeed;
     		  }
+    		  parents[i] = population[bestSeed];
     	  }
     	  
     	  seeds.clear();
     	  bestSeed = random.nextInt(populationSize);
     	  seeds.add(bestSeed);
 
-    	  parents[i] = population[bestSeed];
+    	  
       }
     }else 
     
@@ -102,7 +103,6 @@ public class GeneticAlgorithm
     		
     		for(int j=0; j<populationSize; j++){
     			if(accFitness[j] >= randomFitness){
-    				
     				parents[i] = population[j];
     				break;
     			}

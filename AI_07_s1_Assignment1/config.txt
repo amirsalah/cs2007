@@ -7,7 +7,7 @@
 population_size= 100
 max_generations= 100000
 
-selection_type= roulette_wheel  # eg. roulette_wheel, tournament etc
+selection_type= tournament  # eg. roulette_wheel, tournament etc
 
 crossover_type= partially_matched    # eg. single_point, partially_matched, 
 crossover_rate= 0.4             # probability of crossover occuring (from 0 to 1.0)
