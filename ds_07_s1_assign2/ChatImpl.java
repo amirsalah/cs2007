@@ -23,7 +23,6 @@ public class ChatImpl
 	private Naming naming = null;
 	private String boundURL = null;
 	private ArrayList<String> messages = new ArrayList<String>();
-	private ArrayList<String> tps = new ArrayList<String>();
 //	private File tpFolder = new File("transcriptsFolder");
 	private String folderName = "./transcriptsFolder/";
 	
@@ -179,10 +178,14 @@ public class ChatImpl
     	String[] tpList = null;
     	File f = new File("./transcriptsFolder");
     	tpList = f.list();
-//    	String[] tpList = new String[tps.size()];
-//    	for(int i=0; i<tps.size(); i++){
-//    		tpList[i] = tps.get(i);
-//    	}
+    	int fileNum = tpList.length;
+    	String tmp = null;
+    	
+    	for(int i=0; i<fileNum/2; i++){
+    		tmp = tpList[fileNum - i - 1];
+    		tpList[fileNum - i - 1] = tpList[i];
+    		tpList[i] = tmp;
+    	}
     	return tpList;
     }
 }

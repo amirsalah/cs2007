@@ -8,7 +8,7 @@ import java.rmi.server.*;
 import java.rmi.*;
 
 public class Client 
-	implements ClientCallbacks, Stage2Backend{
+	implements ClientCallbacks, Stage1Backend, Stage2Backend{
 	protected Stage1UserInterface clientUIS1 = null;
 	protected Stage2UserInterface clientUIS2 = null;
 	protected Naming naming = null;
@@ -64,7 +64,7 @@ public class Client
 			return tpList;
 		}
 		catch(RemoteException re){
-			clientUIS1.displayAlert("Could not communicate with registry");
+			clientUIS1.displayAlert("GetTranscriptList: Could not communicate with server.");
 		}
 		return null;
 	}
@@ -107,7 +107,7 @@ public class Client
         	return false;
         }
         catch(java.io.FileNotFoundException fnfe){
-        	clientUIS1.displayAlert("File not found exception.");
+        	clientUIS1.displayAlert("Connect: transcript not found: savetestnotfound");
         	return false;
         }
         
@@ -147,7 +147,7 @@ public class Client
 			ca.shutdown();
 		}
         catch(RemoteException re){
-        	clientUIS1.displayAlert("ShutdownAndSave: Could not communicate with server.");
+        	clientUIS1.displayAlert("SaveTranscript: Could not communicate with server.");
         }	
 	}
 	
