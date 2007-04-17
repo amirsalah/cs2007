@@ -57,7 +57,7 @@ public class GeneticAlgorithm
     {
       ; // TODO: Insert your selection method here!
       /* Increase the tournamentSize will increase the selection pressure */
-      int tournamentSize = 4;  
+      int tournamentSize = 10;  
       int bestSeed = random.nextInt(populationSize);
       int randomSeed = random.nextInt(populationSize);
       Set<Integer> seeds = new HashSet<Integer>();
@@ -248,13 +248,13 @@ public class GeneticAlgorithm
     if (mutationType.equals("swap_columns"))
     {
       ; // TODO: Insert your mutation method here! 
-      int position1 = random.nextInt(gridSize - 1);
-      int position2 = random.nextInt(gridSize - 1);
+      int position1 = random.nextInt(gridSize);
+      int position2 = random.nextInt(gridSize);
       int tmp;
       
-      // Generate two different columns
+      // Ensure the enerated two columns are different
       while(position1 == position2){
-    	  position2 = random.nextInt(gridSize - 1);
+    	  position2 = random.nextInt(gridSize);
       }
       
       // Swap the two columns
@@ -536,11 +536,6 @@ public class GeneticAlgorithm
     {
     	Set<Integer> positionSet = new HashSet<Integer>();
     	int position = random.nextInt(gridSize);
-    	
-//        for(int i=0; i<gridSize; i++){
-//        	  System.out.print(chromosome[i] + " ");
-//          }
-//          System.out.println();
           
     	for(int i=0; i<gridSize; i++){
     		while(positionSet.contains(position)){
@@ -549,11 +544,6 @@ public class GeneticAlgorithm
     		positionSet.add(position);
     		chromosome[i] = position;
     	}
-    	
-//        for(int i=0; i<gridSize; i++){
-//      	  System.out.print(chromosome[i] + " ");
-//        }
-//        System.out.println();
     }
     
     //--------------------------------------------------------------
@@ -571,7 +561,7 @@ public class GeneticAlgorithm
     public void evaluateFitness()
     {
     	int numCollisions = 0;
-    	int selPressure = 1;  // Selection pressure
+    	int selPressure = 1;  // Control selection pressure, higher value, higher selection pressure
     	int offset = 1;       // offset used to calculate the diagnal attack between queens
     	
     	// Calculate the total number of collisions
@@ -590,7 +580,7 @@ public class GeneticAlgorithm
     	if(numCollisions == 0){
     		fitness = 1.0;
     	}else{
-    		// Note: + 1 is used to prevent when the numCollisions == 1; the fitness will be 1
+    		// Note: "+ 1" is used to deal with the situation when numCollisions == 1; the fitness will be 1
     		fitness = (double)1.0/(double)(numCollisions * selPressure + 1);
     	}
     }
