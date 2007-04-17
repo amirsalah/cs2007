@@ -64,10 +64,10 @@ public class GeneticAlgorithm
       
       seeds.add(bestSeed);
       for(int i=0; i<populationSize; i++){
-    	  // Choose best seed from each tournament
+    	  // Choose the best seed from each tournament
     	  for(int j=0; j<tournamentSize; j++){
     		  randomSeed = random.nextInt(populationSize);
-    		  // Make sure each tournament involves different individuals
+    		  // Make sure individuals involved in the tournament are different
     		  while(seeds.contains(randomSeed)){
     			  randomSeed = random.nextInt(populationSize);
     		  }
@@ -76,12 +76,9 @@ public class GeneticAlgorithm
     		  }
     		  parents[i] = population[bestSeed];
     	  }
-    	  
     	  seeds.clear();
     	  bestSeed = random.nextInt(populationSize);
     	  seeds.add(bestSeed);
-
-    	  
       }
     }else 
     
@@ -91,13 +88,13 @@ public class GeneticAlgorithm
     	double[] accFitness = new double[populationSize]; // Accumulated fitness
     	double randomFitness = 0.0;
     
-    	// Sum all the fitness values of current chromosomes and get accumulated fitness values
+    	// Sum of all current chromosomes' fitness values
     	for(int i=0; i<populationSize; i++){
     		fitnessSum += population[i].fitness;
     		accFitness[i] = fitnessSum; 
     	}
 
-    	// Select chromosomes
+    	// Select chromosomes according to their fitness values
     	for(int i=0; i<populationSize; i++){
     		randomFitness = random.nextDouble() * fitnessSum;
     		
@@ -108,7 +105,6 @@ public class GeneticAlgorithm
     			}
     		}
     	}
-    	
     }else if(selectionType.equalsIgnoreCase("ranking_selection")){
     }
     else
@@ -135,21 +131,21 @@ public class GeneticAlgorithm
     if (crossoverType.equals("single_point"))
     {
       ; // TODO: Insert your crossover method here!
-      Set<Integer> oriPositions = new HashSet<Integer>();
+      Set<Integer> originalQueens = new HashSet<Integer>();
       int cutPoint = random.nextInt(gridSize - 1);
-      int duEleCounter = 0; // The counter for duplicated elements that exist in the original set
+      int duEleCounter = 0; // The counter of duplicated elements that exist in the original set
       
       // Add elements(in p1) located before the cutPoint to the set
       for(int i=0; i<cutPoint+1; i++){
-    	  oriPositions.add(p1.chromosome[i]);
+    	  originalQueens.add(p1.chromosome[i]);
     	  child.chromosome[i] = p1.chromosome[i];
       }
       
       for(int i=cutPoint+1; i<gridSize; i++){
     	  // Check in circle to insert the elements from individual p2 to p1
     	  for(int j=duEleCounter; j<gridSize; j++){
-    		  if( !oriPositions.contains(p2.chromosome[(j + i)%gridSize]) ){
-    			  oriPositions.add(p2.chromosome[(j + i )%gridSize]);
+    		  if( !originalQueens.contains(p2.chromosome[(j + i)%gridSize]) ){
+    			  originalQueens.add(p2.chromosome[(j + i )%gridSize]);
     			  child.chromosome[i] = p2.chromosome[(j + i)%gridSize];
     			  break;
     		  }
@@ -179,16 +175,6 @@ public class GeneticAlgorithm
     	}
     	
     	// Add the matched queens into the hash map and the child
-    	/*
-    	 * cutPoint1 = 4; cutPoint2 = 8
-    	 *                     |-------------|
-    	 * p2:  8  4  1  11  7 | 9  10  5  2 | 0  6  3
-    	 * 					   | |        -> |
-    	 *                     | |-  -  -  | |
-    	 * p1:  3  6  11  5  8 | 2  1   10 4 | 0  7  9
-    	 *                      -------------  
-    	 *  NOTE: 9 should match 4, rather than 2
-    	 */
     	for(int i=cutPoint1+1; i<cutPoint2+1; i++){ 		
     		child.chromosome[i] = p2.chromosome[i];
     		keyQueens.add(p2.chromosome[i]);
