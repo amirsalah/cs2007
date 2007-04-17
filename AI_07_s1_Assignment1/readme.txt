@@ -2,13 +2,14 @@
 the selection methods: tournament and roulette_wheel.
 the crossover methods: single_point and partially_matched.
 
+----------------------------------------------------------------------------------------------------
 [Recommended configuration]
 For small grid size, such as 8 and 12, both tournament and roulette wheel seletion method work well.
 For large grid size, such as 24, 36 and 64, the tournament selection is recommended.
 the tournament size is recommended at gridSize/2, such as gridSize=24, tournamentSize=12
 (setting tournamentSize is explained in the next section).
 
-[Other parameters]
+Other parameters:
 Tournament size: is fixed in the program, which is 10 by default.
 You can change the tournament size to vary the selection pressure.
 Increasing the tournament size will also increase the selection pressure, vice versa.
@@ -16,6 +17,7 @@ Increasing the tournament size will also increase the selection pressure, vice v
 Selection pressure: you can also vary the selection pressure by changing the variable selPressure,
 which is in the function "evaluateFitness()".
 
+-----------------------------------------------------------------------------------------------
 [Experiments]
 roulette wheel selection + single point crossover works badly for large sized boards.
 e.g. Generally, it will take about 40 minutes to find a solution.
