@@ -26,18 +26,27 @@ public class MovingAverageModel extends TimeSeriesModel{
 	public void Predict(){
 		// Set the first date to predict its stock price
 		StockDate predictingDate = startDate.clone();
-		StockDate previousDate = predictingDate.PreviousValidDate(dataSet);
+		StockDate previousDate;
 		
 		for(int i=0; i<(dataSet.Length() - numWindows); i++){
 			predictedValue = 0;
-			for(int j=0; j<numWindows; j++){
-				predictedValue += weights[j] * dataSet.GetAdjClose(previousDate);
-				previousDate = previousDate.PreviousValidDate(dataSet);
-			}
+			previousDate = predictingDate.clone();
 			
-			// Parameters initialization for predicting next day
-			predictingDate = predictingDate.NextValidDate(dataSet);
-			previousDate = predictingDate.PreviousValidDate(dataSet);
+			try{
+				for(int j=0; j<numWindows; j++){
+					previousDate = previousDate.PreviousValidDate(dataSet);
+					predictedValue += weights[j] * dataSet.GetAdjClose(previousDate);
+				}
+			
+				System.out.println("Predicted Value: " + predictedValue);
+				// Parameters initialization for predicting next day
+				predictingDate = predictingDate.NextValidDate(dataSet);
+				previousDate = predictingDate.PreviousValidDate(dataSet);
+			}
+			catch(InvalidDateException ide){
+				System.out.println(ide.getMessage());
+				break;
+			}
 
 		}
 	}

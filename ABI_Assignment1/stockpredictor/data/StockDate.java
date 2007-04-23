@@ -1,9 +1,13 @@
 package stockpredictor.data;
 
+import stockpredictor.InvalidDateException;;
+
 public class StockDate {
 	private int year;
 	private int month;
 	private int date;
+	
+	private int searchTimes = 100;
 	
 	public StockDate(){
 	}
@@ -40,15 +44,24 @@ public class StockDate {
 	 * Get next valid date that exists in the stock data set
 	 * @param dataSet the stock data set that will be tested 
 	 * @return the valid next day
+	 * @throws InvalidDateException 
 	 */
-	public StockDate NextValidDate(StockPointsSet dataSet){
+	public StockDate NextValidDate(StockPointsSet dataSet) throws InvalidDateException{
 		StockDate tomorrow = NextDate();
+		int counter;
 		
-		while( !dataSet.ContainsDate(tomorrow)){
+		for(counter=0; counter<searchTimes; counter++){
+			if(dataSet.ContainsDate(tomorrow)){
+				break;
+			}
 			tomorrow = tomorrow.NextDate();
 		}
 		
-		return tomorrow;
+		if(counter == 99){
+			throw new InvalidDateException("No valid next date in next " + String.valueOf(searchTimes) + "days ");
+		}else{
+			return tomorrow;
+		}
 	}
 	
 	public StockDate PreviousDate(){
@@ -68,14 +81,22 @@ public class StockDate {
 		return yesterday;
 	}
 	
-	public StockDate PreviousValidDate(StockPointsSet dataSet){
+	public StockDate PreviousValidDate(StockPointsSet dataSet) throws InvalidDateException{
 		StockDate yesterday = PreviousDate();
+		int counter;
 		
-		while( !dataSet.ContainsDate(yesterday) ){
+		for(counter=0; counter<searchTimes; counter++){
+			if(dataSet.ContainsDate(yesterday)){
+				break;
+			}
 			yesterday = yesterday.PreviousDate();
 		}
 		
-		return yesterday;
+		if(counter == 99){
+			throw new InvalidDateException("No valid previous date in next " + String.valueOf(searchTimes) + "days ");
+		}else{
+			return yesterday;
+		}
 	}
 	
 	/**
