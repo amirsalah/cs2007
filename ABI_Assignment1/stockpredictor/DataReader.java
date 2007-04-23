@@ -74,6 +74,8 @@ public class DataReader {
 				}
 				// Save date into StockDate
 				StockDate stockDate = new StockDate(year, month, date);
+//				if(dowJonesStock.ContainsDate(new StockDate(2007, 1, 25	)))
+//					System.out.println("got it");
 				
 				dayPoint = new StockPoint(stockDate, open, high, low, close, volume, adj_close);
 				dowJonesStock.AddPoint(dayPoint);

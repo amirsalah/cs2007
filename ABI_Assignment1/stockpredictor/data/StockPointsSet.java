@@ -1,11 +1,13 @@
 package stockpredictor.data;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.TreeMap;
 import java.util.HashMap;
 
 public class StockPointsSet
 {
-	private HashMap<StockDate, ArrayList<Double>> stockPoints = new HashMap<StockDate, ArrayList<Double>>();
+	private HashMap<String, ArrayList<Double>> stockPoints = new HashMap<String, ArrayList<Double>>();
 	private int adjCloseIndex = 5;
 	
 	/**
@@ -15,9 +17,10 @@ public class StockPointsSet
 	 */
 	public boolean AddPoint(StockPoint point)
 	{
-		if( stockPoints.put(point.GetCalendar(), point.GetPrices()) != null )
+		if( stockPoints.put(point.GetCalendar().toString(), point.GetPrices()) != null )
 		{
-			System.out.println("Error: duplicated mapping");
+			System.out.print("Error: duplicated mapping  ");
+			System.out.println(point.GetCalendar().toString());
 			return false;
 		}
 		else
@@ -50,12 +53,12 @@ public class StockPointsSet
 	 */
 	public boolean ContainsDate(StockDate date){
 		boolean contain = false;
-		contain = stockPoints.containsKey(date);
+		contain = stockPoints.containsKey(date.toString());
 		return contain;
 	}
 	
 	public double GetAdjClose(StockDate date){
-		return stockPoints.get(date).get(adjCloseIndex);
+		return stockPoints.get(date.toString()).get(adjCloseIndex);
 	}
 	
 }

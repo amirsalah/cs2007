@@ -104,4 +104,23 @@ public class StockDate {
 		StockDate newDate = new StockDate(year, month, date);
 		return newDate;
 	}
+	
+	public String toString(){
+		return String.valueOf(year) + String.valueOf(month) + String.valueOf(date);
+	}
+	
+	public Integer toInteger(){
+		int tmpMonth = month;
+		int tmpDate = date;
+		
+		if(month < 10){
+			tmpMonth = month + 50;
+		}
+		
+		if(date < 10){
+			tmpDate = date + 50;
+		}
+		
+		return tmpDate + tmpMonth*100 + year*10000;
+	}
 }
