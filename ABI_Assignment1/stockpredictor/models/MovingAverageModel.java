@@ -10,8 +10,8 @@ public class MovingAverageModel extends TimeSeriesModel{
 	
 	public MovingAverageModel(StockPointsSet dataSet){
 		super(dataSet);
-		SetWeights();
 		numWindows = weights.length;
+		SetWeights();
 	}
 	
 	/**

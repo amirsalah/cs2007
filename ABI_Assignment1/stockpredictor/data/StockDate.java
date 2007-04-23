@@ -105,22 +105,21 @@ public class StockDate {
 		return newDate;
 	}
 	
+	/**
+	 * Output the string structure of the date: yyyyMMdd
+	 */
 	public String toString(){
-		return String.valueOf(year) + String.valueOf(month) + String.valueOf(date);
-	}
-	
-	public Integer toInteger(){
-		int tmpMonth = month;
-		int tmpDate = date;
+		String stdMonth = String.valueOf(month);
+		String stdDate = String.valueOf(date);
 		
 		if(month < 10){
-			tmpMonth = month + 50;
+			stdMonth = "0" + stdMonth;
 		}
-		
 		if(date < 10){
-			tmpDate = date + 50;
+			stdDate = "0" + stdDate;
 		}
 		
-		return tmpDate + tmpMonth*100 + year*10000;
+		return String.valueOf(year) + stdMonth + stdDate;
 	}
+	
 }
