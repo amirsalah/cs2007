@@ -13,7 +13,8 @@ public class StockDriver {
 		
 		Model predictionModel = new MovingAverageModel(dowJonesReader.GetPointsSet());
 		predictionModel.Predict();
-	
+		DataWriter writer = new DataWriter("DOWJONES_predicted_data.csv");
+		writer.WriteRecordToFile(predictionModel);
 	}
 
 }
