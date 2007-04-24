@@ -65,6 +65,27 @@ public class StockDate {
 		}
 	}
 	
+	/**
+	 * Return the next Nth date
+	 * @param dateSet the data set in which the Nth date will be tested 
+	 * @param n the nth date
+	 * @return
+	 */
+	public StockDate NextNthValidDate(StockPointsSet dataSet, int n) throws InvalidDateException{
+		
+		if(n <= 0){
+			System.out.println("n should be positive integer");
+			System.exit(1);
+		}
+		
+		StockDate nextDay = new StockDate(year, month, date);
+		for(int i=0; i<n; i++){
+			nextDay = nextDay.NextValidDate(dataSet);
+		}
+		
+		return nextDay;
+	}
+	
 	public StockDate PreviousDate(){
 		StockDate yesterday = new StockDate(year, month, date);
 		
@@ -98,6 +119,21 @@ public class StockDate {
 		}else{
 			return yesterday;
 		}
+	}
+	
+	public StockDate PreviousNthValidDate(StockPointsSet dataSet, int n) throws InvalidDateException{
+		
+		if(n <= 0){
+			System.out.println("n should be positive integer");
+			System.exit(1);
+		}
+		
+		StockDate lastDay = new StockDate(year, month, date);
+		for(int i=0; i<n; i++){
+			lastDay = lastDay.PreviousValidDate(dataSet);
+		}
+		
+		return lastDay;
 	}
 	
 	/**
