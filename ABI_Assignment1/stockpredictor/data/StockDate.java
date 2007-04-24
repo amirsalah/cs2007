@@ -9,6 +9,7 @@ public class StockDate {
 	
 	private int searchTimes = 100;
 	
+	
 	public StockDate(){
 	}
 	
@@ -139,8 +140,7 @@ public class StockDate {
 		if(date < 10){
 			stdDate = "0" + stdDate;
 		}
-		
-		return String.valueOf(year) + stdMonth + stdDate;
+		return String.valueOf(year) + "/" + stdMonth + "/" + stdDate; 
 	}
 	
 }

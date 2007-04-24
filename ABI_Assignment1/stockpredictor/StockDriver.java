@@ -11,7 +11,7 @@ public class StockDriver {
 		DataReader dowJonesReader = new DataReader("DOWJONES_data.csv");
 		System.out.println("Read completed");
 		
-		TimeSeriesModel predictionModel = new MovingAverageModel(dowJonesReader.GetPointsSet());
+		Model predictionModel = new MovingAverageModel(dowJonesReader.GetPointsSet());
 		predictionModel.Predict();
 	
 	}

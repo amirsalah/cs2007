@@ -1,6 +1,6 @@
 /*=======================================================
-  File reader to read stock market data from a file
   
+  File reader to read stock market data from a file
   @Author: Bo CHEN
   Student ID: 1139520
   Date: 19th, April 2007

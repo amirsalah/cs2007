@@ -8,7 +8,7 @@ public class StockPointsSet
 {
 	private HashMap<String, ArrayList<Double>> stockPoints = new HashMap<String, ArrayList<Double>>();
 	private int adjCloseIndex = 5;
-	
+
 	/**
 	 * Add a new stock data into the database storing stock prices
 	 * @param point the stock data in a specific day

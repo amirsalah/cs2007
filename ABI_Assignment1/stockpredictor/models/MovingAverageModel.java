@@ -3,10 +3,11 @@ package stockpredictor.models;
 import stockpredictor.*;
 import stockpredictor.data.*;
 
-public class MovingAverageModel extends TimeSeriesModel{
+
+public class MovingAverageModel extends TimeSeriesModel {
 	private double[] weights = new double[20];
-	private double predictedValue;
 	private int numWindows;
+	
 	
 	public MovingAverageModel(StockPointsSet dataSet){
 		super(dataSet);
@@ -27,6 +28,7 @@ public class MovingAverageModel extends TimeSeriesModel{
 		// Set the first date to predict its stock price
 		StockDate predictingDate = startDate.clone();
 		StockDate previousDate;
+		double predictedValue;
 		
 		for(int i=0; i<(dataSet.Length() - numWindows); i++){
 			predictedValue = 0;
@@ -37,8 +39,9 @@ public class MovingAverageModel extends TimeSeriesModel{
 					previousDate = previousDate.PreviousValidDate(dataSet);
 					predictedValue += weights[j] * dataSet.GetAdjClose(previousDate);
 				}
-			
-				System.out.println("Predicted Value: " + predictedValue);
+				
+				RecordPrediction(predictingDate, predictedValue);
+				//System.out.println("Predicted Value: " + predictedValue);
 				// Parameters initialization for predicting next day
 				predictingDate = predictingDate.NextValidDate(dataSet);
 				previousDate = predictingDate.PreviousValidDate(dataSet);
@@ -50,6 +53,5 @@ public class MovingAverageModel extends TimeSeriesModel{
 
 		}
 	}
-	
 	
 }
