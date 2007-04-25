@@ -21,7 +21,6 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 		}
 		
 		this.alpha = alpha;
-		
 	}
 	
 	public void Predict(){
@@ -58,7 +57,7 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 	 * This is a recursive function that perform prediction for a fixed size of windows, which is n previous dates
 	 * The principle of this method is shown below:
 	 * S(t) = alpha * Price(t-1) + (1 - alpha) * S(t - 1)
-	 * S(2) = Price(1);
+	 * S(2) = adjClose(1);
 	 * 
 	 * @param predictingDate the date whose stock price to be predicted
 	 * @param remainingWindows the number of remaining windows
@@ -71,12 +70,10 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 		if(remainingWindows == 1){
 			return dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows));
 		}else{
-			double previousAdjPrice = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - remainingWindows + 1));
-			return alpha *  previousAdjPrice + (1 - alpha) * LimitedPrediction(predictingDate, rWindows);
+			double previousAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - remainingWindows + 1));
+			return alpha *  previousAdjClose + (1 - alpha) * LimitedPrediction(predictingDate, rWindows);
 		}
 	}
 	
 }
-
-
 
