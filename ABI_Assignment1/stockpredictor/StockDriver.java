@@ -11,7 +11,8 @@ public class StockDriver {
 		DataReader dowJonesReader = new DataReader("DOWJONES_data.csv");
 		System.out.println("Read completed");
 		
-		Model predictionModel = new DoubleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.85, 0.9);
+//		Model predictionModel = new DoubleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.95, 0.95);
+	Model predictionModel = new SingleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.85);
 		predictionModel.Predict();
 		DataWriter writer = new DataWriter("DOWJONES_predicted_data.csv");
 		writer.WriteRecordToFile(predictionModel);
