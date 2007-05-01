@@ -7,7 +7,7 @@ public class Predict {
 	LinkedList<Double> elements = new LinkedList<Double>();
 	double predictedValue = 0.0;
 	double sum = 0.0;
-	double alpha = 0.9;
+	double alpha = 0.8;
 	
 	public Predict(Vector<Double> raw){
 		y = raw;
@@ -34,15 +34,14 @@ public class Predict {
 			
 			tempPrediction.add(elements.get(0));
 			
-			for(int j=1; j<20; j++){
+			for(int j=1; j<21; j++){
 				previousY = y.get(y.size() - i - j);
 				tempPrediction.add(alpha*previousY + (1-alpha)*tempPrediction.get(j - 1));
 			}
-			S.add(tempPrediction.get(tempPrediction.size()-1));
+			S.add(tempPrediction.get(20));
 			sum += Math.abs(S.get(S.size()-1) - y.get(y.size() - 21 - i));
 		}
-		
-		return S;
+ 		return S;
 	}
 	
 	public double GetABS_Error(){

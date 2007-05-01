@@ -11,6 +11,7 @@ public class Driver {
 	
 		Vector<Double> result = newData.method();
 		double abs = newData.GetABS_Error();
+		System.out.println("ABS Error: " + abs);
 		Output.Save(result);
 	}
 }
