@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import stockpredictor.data.StockDate;
 import stockpredictor.data.StockPointsSet;
 
-
+/**
+ * The abstract model for different prediction techniques.
+ * All the prediction model should extend from this model, and implements predict()
+ */
 public abstract class Model {
 	protected int numResults = 3;
 	protected HashMap<String, ArrayList<Double>> predictedValues = new HashMap<String, ArrayList<Double>>(numResults);
@@ -23,7 +26,6 @@ public abstract class Model {
 	
 	/**
 	 * Predict the stock prices based on the previous data
-	 *
 	 */
 	public abstract void Predict();
 	

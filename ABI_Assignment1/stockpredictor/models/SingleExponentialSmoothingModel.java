@@ -3,12 +3,20 @@ package stockpredictor.models;
 import stockpredictor.data.*;
 import stockpredictor.*;
 
-
+/**
+ * This is one of the time series prediction method,
+ * in which the weights of previous stock prices are assigned exponentially.
+ * Basically, recent days are given more significant weights.
+ * 
+ * The parameter alpha controls the smoothness of the algorithm, 
+ * alpha should be between 0.0 and 1.0
+ * 
+ */
 public class SingleExponentialSmoothingModel extends TimeSeriesModel{
-	private double alpha;
-	private int numWindows = 20;
+	private double alpha; // The smoothing factor
+	private int numWindows = 20; // the number of previous days to be considered
 	private int numExistingPrices = 20;
-	private boolean noWindows = false;
+	private boolean noWindows = false; // true if all the previous days are used for prediction
 	
 	
 	public SingleExponentialSmoothingModel(StockPointsSet dataSet, double alpha){
@@ -37,7 +45,6 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 					predictedValue = LimitedPrediction(predictingDate, windows);
 					
 					RecordPrediction(predictingDate, predictedValue);
-					//System.out.println("Predicted Value: " + predictedValue);
 					// Parameters initialization for predicting next day
 					predictingDate = predictingDate.NextValidDate(dataSet);
 				}

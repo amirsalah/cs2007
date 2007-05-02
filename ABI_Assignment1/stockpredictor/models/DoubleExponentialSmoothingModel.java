@@ -4,10 +4,21 @@ import stockpredictor.data.StockDate;
 import stockpredictor.data.StockPointsSet;
 import stockpredictor.InvalidDateException;
 
+/**
+ * This model is a improvement of single exponential model.
+ * The model take the trend of data into account, in comparison single exponential model doesn't
+ * 
+ * The formulation for this model can be found at
+ * http://www.itl.nist.gov/div898/handbook/pmc/section4/pmc433.htm
+ * However, this implementation is slightly different from the one given in the web.
+ * 
+ * The trend smoothing only consider the past 20 days, rather than all previous day.
+ * 
+ */
 public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
-	private double alpha;
-	private double gamma;
-	private int numWindows = 20;
+	private double alpha;  // The smoothing factor
+	private double gamma;  // The smoothing factor of global trend
+	private int numWindows = 20; // The number of previous days to be considered in prediction
 	private int numExistingPrices = 20;
 	
 	public DoubleExponentialSmoothingModel(StockPointsSet dataSet, double alpha, double gamma){
@@ -40,7 +51,6 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 				predictedValue = PredictionWithTrend(predictingDate, windows);
 				
 				RecordPrediction(predictingDate, predictedValue);
-				//System.out.println("Predicted Value: " + predictedValue);
 				// Parameters initialization for predicting next day
 				predictingDate = predictingDate.NextValidDate(dataSet);
 			}
@@ -49,7 +59,15 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 			return;
 		}
 	}
-	
+
+	/**
+	 * Prediction taking account with global trend.
+	 * 
+	 * @param predictingDate the day need to predict its adj. close
+	 * @param remainingWindows
+	 * @return the predicted value
+	 * @throws InvalidDateException
+	 */
 	private double PredictionWithTrend(StockDate predictingDate, int remainingWindows) throws InvalidDateException {
 		int rWindows = remainingWindows - 1;
 		
@@ -64,6 +82,14 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 		}
 	}
 	
+	/**
+	 * Exponential smoothing global trend, by applying single exponential smoothing to
+	 * the differences of past days. 
+	 * @param predictingDate 
+	 * @param remainingWindows
+	 * @return b(t)
+	 * @throws InvalidDateException not a valid date
+	 */
 	private double TrendExponentialSmoothing(StockDate predictingDate, int remainingWindows) throws InvalidDateException {
 		int rWindows = remainingWindows - 1;
 		

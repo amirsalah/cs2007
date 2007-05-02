@@ -8,11 +8,13 @@
 package stockpredictor;
 
 import java.io.*;
-import java.util.*;
 
 import stockpredictor.data.*;
 
-
+/**
+ * Read data from the specific file, which contains the stock data.
+ * and then transfer the string data into appropriate data, containing open, close, etc.
+ */
 public class DataReader {
 	private BufferedReader fileReader;
 	private StockPointsSet dowJonesStock = new StockPointsSet();
@@ -74,8 +76,6 @@ public class DataReader {
 				}
 				// Save date into StockDate
 				StockDate stockDate = new StockDate(year, month, date);
-//				if(dowJonesStock.ContainsDate(new StockDate(2007, 1, 25	)))
-//					System.out.println("got it");
 				
 				dayPoint = new StockPoint(stockDate, open, high, low, close, volume, adj_close);
 				dowJonesStock.AddPoint(dayPoint);

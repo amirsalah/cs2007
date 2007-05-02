@@ -3,7 +3,10 @@ package stockpredictor.models;
 import stockpredictor.*;
 import stockpredictor.data.*;
 
-
+/**
+ * this model calculates the average value of previous "numWindows" days' stock prices
+ * the numWindows can be changed, and 20 is recommanded.
+ */
 public class MovingAverageModel extends TimeSeriesModel {
 	private double[] weights = new double[20];
 	private int numWindows;
@@ -17,6 +20,7 @@ public class MovingAverageModel extends TimeSeriesModel {
 	
 	/**
 	 * Set average weights for each previous close value
+	 * Note: each weight is the same
 	 */
 	protected void SetWeights(){
 		for(int i=0; i<numWindows; i++){
@@ -41,7 +45,6 @@ public class MovingAverageModel extends TimeSeriesModel {
 				}
 				
 				RecordPrediction(predictingDate, predictedValue);
-				//System.out.println("Predicted Value: " + predictedValue);
 				// Parameters initialization for predicting next day
 				predictingDate = predictingDate.NextValidDate(dataSet);
 				previousDate = predictingDate.PreviousValidDate(dataSet);

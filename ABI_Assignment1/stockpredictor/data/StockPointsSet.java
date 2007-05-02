@@ -1,7 +1,6 @@
 package stockpredictor.data;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.HashMap;
 
 public class StockPointsSet
@@ -23,7 +22,6 @@ public class StockPointsSet
 			return false;
 		}
 		else
-//			System.out.println("Add successfully");
 			return true;
 	}
 
