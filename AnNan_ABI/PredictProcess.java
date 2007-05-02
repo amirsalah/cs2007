@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Predict {
+public class PredictProcess {
 	
 	Vector<Double> S = new Vector<Double>();
 	Vector<Double> y = null;
@@ -10,11 +10,11 @@ public class Predict {
 	LinkedList<Double> elements = new LinkedList<Double>();
 	double predictedValue = 0.0;
 	double sum = 0.0;
-	double alpha = 0.8;
+	double alpha = 0.9;
 	double sumABS;
 	double sumLMS;
 	
-	public Predict(Vector<Double> raw){
+	public PredictProcess(Vector<Double> raw){
 		y = raw;
 	}
 	

@@ -1,13 +1,12 @@
 import java.util.*;
 
-public class Driver {
+public class SotckPrediction {
 	public static void main(String args[])
 	{
 		fileProcess Import = new fileProcess();
-		CsvFileSave Output = new CsvFileSave();
 		
 		Vector<Double> rawData = Import.LoadClose();
-		Predict newData = new Predict(rawData);
+		PredictProcess newData = new PredictProcess(rawData);
 		
 		Vector<Double> ColumeOfABS = null;
 		Vector<Double> ColumeOfLMS = null;
@@ -15,7 +14,8 @@ public class Driver {
 		ColumeOfABS = newData.Get_ABS();
 		ColumeOfLMS = newData.Get_LMS();
 		predicted = newData.prediction();
-
-		Output.Save(rawData,predicted,ColumeOfABS,ColumeOfLMS,newData.Get_Average_ABS_Error(),newData.Get_Average_LMS_Error());
+		
+		// Save the prediction data into a file
+		Import.SaveToFile(predicted,ColumeOfABS,ColumeOfLMS,newData.Get_Average_ABS_Error(),newData.Get_Average_LMS_Error());
 	}
-}
+} 
