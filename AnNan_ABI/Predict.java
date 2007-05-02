@@ -4,10 +4,15 @@ public class Predict {
 	
 	Vector<Double> S = new Vector<Double>();
 	Vector<Double> y = null;
+	Vector<Double> absError = new Vector<Double>();
+	Vector<Double> lmsError = new Vector<Double>();
+	
 	LinkedList<Double> elements = new LinkedList<Double>();
 	double predictedValue = 0.0;
 	double sum = 0.0;
 	double alpha = 0.8;
+	double sumABS;
+	double sumLMS;
 	
 	public Predict(Vector<Double> raw){
 		y = raw;
@@ -23,10 +28,14 @@ public class Predict {
 		}
 	}
 	
-	public Vector<Double> method()
+	public Vector<Double> prediction()
 	{
 		ArrayList<Double> tempPrediction = new ArrayList<Double>(20);
 		double previousY = 0.0;
+		double absErrorValue = 0.0;
+		sumABS = 0.0;
+		double lmsErrorValue = 0.0;
+		sumLMS = 0.0;
 		
 		for(int i=0; i<y.size()-20; i++){
 			tempPrediction.clear();
@@ -39,12 +48,35 @@ public class Predict {
 				tempPrediction.add(alpha*previousY + (1-alpha)*tempPrediction.get(j - 1));
 			}
 			S.add(tempPrediction.get(20));
+			// Compute abs Error and sum all the error values
+			absErrorValue = Math.abs(tempPrediction.get(20) - y.get(y.size() - 21 - i));
+			absError.add(absErrorValue); //Save it to the vector
+			sumABS += absErrorValue;
+			
+			// Compute LMS error and sum all the error values
+			lmsErrorValue = Math.pow(absErrorValue, 2)/(double)2.0;
+			lmsError.add(lmsErrorValue);
+			sumLMS += lmsErrorValue;
+			
 			sum += Math.abs(S.get(S.size()-1) - y.get(y.size() - 21 - i));
 		}
  		return S;
 	}
 	
-	public double GetABS_Error(){
-		return sum/(double)(y.size()-20);
+	
+	public Vector<Double> Get_ABS(){
+		return absError;
+	}
+	
+	public Vector<Double> Get_LMS(){
+		return lmsError;
+	}
+	
+	public double Get_Average_ABS_Error(){
+		return sumABS/(double)(y.size()-20);
+	}
+	
+	public double Get_Average_LMS_Error(){
+		return sumLMS/(double)(y.size()-20);
 	}
 }

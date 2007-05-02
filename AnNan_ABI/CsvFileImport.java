@@ -7,7 +7,7 @@ public class CsvFileImport
 	BufferedReader in = null;
 	Vector<Double> RawData = new Vector<Double>();
 	
-	public Vector<Double> Load(){
+	public Vector Load(){
 		try{
 			String fileName = "DOWJONES_data.csv"; 
 			BufferedReader in = new BufferedReader(new FileReader(fileName));
@@ -27,7 +27,10 @@ public class CsvFileImport
 					}
 				}
 			}
-		}catch(IOException e){}
+		}catch(IOException ioe)
+		{
+			System.out.println("Read file failed");
+		}
 		return RawData;	
 	}
 }
