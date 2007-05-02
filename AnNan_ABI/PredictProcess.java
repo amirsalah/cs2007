@@ -1,9 +1,13 @@
 import java.util.*;
 
+/*
+ * The prediction is based on Single exponential smoothing method,
+ * The windows is set to 20
+ */
 public class PredictProcess {
 	
 	Vector<Double> S = new Vector<Double>();
-	Vector<Double> y = null;
+	Vector<Double> y = null; // the raw adj. close data
 	Vector<Double> absError = new Vector<Double>();
 	Vector<Double> lmsError = new Vector<Double>();
 	
@@ -18,6 +22,7 @@ public class PredictProcess {
 		y = raw;
 	}
 	
+	// Initialization of the valid past dates
 	private void init20Elements(int index){
 		elements.clear();
 		
@@ -28,14 +33,19 @@ public class PredictProcess {
 		}
 	}
 	
+	/* the prediction process
+	 * the prediction value is calculated from its previous dates' data
+	 * different past dates, will be given different weights
+	 * based on the Single exponential smoothing formula
+	 */
 	public Vector<Double> prediction()
 	{
 		ArrayList<Double> tempPrediction = new ArrayList<Double>(20);
 		double previousY = 0.0;
 		double absErrorValue = 0.0;
-		sumABS = 0.0;
+		sumABS = 0.0; // sum of all the abs error values
 		double lmsErrorValue = 0.0;
-		sumLMS = 0.0;
+		sumLMS = 0.0; // sum of all the lms error values
 		
 		for(int i=0; i<y.size()-20; i++){
 			tempPrediction.clear();
@@ -63,7 +73,7 @@ public class PredictProcess {
  		return S;
 	}
 	
-	
+	// Get all the abs error values
 	public Vector<Double> Get_ABS(){
 		return absError;
 	}
