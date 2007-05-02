@@ -5,6 +5,9 @@ public class CsvFileSave{
 	
 	public void Save(Vector<Double> originalData,Vector<Double> predictedData,
 			Vector<Double> ABSCol,Vector<Double> LMSCol,double absMean, double lmsMean){
+		Vector<Double> dates = null;
+		
+//		dates = 
 		try{
 			PrintWriter Writer = new PrintWriter(new FileWriter("DOWJONES_data_output.csv"));
 			Writer.println("Adj.close" + "," + "Prediction P" + "," + "ABS Error" + "," + "LMS Error");
