@@ -1,21 +1,25 @@
 /***********************************/
 /* Author: Bo CHEN                 */
 /* Student ID: 1139520             */
-/* Date: 4th, May 2007            */
+/* Date: 6th, May 2007             */
 /***********************************/
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.AccessControlException;
 import java.security.InvalidKeyException;
-import java.util.Vector;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+import java.util.Iterator;
 
 public class ChatImpl 
 	extends java.rmi.server.UnicastRemoteObject 
@@ -28,9 +32,13 @@ public class ChatImpl
 	private ArrayList<String> messages = new ArrayList<String>();
 	private String folderName = "./transcriptsFolder/";
 	
+	private Map<String, String> accounts = new HashMap<String, String>();
+	
     public ChatImpl() throws java.rmi.RemoteException
     {
     	super();
+    	
+    	CreateAdmin();
     }
 	
     /**
@@ -46,13 +54,78 @@ public class ChatImpl
 		serverName = name;
 		this.naming = naming;
 		this.boundURL = boundURL;
+		
+		CreateAdmin();
+		LoadAccounts();
+	}
+	
+	/**
+	 * Create an admin account when it's initialized
+	 * with account name: admin, password:intadmin
+	 */
+	private void CreateAdmin(){
+		accounts.put("admin", "initadmin");
+	}
+	
+	/**
+	 * Load the existing accounts which previously stored in a file named Accounts.ds
+	 */
+	private void LoadAccounts(){
+		File accountsFile = new File("Accounts.ds");
+		String account = null;
+		String password = null;
+		
+		try{
+			if(accountsFile.exists()){
+				BufferedReader reader = new BufferedReader(new FileReader(accountsFile));
+				account = reader.readLine();
+				
+				while(account != null){
+					password = reader.readLine();
+					if(password != null){
+						accounts.put(account, password);
+					}else{
+						System.out.println("invalid password in the file: Accounts.ds");
+					}
+					account = reader.readLine();
+				}
+			}
+		}
+		catch(IOException ioe){
+			System.out.println("File Accounts.ds is not found");
+		}
+	}
+	
+	private void SaveAccounts(){
+		File accountsFile = new File("Accounts.ds");
+		String account = null;
+		String password = null;
+		
+		try{
+			if(accountsFile.exists()){
+				PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(accountsFile)));
+				Iterator<String> accountsIterator = accounts.keySet().iterator();
+				
+				// Save accounts and passwords to a file
+				while(accountsIterator.hasNext()){
+					account = accountsIterator.next();
+					writer.println(account);
+					password = accounts.get(account);
+					writer.println(password);
+				}
+			}
+		}
+		catch(IOException ioe){
+			System.out.println("File Accounts.ds is not found");
+		}
 	}
 	
 	public String serverName() throws java.rmi.RemoteException{
 		return serverName;
 	}
 	
-	public boolean connect(ClientCallbacks cl) throws java.rmi.RemoteException{
+	public boolean connect(ChatKey key,ClientCallbacks cl)
+		throws java.rmi.RemoteException{
 		// Test if the new client has been in the set.
 		if(activeClients.contains(cl)){
 			System.out.println("Duplicated client");
@@ -74,7 +147,7 @@ public class ChatImpl
 		}
 	}
 
-	public boolean connect(ClientCallbacks cl,String transcriptName) 
+	public boolean connect(ChatKey key,ClientCallbacks cl,String transcriptName) 
 		throws java.rmi.RemoteException,java.io.FileNotFoundException{
 		// Existing session, join the session
 		if(!activeClients.isEmpty()){
@@ -120,7 +193,7 @@ public class ChatImpl
 		
 	}
 
-	public void disconnect(ClientCallbacks cl) throws java.rmi.RemoteException{
+	public void disconnect(ChatKey key,ClientCallbacks cl) throws java.rmi.RemoteException{
 		if(activeClients.contains(cl)){
 			activeClients.remove(cl);
 		}else{
@@ -128,7 +201,7 @@ public class ChatImpl
 		}
 	}
 	
-	public void sendMessage(String msg) throws java.rmi.RemoteException{
+	public void sendMessage(ChatKey key,String msg) throws java.rmi.RemoteException{
 		// Send message to each client in the active clients vector
 		for(int i=0; i<activeClients.size(); i++){
 			try{
@@ -145,7 +218,7 @@ public class ChatImpl
 		messages.add(msg);
 	}
 	
-    public void saveTranscript(String transcriptName) throws java.rmi.RemoteException{
+    public void saveTranscript(ChatKey key,String transcriptName) throws java.rmi.RemoteException{
     	String transcripts = folderName + transcriptName;
     	File folder = new File("./transcriptsFolder");
 	    if(!folder.exists()){
@@ -167,7 +240,7 @@ public class ChatImpl
         }
     }
     
-    public void shutdown() throws java.rmi.RemoteException{
+    public void shutdown(ChatKey key) throws java.rmi.RemoteException{
     	try{
     		naming.unbind(boundURL);
     	}
@@ -183,7 +256,7 @@ public class ChatImpl
 		System.exit(1);
     }
     
-    public String[] getTranscriptList() throws java.rmi.RemoteException{
+    public String[] getTranscriptList(ChatKey key) throws java.rmi.RemoteException{
     	String[] tpList = null;
     	File f = new File("./transcriptsFolder");
     	tpList = f.list();
@@ -199,6 +272,17 @@ public class ChatImpl
     }
     
     
+    
+    
+	public ChatKey login(String username,String password)
+		throws RemoteException{
+		
+	}
+	
+	public void logout(ChatKey key)  
+		throws RemoteException,InvalidKeyException{
+		
+	}
     
 	// IsPrivileged::
 	//	FUNCTION: indicates whether given key is privileged, if it is a key (or copy) generated by the server.

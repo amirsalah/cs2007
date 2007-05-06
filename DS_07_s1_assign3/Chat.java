@@ -16,7 +16,7 @@ public interface Chat extends java.rmi.Remote
 	//	FUNCTION: permits a client providing a valid username and corresponding password to login.
 	//	RETURN VALUE: a ChatKey if authentication successful, null otherwise.
 	//	CALL CONSTRAINTS: can be called at anytime, by any client.
-	public ChatKey login(String username,String password) 
+	public ChatKey login(String username,String password)
 		throws RemoteException;
 		
 	// GetTranscriptList::
