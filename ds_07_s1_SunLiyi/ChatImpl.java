@@ -176,8 +176,9 @@ implements Chat
 	{
 		String[] temp = null;
 		int length = transcripts.list().length;
+		temp = new String[length];
 		String[] localtranscripts = transcripts.list();
-		for(int i=0; i<length/2; i++){
+		for(int i=0; i<length; i++){
 			temp[i] = localtranscripts[length-1-i];
 		}
 			return temp;
