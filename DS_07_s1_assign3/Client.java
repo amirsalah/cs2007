@@ -8,7 +8,7 @@ import java.rmi.server.*;
 import java.rmi.*;
 
 public class Client 
-	implements ClientCallbacks, Stage1Backend, Stage2Backend{
+	implements ClientCallbacks, Stage3Backend{
 	protected Stage1UserInterface clientUIS1 = null;
 	protected Stage2UserInterface clientUIS2 = null;
 	protected Naming naming = null;

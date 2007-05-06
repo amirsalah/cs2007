@@ -1,4 +1,4 @@
 
-public class ChatKeyImpl {
+public class ChatKeyImpl implements ChatKey{
 
 }
