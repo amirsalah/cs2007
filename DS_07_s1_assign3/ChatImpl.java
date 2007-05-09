@@ -25,7 +25,8 @@ import java.util.LinkedList;
 public class ChatImpl 
 	extends java.rmi.server.UnicastRemoteObject 
 	implements Chat{
-
+	
+	// clients should login before connect to a existing session.
 	private Vector<ClientCallbacks> activeClients = new Vector<ClientCallbacks>();
 	private String serverName = null;
 	private Naming naming = null;
@@ -160,12 +161,58 @@ public class ChatImpl
 		}
 	}
 	
+	/**
+	 * Test if the key is valid
+	 * Return value: throws different exceptions.
+	 * @param key
+	 */
+	private void TestVadility(ChatKey key)
+		throws InvalidKeyException{
+		String user = keys.get(key);
+		
+		// Test if the user is logined
+		if( !loginedAccounts.contains(user) ){
+			InvalidKeyException ike = new InvalidKeyException();
+			throw ike;
+		}
+	}
+	
+	/**
+	 * Test to see if the key provided is valid and privileged, otherwise throws an exception
+	 * @param key
+	 * @throws InvalidKeyException
+	 * @throws AccessControlException
+	 */
+	private void TestVadilityAndPrivilege(ChatKey key)
+	throws InvalidKeyException,AccessControlException{
+		String user = keys.get(key);
+		
+		// Test if the user is logined
+		if( !loginedAccounts.contains(user) ){
+			InvalidKeyException ike = new InvalidKeyException();
+			throw ike;
+		}
+		
+		// Test the privilege
+		if( !key.amPrivileged() ){
+			AccessControlException ace = new AccessControlException("unprivileged Key");
+			throw ace;
+		}
+	}
+	
+	
 	public String serverName() throws java.rmi.RemoteException{
 		return serverName;
 	}
 	
+	// Connect::
+	//	FUNCTION: permits a logged in client to connect to an existing session (if there is one) or start a new session.
+	//	RETURN VALUE: true if a new session is started, false if joining an existing session.
+	//	CALL CONSTRAINTS: only clients providing valid ChatKeys can call successfully, others get InvalidKeyException.
 	public boolean connect(ChatKey key,ClientCallbacks cl)
-		throws java.rmi.RemoteException{
+		throws java.rmi.RemoteException,InvalidKeyException{
+		TestVadility(key);
+		
 		// Test if the new client has been in the set.
 		if(activeClients.contains(cl)){
 			System.out.println("Duplicated client");
@@ -187,8 +234,18 @@ public class ChatImpl
 		}
 	}
 
+	// Connect:: 
+	//	FUNCTION: permits a logged in and privileged client to connect to an existing session (if any) or resume a chat
+	//	 session from a transcript.
+	//	RETURN VALUE: true if the session is resumed from the transcript, false if joining an existing session.
+	//	CALL CONSTRAINTS: only clients providing valid, privileged ChatKeys can call successfully, others get 
+	//	 InvalidKeyException or AccessControlException (valid but unprivileged Key). If the transcript doesn't exist,
+	//	 FileNotFoundException is thrown.
 	public boolean connect(ChatKey key,ClientCallbacks cl,String transcriptName) 
-		throws java.rmi.RemoteException,java.io.FileNotFoundException{
+		throws java.rmi.RemoteException,java.io.FileNotFoundException,InvalidKeyException,AccessControlException{
+		
+		TestVadilityAndPrivilege(key);
+		
 		// Existing session, join the session
 		if(!activeClients.isEmpty()){
 			activeClients.add(cl);
@@ -233,7 +290,14 @@ public class ChatImpl
 		
 	}
 
-	public void disconnect(ChatKey key,ClientCallbacks cl) throws java.rmi.RemoteException{
+	//  Disconnect::
+	//	FUNCTION: permits a logged in client to disconnect from the chat session; the client remains logged in.
+	//	CALL CONSTRAINTS: only clients providing valid ChatKeys can call successfully, others get InvalidKeyException.
+	public void disconnect(ChatKey key,ClientCallbacks cl) 
+		throws java.rmi.RemoteException,InvalidKeyException{
+		
+		TestVadility(key);
+		
 		if(activeClients.contains(cl)){
 			activeClients.remove(cl);
 		}else{
@@ -241,7 +305,14 @@ public class ChatImpl
 		}
 	}
 	
-	public void sendMessage(ChatKey key,String msg) throws java.rmi.RemoteException{
+	//	SendMessage::
+	//	FUNCTION: permits a logged in client to send a message in the chat session to which it is connected.
+	//	CALL CONSTRAINTS: only clients providing valid ChatKeys can call successfully, others get InvalidKeyException.
+	public void sendMessage(ChatKey key,String msg)
+		throws java.rmi.RemoteException,InvalidKeyException{
+		
+		TestVadility(key);
+		
 		// Send message to each client in the active clients vector
 		for(int i=0; i<activeClients.size(); i++){
 			try{
@@ -258,7 +329,15 @@ public class ChatImpl
 		messages.add(msg);
 	}
 	
-    public void saveTranscript(ChatKey key,String transcriptName) throws java.rmi.RemoteException{
+	//	SaveTranscript::
+	//	FUNCTION: permits a logged in and privileged client to save the current session to a transcript
+	//	CALL CONSTRAINTS: only clients providing valid, privileged ChatKeys can call successfully, others get 
+	//	 InvalidKeyException or AccessControlException (valid but unprivileged Key).
+    public void saveTranscript(ChatKey key,String transcriptName)
+    	throws java.rmi.RemoteException,InvalidKeyException,AccessControlException{
+    	
+    	TestVadilityAndPrivilege(key);
+    	
     	String transcripts = folderName + transcriptName;
     	File folder = new File("./transcriptsFolder");
 	    if(!folder.exists()){
@@ -280,7 +359,15 @@ public class ChatImpl
         }
     }
     
-    public void shutdown(ChatKey key) throws java.rmi.RemoteException{
+    //  Shutdown::
+	//	FUNCTION: permits a logged in and privileged client to shutdown the server.
+	//	CALL CONSTRAINTS: only clients providing valid, privileged ChatKeys can call successfully,
+	//	 others get InvalidKeyException or AccessControlException (valid but unprivileged Key).
+    public void shutdown(ChatKey key) 
+    	throws java.rmi.RemoteException,InvalidKeyException,AccessControlException{
+    	
+    	TestVadilityAndPrivilege(key);
+    	
     	try{
     		naming.unbind(boundURL);
     	}
@@ -296,7 +383,16 @@ public class ChatImpl
 		System.exit(1);
     }
     
-    public String[] getTranscriptList(ChatKey key) throws java.rmi.RemoteException{
+    //  GetTranscriptList::
+	//	FUNCTION: permits a logged in, privileged client to obtain a list of saved transcripts.
+	//	RETURN VALUE: the list of transcripts.
+	//	CALL CONSTRAINTS: only clients providing valid, privileged ChatKeys can call successfully, others get 
+	//	 InvalidKeyException or AccessControlException (valid but unprivileged Key)
+    public String[] getTranscriptList(ChatKey key) 
+    	throws java.rmi.RemoteException,InvalidKeyException,AccessControlException{
+    	
+    	TestVadilityAndPrivilege(key);
+    	
     	String[] tpList = null;
     	File f = new File("./transcriptsFolder");
     	tpList = f.list();
@@ -313,7 +409,10 @@ public class ChatImpl
     
     
     
-    
+    //  Login::
+	//	FUNCTION: permits a client providing a valid username and corresponding password to login.
+	//	RETURN VALUE: a ChatKey if authentication successful, null otherwise.
+	//	CALL CONSTRAINTS: can be called at anytime, by any client.
 	public ChatKey login(String username,String password)
 		throws RemoteException{
 		ChatKey userChatKey = null;
