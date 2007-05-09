@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class ChatImpl 
 	extends java.rmi.server.UnicastRemoteObject 
@@ -32,7 +33,14 @@ public class ChatImpl
 	private ArrayList<String> messages = new ArrayList<String>();
 	private String folderName = "./transcriptsFolder/";
 	
+	// accounts: <user name, password>
 	private Map<String, String> accounts = new HashMap<String, String>();
+	// privileges: <user name, previlege>
+	private Map<String, Boolean> privileges = new HashMap<String, Boolean>();
+	// keys: <ChatKey, user name>
+	private Map<ChatKey, String> keys = new HashMap<ChatKey, String>();
+	// loginedAccounts: <user name>
+	private LinkedList<String> loginedAccounts = new LinkedList<String>();
 	
     public ChatImpl() throws java.rmi.RemoteException
     {
@@ -64,16 +72,25 @@ public class ChatImpl
 	 * with account name: admin, password:intadmin
 	 */
 	private void CreateAdmin(){
-		accounts.put("admin", "initadmin");
+		String admin = "admin";
+		accounts.put(admin, "initadmin");
+		loginedAccounts.add(admin);
+		privileges.put(admin, true);
 	}
 	
 	/**
 	 * Load the existing accounts which previously stored in a file named Accounts.ds
+	 * The structure of this file is that: 
+	 * for every 3 lines:
+	 * 1. user name
+	 * 2. password
+	 * 3. is privileged?
 	 */
 	private void LoadAccounts(){
 		File accountsFile = new File("Accounts.ds");
 		String account = null;
 		String password = null;
+		String isPrivileged = null;
 		
 		try{
 			if(accountsFile.exists()){
@@ -81,11 +98,23 @@ public class ChatImpl
 				account = reader.readLine();
 				
 				while(account != null){
+					// Read password of this account
 					password = reader.readLine();
 					if(password != null){
 						accounts.put(account, password);
 					}else{
 						System.out.println("invalid password in the file: Accounts.ds");
+					}
+					// Read privilege of this account
+					isPrivileged = reader.readLine();
+					if(isPrivileged.equalsIgnoreCase("y")){
+						privileges.put(account, true);
+					}else{
+						if(isPrivileged.equalsIgnoreCase("n")){
+							privileges.put(account, false);
+						}else{
+							System.out.println("invalid previleges in the file: Accounts.ds");
+						}
 					}
 					account = reader.readLine();
 				}
@@ -96,22 +125,33 @@ public class ChatImpl
 		}
 	}
 	
+	/**
+	 * Save all the accounts currently in the HashMap into a file named Accounts.ds
+	 */
 	private void SaveAccounts(){
 		File accountsFile = new File("Accounts.ds");
 		String account = null;
 		String password = null;
+		Boolean isPrivileged = null;
 		
 		try{
 			if(accountsFile.exists()){
 				PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(accountsFile)));
 				Iterator<String> accountsIterator = accounts.keySet().iterator();
 				
-				// Save accounts and passwords to a file
+				// Save accounts, passwords and privileges to a file
 				while(accountsIterator.hasNext()){
 					account = accountsIterator.next();
 					writer.println(account);
+					
 					password = accounts.get(account);
 					writer.println(password);
+					
+					isPrivileged = privileges.get(account);
+					if(isPrivileged)
+						writer.println("y");
+					else
+						writer.println("n");
 				}
 			}
 		}
@@ -276,11 +316,35 @@ public class ChatImpl
     
 	public ChatKey login(String username,String password)
 		throws RemoteException{
+		ChatKey userChatKey = null;
 		
+		// Verify the user name
+		if( !accounts.containsKey(username) ){
+			return null;
+		}
+		
+		// Verify the password
+		String actualPWD = accounts.get(username);
+		if( !actualPWD.equals(password) ){
+			System.out.println("Password mismatched");
+			return null;
+		}
+		
+		// Verify the privilege
+		userChatKey = new ChatKeyImpl(privileges.get(username));
+		
+		// Add the new logined client to the array list
+		loginedAccounts.add(username);
+		keys.put(userChatKey, username);
+		
+		return userChatKey;
 	}
 	
 	public void logout(ChatKey key)  
 		throws RemoteException,InvalidKeyException{
+		String userName = keys.get(key);
+		
+		loginedAccounts.remove(userName);
 		
 	}
     
@@ -291,7 +355,7 @@ public class ChatImpl
 	//	CALL CONSTRAINTS: can be called at anytime, by any client.  
 	public boolean isPrivileged(ChatKey key) 
 		throws RemoteException{
-		
+		return key.amPrivileged();
 	}
 		
 	// CreateAccount::
@@ -301,7 +365,29 @@ public class ChatImpl
 	//	 InvalidKeyException or AccessControlException (valid but unprivileged Key).
 	public boolean createAccount(ChatKey creatorKey,String username,String password,boolean isPrivileged)
 		throws RemoteException,InvalidKeyException,AccessControlException{
+		String creator = keys.get(creatorKey);
 		
+		// Test if the creator is logined
+		if( !loginedAccounts.contains(creator) ){
+			InvalidKeyException ike = new InvalidKeyException();
+			throw ike;
+		}
+		
+		// Test the privilege
+		if( !creatorKey.amPrivileged() ){
+			AccessControlException ace = new AccessControlException("unprivileged Key");
+			throw ace;
+		}
+		
+		// Test if the username has been existed
+		if( accounts.containsKey(username) ){
+			return false;
+		}
+		
+		accounts.put(username, password);
+		privileges.put(username, isPrivileged);
+		SaveAccounts();
+		return true;
 	}
 		 
 	// SetPrivilege::
@@ -312,6 +398,33 @@ public class ChatImpl
 	public void setPrivilege(ChatKey adminKey,String username,boolean isPrivileged)
 		throws RemoteException,InvalidKeyException,AccessControlException{
 		
+		String admin = keys.get(adminKey);
+		
+		// Ignore changing "admin"'s privilege
+		if(username.equals("admin")){
+			return;
+		}
+		
+		// return when call non-existent users
+		if( !accounts.containsKey(username) ){
+			return;
+		}
+		
+		// Test if the admin is logined
+		if( !loginedAccounts.contains(admin) ){
+			InvalidKeyException ike = new InvalidKeyException();
+			throw ike;
+		}
+		
+		// Test the privilege
+		if( !adminKey.amPrivileged() ){
+			AccessControlException ace = new AccessControlException("unprivileged Key");
+			throw ace;
+		}
+		
+		privileges.remove(username);
+		privileges.put(username, isPrivileged);
+		SaveAccounts();
 	}
 		 
  	// SetPassword::
@@ -322,6 +435,35 @@ public class ChatImpl
 	//	 get AccessControlException.
 	public void setPassword(ChatKey key,String username,String newPassword) 
 		throws RemoteException,InvalidKeyException,AccessControlException{
+		String user = keys.get(key);
 		
+		// return when call non-existent users
+		if( !accounts.containsKey(username) ){
+			return;
+		}
+		
+		// Test if the user is logined
+		if( !loginedAccounts.contains(user) ){
+			InvalidKeyException ike = new InvalidKeyException();
+			throw ike;
+		}
+		
+		// user change his own password
+		if( username == keys.get(key) ){
+			accounts.remove(key);
+			accounts.put(username, newPassword);
+			SaveAccounts();
+			return;
+		}
+		
+		// user change another user's password, test the privilege
+		if( !key.amPrivileged() ){
+			AccessControlException ace = new AccessControlException("unprivileged Key");
+			throw ace;
+		}
+		
+		accounts.remove(username);
+		accounts.put(username, newPassword);
+		SaveAccounts();
 	}
 }
