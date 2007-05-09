@@ -381,5 +381,17 @@ public class Client
 		clientUIS1.displayMessage(msg);
 	}
 	
-
+	// UpdatePrivilege::
+	//	FUNCTION: Notifies the attached user interface (via the updatePrivilege() method) that the client's privilege
+	//	 has changed.
+	public void updatePrivilege(boolean isNowPrivileged) throws java.rmi.RemoteException{
+		updatePrivilege(isNowPrivileged);
+	}
+	
+	// Ping::
+	//	FUNCTION: Calls the pinged() method of the user interface.
+	//	NOTE: Should NOT catch RemoteException if it is thrown by pinged(). 
+	public void ping() throws java.rmi.RemoteException{
+		clientUIS3.pinged();
+	}
 }
