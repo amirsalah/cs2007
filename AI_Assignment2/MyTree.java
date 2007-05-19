@@ -18,7 +18,7 @@ public class MyTree {
 		numTreeLevels = 0;
 		GenerateTree(root);
 	}
-	
+
 	public void GenerateTree(MyTreeNode root){
 		ArrayList<MyTreeNode> tempChildren = new ArrayList<MyTreeNode>();
 		ArrayList<MyTreeNode> levelNodes = new ArrayList<MyTreeNode>();
@@ -38,7 +38,7 @@ public class MyTree {
 			
 			/* Generate children of nodes in current level and save */
 			for(int i=0; i<minimaxTree.get(numTreeLevels-1).size(); i++){
-				tempChildren = minimaxTree.get(numTreeLevels-1).get(i).GenerateChildren();
+				tempChildren = (ArrayList<MyTreeNode>)minimaxTree.get(numTreeLevels-1).get(i).GenerateChildren().clone();
 				// Add the children to the next minimax tree level
 				for(int j=0; j<tempChildren.size(); j++){
 					tempChildren.get(j).SetTreeLevel(numTreeLevels);
@@ -80,7 +80,7 @@ public class MyTree {
 				return 0;
 			}
 		}else{
-			ArrayList<MyTreeNode> children = root.GenerateChildren();
+			ArrayList<MyTreeNode> children = root.GetChildren();
 			if( (root.GetTreeLevel()%2) == 0 ){
 				int max = 0;
 				// Max in children nodes

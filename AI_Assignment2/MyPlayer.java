@@ -27,7 +27,7 @@ public class MyPlayer implements PilesPlayer {
 			
 			selectedNode = root.GetBestChild();
 			imovedPiles = selectedNode.GetPilesNum();
-			
+
 			// Transfer the integer to byte
 			for(int i=0; i<numPiles; i++){
 				movedPiles[i] = (byte)imovedPiles[i];

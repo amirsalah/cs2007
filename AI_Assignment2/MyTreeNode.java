@@ -29,17 +29,19 @@ public class MyTreeNode {
 		int[] thisPileNum = GetPilesNum();
 		int[] newPileNum = new int[3];  // The pile number in the child node
 		int counter;
-		
-		// Set the new pile number the same as original pile numbers
-		for(int i=0; i<3; i++){
-			newPileNum[i] = thisPileNum[i];
-		}
+		boolean duplicatedNode = false;
 		
 		/* Generate children */
 		// Varying pile numbers
 		for(int pileIndex = 0; pileIndex<3; pileIndex++){
 			counter = thisPileNum[pileIndex];
+			// Set the new pile number the same as original pile numbers
+			for(int i=0; i<3; i++){
+				newPileNum[i] = thisPileNum[i];
+			}
+			
 			while(counter > 0){
+				duplicatedNode = false;
 				counter--;
 			
 				newPileNum[pileIndex] = counter;
@@ -47,10 +49,13 @@ public class MyTreeNode {
 				// Check if there is a duplicated node in the children nodes
 				for(int j=0; j<children.size(); j++){
 					if(children.get(j).equals(newNode)){
+						duplicatedNode = true;
 						break;
 					}
 				}
-				children.add(newNode);
+				if( !duplicatedNode ){
+					children.add(newNode);
+				}
 			}
 		}
 		
@@ -121,6 +126,10 @@ public class MyTreeNode {
 	 * @return true if there is more than one child
 	 */
 	public boolean HasChild(){
+		if(children == null){
+			return false;
+		}
+		
 		if(children.size() > 0){
 			return true;
 		}else{
