@@ -86,24 +86,20 @@ public class MyTree {
 				// Max in children nodes
 				for(int i=0; i<children.size(); i++){
 					if(Minimax(children.get(i)) == 1){
-						root.SetMinimax(1);
 						max = 1;
-					}else{
-						root.SetMinimax(0);
 					}
 				}
+				root.SetMinimax(max);
 				return max;
 			}else{
 				int min = 1;
 				// Min in children nodes
 				for(int i=0; i<children.size(); i++){
 					if(Minimax(children.get(i)) == 0){
-						root.SetMinimax(0);
 						min = 0;
-					}else{
-						root.SetMinimax(1);
 					}
-				}
+				} 
+				root.SetMinimax(min);
 				return min;
 			}
 		}
