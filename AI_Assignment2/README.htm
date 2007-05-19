@@ -1,0 +1,58 @@
+--------------------------------------------------------------------------------
+
+                                   PILES GAME
+
+--------------------------------------------------------------------------------
+
+1. CONTENTS
+  
+  What's contained in this directory:
+        PilesGame.jar		- The driver program and existing players
+        PilesPlayer.java	- The interface you must implement.
+  
+  We supply 3 different players:
+        - HumanPlayer: You type in the moves
+        - SmartPlayer: A min-max player.
+        - RandomPlayer: Always makes random moves.
+  
+  Note that each player may reorder the piles. The smart player will definitely
+  do this. Such behaviour can make playing as the human confusing.
+  
+2. RUNNING THE GAME:
+  
+  To run the game, the syntax is:
+
+  > java -jar PilesGame.jar <Player1> <Player2> <Pile1> <Pile2> <Pile3>
+
+  For instance, if you want a RandomPlayer as player 1 and SmartPlayer as player
+  2, with 5, 4 and 1 stones in each pile, you would run:
+
+  > java -jar PilesGame.jar RandomPlayer SmartPlayer 5 4 1
+
+  If your player is called MyPlayer, and you want it to go first, you would run
+
+  > java -jar PilesGame.jar MyPlayer SmartPlayer 5 4 1
+
+  Note that MyPlayer.class must be in the same directory as PilesGame.jar
+  
+  You can also make the same player play itself. For instance:
+  
+  > java -jar PilesGame.jar RandomPlayer RandomPlayer 5 4 1
+  
+3. IMPLEMENTING YOUR PLAYER
+  
+  The interface PilesPlayer.class is contained in PilesGame.jar, so you don't
+  need to compile PilesPlayer.java. However, this means that instead of
+  typing:
+  
+  > javac PilesGame.jar MyPlayer.java
+  
+  you will need to type:
+  
+  > javac -classpath PilesGame.jar MyPlayer.java
+  
+  or set the CLASSPATH environment variable appropriately.
+  
+  If you need any help with this, try the bulletin boards, or email me:
+  rhys@cs.adelaide.edu.au
+  
