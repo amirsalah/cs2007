@@ -13,6 +13,7 @@ public class MyTree {
 	private ArrayList<ArrayList<MyTreeNode>> minimaxTree = new ArrayList<ArrayList<MyTreeNode>>();
 	private int numTreeLevels;
 	
+	
 	public MyTree(MyTreeNode root){
 		numTreeLevels = 0;
 		GenerateTree(root);
@@ -20,28 +21,38 @@ public class MyTree {
 	
 	public void GenerateTree(MyTreeNode root){
 		ArrayList<MyTreeNode> tempChildren = new ArrayList<MyTreeNode>();
-		boolean hasChild = root.HasChild();
+		ArrayList<MyTreeNode> levelNodes = new ArrayList<MyTreeNode>();
+		boolean hasChild = true;
+		MyTreeNode treeLeaf = new MyTreeNode(0, 0, 0);
 		
-		minimaxTree.get(0).add(root);
+//		root.GenerateChildren();
+//		hasChild = root.HasChild();
+		levelNodes.add(root);
+		minimaxTree.add(levelNodes);
 		root.SetTreeLevel(numTreeLevels);
 		
 		while(hasChild){
 			hasChild = false;
 			numTreeLevels++;
+			ArrayList<MyTreeNode> nextLevelNodes = new ArrayList<MyTreeNode>();
 			
 			/* Generate children of nodes in current level and save */
 			for(int i=0; i<minimaxTree.get(numTreeLevels-1).size(); i++){
 				tempChildren = minimaxTree.get(numTreeLevels-1).get(i).GenerateChildren();
 				// Add the children to the next minimax tree level
-				for(int j=0; i<tempChildren.size(); j++){
+				for(int j=0; j<tempChildren.size(); j++){
 					tempChildren.get(j).SetTreeLevel(numTreeLevels);
-					minimaxTree.get(numTreeLevels).add(tempChildren.get(j));
+					nextLevelNodes.add(tempChildren.get(j));
 				}
+				tempChildren.clear();
 			}
+			
+			minimaxTree.add(nextLevelNodes);
 			
 			// travel the whole level to detemine if there is any child exist
 			for(int i=0; i<minimaxTree.get(numTreeLevels).size(); i++){
-				if(minimaxTree.get(numTreeLevels).get(i).HasChild()){
+//				if(minimaxTree.get(numTreeLevels).get(i).HasChild()){
+				if( !minimaxTree.get(numTreeLevels).get(i).equals(treeLeaf) ){
 					hasChild = true;
 					break;
 				}
