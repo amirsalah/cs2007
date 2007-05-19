@@ -135,4 +135,29 @@ public class MyTreeNode {
 	public int GetTreeLevel(){
 		return treeLevel;
 	}
+	
+	/**
+	 * Get the child with highest minimax value
+	 * @return
+	 */
+	public MyTreeNode GetBestChild(){
+		if( (treeLevel%2) == 0 ){
+			// Max nodes ( my turn )
+			for(int i=0; i<children.size(); i++){
+				if(children.get(i).GetMinimax() == 1){
+					return children.get(i);
+				}
+			}
+			
+			// No node with the minimax value of 1, return the last node
+			return children.get(children.size() - 1);
+		}else{
+			System.out.println("Oponent's move???");
+			return children.get(0);
+		}
+	}
+	
+	public ArrayList<MyTreeNode> GetChildren(){
+		return children;
+	}
 }
