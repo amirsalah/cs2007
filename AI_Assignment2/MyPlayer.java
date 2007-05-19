@@ -4,6 +4,12 @@
   Date: 17th, May 2007
 =========================================================*/
 
+/**
+ * The player makes move according to the oponent's move.
+ * The strategy is based on the minimax tree.
+ * This player will always make moves that have MAX minimax values.
+ * The minimax tree is only generated once.
+ */
 public class MyPlayer implements PilesPlayer {
 	private int numPiles = 3;
 	private boolean initTree;

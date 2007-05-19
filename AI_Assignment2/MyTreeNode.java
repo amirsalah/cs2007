@@ -6,6 +6,10 @@
 import java.util.Vector;
 import java.util.ArrayList;
 
+/**
+ * Tree nodes consist of 3 pile numbers, minimax value of this node, its valid children
+ * and the tree level to distinguish the player and oponent.
+ */
 public class MyTreeNode {
 	private int pile1;
 	private int pile2;
@@ -24,6 +28,10 @@ public class MyTreeNode {
 		this.minimaxValue = minimaxValue;
 	}
 	
+	/**
+	 * Generate the valid children, which exclude duplicated children (112 == 121 == 211)
+	 * @return children in a arraylist data structure
+	 */
 	public ArrayList<MyTreeNode> GenerateChildren(){
 		ArrayList<MyTreeNode> children= new ArrayList<MyTreeNode>();
 		int[] thisPileNum = GetPilesNum();
@@ -83,19 +91,6 @@ public class MyTreeNode {
 		pilesNum2.add(pile2);
 		pilesNum2.add(pile3);
 		
-		/*		
-		for(int i=0; i<givenPilesNum.length; i++){
-			
-			int temp = pilesNum1.get(0);
-			if(pilesNum2.contains(temp)){
-				pilesNum1.remove(0);
-				pilesNum2.remove((Integer)temp);
-			}else{
-				return false;
-			}
-		}
-		return true;
-		*/
 		for(int i=0; i<givenPilesNum.length; i++){
 			if( !pilesNum2.remove(pilesNum1.remove(0)) ){
 				return false;
@@ -105,6 +100,10 @@ public class MyTreeNode {
 		
 	}
 	
+	/**
+	 * Return the 3 pile numbers
+	 * @return pile numbers
+	 */
 	public int[] GetPilesNum(){
 		int[] pilesNum = new int[3];
 		pilesNum[0] = pile1;
@@ -146,8 +145,10 @@ public class MyTreeNode {
 	}
 	
 	/**
-	 * Get the child with highest minimax value
-	 * @return
+	 * Get the best child depend on the different tree levels
+	 * If the node is in the MAX level, the child with highest minimax value will be return
+	 * If the node is in the MIN level, the child with lowest minimax value will be return.
+	 * @return the best child
 	 */
 	public MyTreeNode GetBestChild(){
 		if( (treeLevel%2) == 0 ){

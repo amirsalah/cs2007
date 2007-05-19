@@ -19,14 +19,18 @@ public class MyTree {
 		GenerateTree(root);
 	}
 
+	/**
+	 * Generate the minimax tree with the given root
+	 * The tree is stored according to the tree levels.
+	 * all the nodes in the same level are stored in the same arraylist
+	 * @param root the root of the tree to be generated
+	 */
 	public void GenerateTree(MyTreeNode root){
 		ArrayList<MyTreeNode> tempChildren = new ArrayList<MyTreeNode>();
 		ArrayList<MyTreeNode> levelNodes = new ArrayList<MyTreeNode>();
 		boolean hasChild = true;
 		MyTreeNode treeLeaf = new MyTreeNode(0, 0, 0);
 		
-//		root.GenerateChildren();
-//		hasChild = root.HasChild();
 		levelNodes.add(root);
 		minimaxTree.add(levelNodes);
 		root.SetTreeLevel(numTreeLevels);
@@ -51,7 +55,6 @@ public class MyTree {
 			
 			// travel the whole level to detemine if there is any child exist
 			for(int i=0; i<minimaxTree.get(numTreeLevels).size(); i++){
-//				if(minimaxTree.get(numTreeLevels).get(i).HasChild()){
 				if( !minimaxTree.get(numTreeLevels).get(i).equals(treeLeaf) ){
 					hasChild = true;
 					break;
@@ -98,7 +101,7 @@ public class MyTree {
 					if(Minimax(children.get(i)) == 0){
 						min = 0;
 					}
-				} 
+				}
 				root.SetMinimax(min);
 				return min;
 			}
