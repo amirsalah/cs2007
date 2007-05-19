@@ -27,6 +27,4 @@ public class ChatKeyImpl implements ChatKey{
 	public boolean amPrivileged(){
 		return amPrivileged;
 	}
-	
-	
 }

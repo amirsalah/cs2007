@@ -6,6 +6,7 @@
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 
 public class Client
@@ -50,12 +51,15 @@ public class Client
 	public boolean login(String username,String password){
 		try{
 			chatKey = ca.login(username, password);
+			if( !isLoggedIn() ){
+				clientUIS1.displayAlert("Login: Bad username or password.");
+			}
 		}
 		catch(RemoteException re){
-			clientUIS1.displayAlert("Login failed");
+			clientUIS1.displayAlert("Login: Could not communicate with server.");
 			return false;
 		}
-		
+
 		return true;
 	}
 	
@@ -91,16 +95,22 @@ public class Client
 		try{
 			ca.logout(chatKey);
 			chatKey = null;
-			java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
+			try{
+				java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
+			}
+			catch(RemoteException re){
+//				clientUIS1.displayAlert("Logout: Could not communicate with server.");
+				return false;
+			}
 		}
 		catch(RemoteException re){
-			clientUIS1.displayAlert("logout failed");
+			clientUIS1.displayAlert("Logout: Could not communicate with server.");
 			return false;
 		}
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("Logout failed in UI3");
-		 }
+			clientUIS3.invalidKey("Logout");
+		}
 		
 		return true;
 	}
@@ -115,12 +125,16 @@ public class Client
 			ca.createAccount(chatKey, username, password, priv);
 		}
 		catch(RemoteException re){
-			clientUIS1.displayAlert("createACcount failed");
+			clientUIS1.displayAlert("CreateAccount: Could not communicate with server.");
 			return false;
 		}
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("createACcount failed in UI3");
+			clientUIS3.invalidKey("CreateAccount");
+		}
+		 catch(AccessControlException ace)
+		 {
+		 	  clientUIS1.displayAlert("createAccount: Unprivileged key.");
 		 }
 		
 		return true;
@@ -136,15 +150,19 @@ public class Client
 			ca.setPrivilege(chatKey, username, priv);
 		}
 		catch(RemoteException re){
-			clientUIS1.displayAlert("set Privilege failed");
+			clientUIS1.displayAlert("SetPrivilege: Could not communicate with server.");
 			return false;
 		}
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("set Privilege failed in UI3");
+			clientUIS3.invalidKey("SetPrivilege");
 			chatKey = null;
 			return false;
-		 }
+		}
+		catch(AccessControlException ace)
+		{
+			 clientUIS1.displayAlert("setPrivilege: Unprivileged key.");
+		}
 		
 		return true;
 	}
@@ -159,15 +177,19 @@ public class Client
 			ca.setPassword(chatKey, username, password);
 		}
 		catch(RemoteException re){
-			clientUIS1.displayAlert("set password failed");
+			clientUIS1.displayAlert("SetPassword: Could not communicate with server.");
 			return false;
 		}
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("set Privilege failed in UI3");
+			clientUIS3.invalidKey("SetPassword");
 			chatKey = null;
 			return false;
-		 }
+		}
+		catch(AccessControlException ace)
+		{
+			 clientUIS1.displayAlert("setPassword: Unprivileged key.");
+		}
 		
 		return true;
 	}
@@ -215,7 +237,11 @@ public class Client
 			return null;
 		}
 		catch(InvalidKeyException ie){
-			clientUIS3.invalidKey("getTranscriptList failed in UI3");
+			clientUIS3.invalidKey("GetTranscriptList");
+		}
+		catch(AccessControlException e)
+		{
+		 	clientUIS1.displayAlert("GetTranscriptList: Unprivileged key.");
 		}
 		
 		return null;
@@ -248,7 +274,7 @@ public class Client
         try{
         	UnicastRemoteObject.exportObject(this);
         	if(selectedTP == null){
-        		// Choosing first version of connect(*) method
+        		// Choosing first version of connect(*,*) method
         		if(ca.connect(chatKey, this)){
         			// Indicate starting a new session
         			clientUIS2.setTranscriptLabelText("Started new session at server \"" + serverName + "\"");
@@ -256,7 +282,7 @@ public class Client
         			clientUIS2.setTranscriptLabelText("Connected to ongoing session at server \"" + serverName + "\"");
         		}
         	}else{
-        		// Choose second version of connect(*,*) method
+        		// Choose second version of connect(*,*,*) method
         		if(ca.connect(chatKey, this, selectedTP)){
         			clientUIS2.setTranscriptLabelText("Resumed session using transcript \"" + selectedTP + "\"" + " at server \"" + serverName + "\"");
         		}else{
@@ -275,7 +301,11 @@ public class Client
         }
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("connect failed in UI3");
+			clientUIS3.invalidKey("connect");
+		}
+		catch(AccessControlException ace)
+		{
+		 	 clientUIS1.displayAlert("connect: Unprivileged key.");
 		}
 		
         return true;
@@ -291,7 +321,6 @@ public class Client
 	public boolean disconnect(){
         try{
         	ca.disconnect(chatKey, this);
-        	UnicastRemoteObject.unexportObject(this,true);
         }
         catch(RemoteException re){
         	clientUIS1.displayAlert("Disconnect: Could not communicate with server.");
@@ -299,9 +328,18 @@ public class Client
         }
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("disconnect failed in UI3");
+			clientUIS3.invalidKey("Disconnect");
+			return false;
 		}
 		
+		try{
+			UnicastRemoteObject.unexportObject(this,true);
+		}
+        catch(RemoteException re){
+//        	clientUIS1.displayAlert("Disconnect: Could not communicate with server.");
+        	return false;
+        }
+        
         return true;
 	}
 	
@@ -321,13 +359,14 @@ public class Client
         		UnicastRemoteObject.unexportObject(this,true);
         	}
             catch(RemoteException e){
-            	clientUIS1.displayAlert("Disconnect: Could not communicate with server.");
+//            	clientUIS1.displayAlert("Disconnect: Could not communicate with server.");
+            	return false;
             }
         	return false;
         }
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("shutdownAndAbort failed in UI3");
+			clientUIS3.invalidKey("SendMessage");
 		}
 		
         return true;
@@ -349,9 +388,12 @@ public class Client
         }
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("shutdownAndSave failed in UI3");
+			clientUIS3.invalidKey("SaveTranscript");
 		}
-		
+		 catch(AccessControlException ace)
+		 {
+		 	  clientUIS1.displayAlert("SaveTranscript: Unprivileged key.");
+		 }
 		return true;
         
 	}
@@ -371,8 +413,12 @@ public class Client
         }
 		catch(InvalidKeyException ie)
 		{
-			clientUIS3.invalidKey("shutdownAndAbort failed in UI3");
+			clientUIS3.invalidKey("Shutdown");
 		}
+		 catch(AccessControlException ace)
+		 {
+		 	  clientUIS1.displayAlert("Shutdown: Unprivileged key.");
+		 }
 		
 		return true;
 	}

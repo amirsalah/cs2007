@@ -33,7 +33,7 @@ public class ChatImpl
 	private String boundURL = null;
 	private ArrayList<String> messages = new ArrayList<String>();
 	private String folderName = "./transcriptsFolder/";
-	
+
 	// accounts: <user name, password>
 	private Map<String, String> accounts = new HashMap<String, String>();
 	// privileges: <user name, previlege>
@@ -42,6 +42,8 @@ public class ChatImpl
 	private Map<ChatKey, String> keys = new HashMap<ChatKey, String>();
 	// loginedAccounts: <user name>
 	private LinkedList<String> loginedAccounts = new LinkedList<String>();
+	// keyToClient: <ChatKey, activeClients>
+	private Map<ChatKey, ClientCallbacks> keyToClient = new HashMap<ChatKey, ClientCallbacks>();
 	
     public ChatImpl() throws java.rmi.RemoteException
     {
@@ -49,7 +51,7 @@ public class ChatImpl
     	
     	CreateAdmin();
     }
-	
+
     /**
      * @param boundURL the URL with which the server object is to be bound in the registry
      * @param naming an object implementing the Naming interface (this is provided so the server can unbind
@@ -74,9 +76,15 @@ public class ChatImpl
 	 */
 	private void CreateAdmin(){
 		String admin = "admin";
-		accounts.put(admin, "initadmin");
-		loginedAccounts.add(admin);
-		privileges.put(admin, true);
+		String password = "initadmin";
+		
+//		loginedAccounts.add(admin);
+		
+		// Add admin account if it is not created
+		if( !accounts.containsKey(admin) ){
+			accounts.put(admin, password);
+			privileges.put(admin, true);
+		}
 	}
 	
 	/**
@@ -136,6 +144,7 @@ public class ChatImpl
 		Boolean isPrivileged = null;
 		
 		try{
+			accountsFile.createNewFile();
 			if(accountsFile.exists()){
 				PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(accountsFile)));
 				Iterator<String> accountsIterator = accounts.keySet().iterator();
@@ -149,11 +158,16 @@ public class ChatImpl
 					writer.println(password);
 					
 					isPrivileged = privileges.get(account);
-					if(isPrivileged)
+					if(isPrivileged){
 						writer.println("y");
-					else
+					}else{
 						writer.println("n");
+//						System.out.println("lower privilege");
+					}
 				}
+				
+				writer.flush();
+				writer.close();
 			}
 		}
 		catch(IOException ioe){
@@ -215,10 +229,11 @@ public class ChatImpl
 		
 		// Test if the new client has been in the set.
 		if(activeClients.contains(cl)){
-			System.out.println("Duplicated client");
+//			System.out.println("Duplicated client");
 			return false;
 		}else{
 			activeClients.add(cl);
+			keyToClient.put(key, cl);
 			// New session
 			if(activeClients.size() == 1){
 				messages.clear();
@@ -249,6 +264,7 @@ public class ChatImpl
 		// Existing session, join the session
 		if(!activeClients.isEmpty()){
 			activeClients.add(cl);
+			keyToClient.put(key, cl);
 			// Receive existing messages in this session
 			for(int i=0; i<messages.size(); i++){
 				cl.receiveMessage(messages.get(i));	
@@ -262,6 +278,7 @@ public class ChatImpl
 		
 		
 		activeClients.add(cl);
+		keyToClient.put(key, cl);
 		// Read the file storing transcripts
 		File scriptFile = new File(folderName + transcriptName);
 		String oneMessage = null;
@@ -281,7 +298,7 @@ public class ChatImpl
         		return true;
         	}
             catch(java.io.IOException ioe){
-            	System.out.println("IOException");
+//            	System.out.println("IOException");
             }
         }else{
         	throw(new FileNotFoundException(transcriptName));
@@ -301,7 +318,7 @@ public class ChatImpl
 		if(activeClients.contains(cl)){
 			activeClients.remove(cl);
 		}else{
-			System.out.println("No such client");
+//			System.out.println("No such client");
 		}
 	}
 	
@@ -322,6 +339,7 @@ public class ChatImpl
 			}
 			catch (java.rmi.RemoteException re){
 				activeClients.set(i, null);
+				keyToClient.remove(key);
 			}
 		}
 		
@@ -355,7 +373,7 @@ public class ChatImpl
             messages.clear();
     	}
         catch (java.io.IOException e) {
-            System.out.println("Error in writing file");
+//            System.out.println("Error in writing file");
         }
     }
     
@@ -425,7 +443,7 @@ public class ChatImpl
 		// Verify the password
 		String actualPWD = accounts.get(username);
 		if( !actualPWD.equals(password) ){
-			System.out.println("Password mismatched");
+//			System.out.println("Password mismatched");
 			return null;
 		}
 		
@@ -439,12 +457,21 @@ public class ChatImpl
 		return userChatKey;
 	}
 	
+	// Logout::
+	//	FUNCTION: permits a logged in client to logout from the chat server, also disconnecting the client 
+	//	CALL CONSTRAINTS: only clients providing valid ChatKeys can call successfully, others get InvalidKeyException.
 	public void logout(ChatKey key)  
 		throws RemoteException,InvalidKeyException{
 		String userName = keys.get(key);
+		ClientCallbacks cl = keyToClient.get(key);
+		
+		TestVadility(key);
 		
 		loginedAccounts.remove(userName);
-		
+		keys.remove(key);
+		activeClients.remove(cl);
+		// Disconnect the client
+//		activeClients
 	}
     
 	// IsPrivileged::
@@ -521,6 +548,11 @@ public class ChatImpl
 			throw ace;
 		}
 		
+		// non-admin user can only lower its privilege.
+		if( !admin.equals("admin") ){
+			
+		}
+		
 		privileges.remove(username);
 		privileges.put(username, isPrivileged);
 		SaveAccounts();
@@ -548,7 +580,7 @@ public class ChatImpl
 		}
 		
 		// user change his own password
-		if( username == keys.get(key) ){
+		if( username.equals(keys.get(key)) ){
 			accounts.remove(key);
 			accounts.put(username, newPassword);
 			SaveAccounts();
