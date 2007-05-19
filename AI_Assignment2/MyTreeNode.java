@@ -11,6 +11,8 @@ public class MyTreeNode {
 	private int pile2;
 	private int pile3;
 	private int minimaxValue;
+	private ArrayList<MyTreeNode> children;
+	private int treeLevel;
 	
 	public MyTreeNode(int pile1, int pile2, int pile3){
 		this.pile1 = pile1;
@@ -52,6 +54,7 @@ public class MyTreeNode {
 			}
 		}
 		
+		this.children = children;
 		return children;
 	}
 	
@@ -108,5 +111,28 @@ public class MyTreeNode {
 	
 	public int GetMinimax(){
 		return minimaxValue;
+	}
+	
+	public int GetNumChildren(){
+		return children.size();
+	}
+	
+	/**
+	 * @return true if there is more than one child
+	 */
+	public boolean HasChild(){
+		if(children.size() > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public void SetTreeLevel(int level){
+		treeLevel = level;
+	}
+	
+	public int GetTreeLevel(){
+		return treeLevel;
 	}
 }
