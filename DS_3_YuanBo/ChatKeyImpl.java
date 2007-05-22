@@ -2,26 +2,18 @@
 
 
 public class ChatKeyImpl implements ChatKey{
-
-    private double id;
     private ChatImpl chat;
-
-    public ChatKeyImpl(ChatImpl c) {
-        chat = c;  
-        id = Math.random();  
+    public ChatKeyImpl(ChatImpl chatIM) {
+        chat = chatIM;  
     }
 
-   
-
     public boolean amPrivileged() {
-        boolean test = false;
+        boolean privilege = false;
         try{
-            test =chat.isPrivileged(this);
-
+        	privilege =chat.isPrivileged(this);
         } 
-        catch (Exception c)
-         {}
-        return test;
+        catch (Exception e){}
+        return privilege;
     }
 
     

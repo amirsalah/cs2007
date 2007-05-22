@@ -4,18 +4,13 @@ public class ChatServer
 	public static void main(String[] args) 
 	                      throws java.rmi.RemoteException
 	{
+		Naming nm = new RegistryNamingImpl();
+		String server_Name="Bo Yuan's space";
+		Chat chat=new ChatImpl(args[0],nm,server_Name);
 		
-		String servername="wenjie's space";
-		Naming name=new RegistryNamingImpl();
-		
-		Chat c=new ChatImpl(args[0],name,servername);
 		try{
-			java.rmi.Naming.rebind(args[0],c);
+			java.rmi.Naming.rebind(args[0],chat);
 		}
-		catch(Exception e)
-		{
-			//System.out.println(e.getMessage());
-		}
-		
+		catch(Exception e){}
 	}
 } 

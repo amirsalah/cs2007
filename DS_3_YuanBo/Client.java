@@ -7,29 +7,21 @@ import java.rmi.RemoteException;
 
 public class Client implements ClientCallbacks, Stage3Backend
 {
+	private Chat chat;
+	private Naming name;
+
 	private Stage1UserInterface ui;
 	private Stage2UserInterface ui2;
 	private Stage3UserInterface ui3;
-	private Chat chat;
-	private Naming name;
-	private ClientCallbacks callbacks;
-	private String untype="Stub is not of expected type.";
-	private String stubnotfound="Stub is not of expected type.";
-	private String registryremote="Could not communicate with registry.";
-	private String serverremote="Could not communicate with server.";
-	private String scriptname;
-	private ChatKey k=null;
-	//private int ID;
-	//private Random rd;
+	private String tps;
+	private ChatKey chat_key = null;
 	
 	public Client(Naming name)
 	{
-	  //rd = new Random();
 	  super();
 	  this.name=name;
-	  callbacks=this;
-	  //ID=rd.nextInt();
-	}	
+	}
+	
 	public boolean locate(String url)
 	{
 		try
@@ -37,7 +29,6 @@ public class Client implements ClientCallbacks, Stage3Backend
 		  chat = (Chat) name.lookup(url);
 		  return true;
 		 }
-		
 		catch(java.rmi.NotBoundException e)
 		{
 			ui.displayAlert("Locate: No binding in registry for: "+url);
@@ -45,30 +36,30 @@ public class Client implements ClientCallbacks, Stage3Backend
 		}
 		catch(java.net.MalformedURLException e)
 		{ 
-			//ui.displayAlert(url);
 			ui.displayAlert("Locate: Malformed URL: "+e.getMessage());
 			return false;
 		}
-		 catch(java.rmi.StubNotFoundException e)
-		 {
-		    ui.displayAlert("Locate: "+stubnotfound);
-		    return false;
-		   }
+		catch(java.rmi.StubNotFoundException e)
+		{
+		   ui.displayAlert("Locate: "+"Stub is not of expected type.");
+		   return false;
+		}
 		 catch(java.rmi.RemoteException e)
 		 {
-		  ui.displayAlert("Locate: "+registryremote);
+		  ui.displayAlert("Locate: "+"Could not communicate with registry.");
 		 	return false;
 		}
 		catch(Exception e)
 		{
-		   ui.displayAlert("Locate: "+untype);
+		   ui.displayAlert("Locate: "+"Stub is not of expected type.");
 		   }
 		return false;
 	}
+	
 	public boolean login(String username,String password)
 	{
 		try{
-			k=chat.login(username,password);
+			chat_key=chat.login(username,password);
 			if(!isLoggedIn())
 			  ui.displayAlert("Login: Bad username or password.");
 		  return true;
@@ -80,24 +71,24 @@ public class Client implements ClientCallbacks, Stage3Backend
 		return false;
 	}
 	
-	public boolean isPrivileged()//?
+	public boolean isPrivileged()
 	{
-		boolean test = false;
+		boolean Privileged = false;
 		try{
-		  //test = chat.isPrivileged(k);
-		  test = k.amPrivileged();
+		  //Privileged = chat.isPrivileged(chat_key);
+		  Privileged = chat_key.amPrivileged();
 		}
 		catch(Exception e)
 		{
 		   
 		   //ui.displayAlert("isprivilege");
 		}
-	  return test;
+	  return Privileged;
 	}
 	
 	public boolean isLoggedIn()//??
 	{
-		if(k!=null)
+		if(chat_key!=null)
 		  return true;
 		else
 		  return false;
@@ -106,10 +97,10 @@ public class Client implements ClientCallbacks, Stage3Backend
 	public boolean logout()//???
 	{
 		try{
-			chat.logout(k);
-			k=null;
+			chat.logout(chat_key);
+			chat_key=null;
 			try{//????
-			    java.rmi.server.UnicastRemoteObject.unexportObject(callbacks,true);
+			    java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
 		   }
 		  catch(java.rmi.RemoteException er)
 		  {}
@@ -129,38 +120,35 @@ public class Client implements ClientCallbacks, Stage3Backend
 	
 	public boolean createAccount(String username,String password,boolean priv)
 	{
-		boolean test = false;
+		boolean Privileged = false;
 		
 		try{
-		test = chat.createAccount(k,username,password,priv);
+		Privileged = chat.createAccount(chat_key,username,password,priv);
 		}
 		catch(RemoteException e)
 		{
 			ui.displayAlert("CreateAccount: Could not communicate with server.");
-			//ui.displayAlert("Login: Bad username or password.");
 			return false;
 		}
 		catch(InvalidKeyException e)
 		{
 			  ui3.invalidKey("CreateAccount");
-			  k=null;
+			  chat_key=null;
 			  return false;
-		  
 		 }
 		 catch(AccessControlException e)
 		 {
 		 	  ui.displayAlert("CreateAccount: Unprivileged key.");
-			  k=null;
+			  chat_key=null;
 			  return false;
-		 	}
-		 	
-		 return test;
+		 }
+		 return Privileged;
 	}
 	
 	public boolean setPrivilege(String username,boolean priv)
 	{
 		try{
-			chat.setPrivilege(k,username,priv);
+			chat.setPrivilege(chat_key,username,priv);
 		}
 		catch(RemoteException e)
 		{
@@ -168,21 +156,19 @@ public class Client implements ClientCallbacks, Stage3Backend
 		}
 		catch(InvalidKeyException e)
 		{
-			  ui3.invalidKey("SetPrivilege");
-		  
-		 }
-		 catch(AccessControlException e)
-		 {
-		 	  ui.displayAlert("SetPrivilege: Unprivileged key.");
-		 	}
-		 	
-		 	return true;
+			 ui3.invalidKey("SetPrivilege");
+		}
+		catch(AccessControlException e)
+		{
+		 	 ui.displayAlert("SetPrivilege: Unprivileged key.");
+		}
+		return true;
 	}
 	
 	public boolean setPassword(String username,String password)
 	{
 		try{
-			chat.setPassword(k,username,password);
+			chat.setPassword(chat_key,username,password);
 		}
 		catch(RemoteException e)
 		{
@@ -191,14 +177,12 @@ public class Client implements ClientCallbacks, Stage3Backend
 		catch(InvalidKeyException e)
 		{
 			  ui3.invalidKey("setPassword");
-		  
 		 }
-		 catch(AccessControlException e)
-		 {
-		 	  ui.displayAlert("SetPassword: Unprivileged key.");
-		 	}
-		 	
-		 	return true;
+		catch(AccessControlException e)
+		{
+			ui.displayAlert("SetPassword: Unprivileged key.");
+		}
+		 return true;
 	}
 	
 	public void attach(Stage3UserInterface ui3)
@@ -209,8 +193,7 @@ public class Client implements ClientCallbacks, Stage3Backend
 	public boolean connect()
 	{
 		try{
-			java.rmi.server.UnicastRemoteObject.exportObject(callbacks);
-		 
+			java.rmi.server.UnicastRemoteObject.exportObject(this);
 		}
 		catch(java.rmi.RemoteException e)
 		{
@@ -219,31 +202,30 @@ public class Client implements ClientCallbacks, Stage3Backend
 		}
 		
 		
-			if(scriptname==null)
-			 {
-			 	String servername=new String();
-				try{
-					servername=chat.serverName();
+		if(tps==null)
+		{
+			 String server_Name="";
+			 try{
+				server_Name=chat.serverName();
 					
-				}
-				catch(java.rmi.RemoteException re)
+			}
+			catch(java.rmi.RemoteException re)
+			{
+					ui.displayAlert("ServerName: Could not communicate with server.");
+					return false;
+			}
+			try{
+				if(chat.connect(chat_key,this))
 				{
-						ui.displayAlert("ServerName: Could not communicate with server.");
-						return false;
-				}
-				 try{
-				 if(chat.connect(k,callbacks))
-			        {
-		
-					ui2.setTranscriptLabelText("Started new session at server "+"\""+servername+"\"");
+					ui2.setTranscriptLabelText("Started new session at server "+"\""+server_Name+"\"");
 				}else{
-					ui2.setTranscriptLabelText("Connected to ongoing session at server "+"\""+servername+"\"");
+					ui2.setTranscriptLabelText("Connected to ongoing session at server "+"\""+server_Name+"\"");
 				}
 				return true;
 			  }
 			  catch(java.rmi.RemoteException re)
 			  {
-			  	ui.displayAlert("Connect: "+serverremote);
+			  	ui.displayAlert("Connect: "+"Could not communicate with server.");
 			  	return false;
 			  }
 			  catch(InvalidKeyException ine)
@@ -251,29 +233,27 @@ public class Client implements ClientCallbacks, Stage3Backend
 			  	ui3.invalidKey("Connect");
 			  }
 			}else{
-				String servername=new String();
+				String server_Name=new String();
 				try{
-					servername=chat.serverName();
-					
+					server_Name=chat.serverName();
 				}
 				catch(java.rmi.RemoteException re)
 				{
-						ui.displayAlert("ServerName: Could not communicate with server.");
-						return false;
+					ui.displayAlert("ServerName: Could not communicate with server.");
+					return false;
 				}
 				try{
-				  if(chat.connect(k,callbacks,scriptname))
+				  if(chat.connect(chat_key,this,tps))
 			          {
-					  ui2.setTranscriptLabelText("Resumed session using transcript \""+scriptname+"\" at server "+"\""+servername+"\"");
+					  ui2.setTranscriptLabelText("Resumed session using transcript \""+tps+"\" at server "+"\""+server_Name+"\"");
 				  }else{
-					  ui2.setTranscriptLabelText("Connected to ongoing session at server "+"\""+servername+"\"");
+					  ui2.setTranscriptLabelText("Connected to ongoing session at server "+"\""+server_Name+"\"");
 					  
 				  }
 				  return true;
 				}
 				catch(java.io.FileNotFoundException ioe)
 				{
-					
 					ui.displayAlert("Connect: transcript not found: savetestnotfound");
 					return false;
 				}
@@ -283,65 +263,61 @@ public class Client implements ClientCallbacks, Stage3Backend
 					
 				}
 				catch(InvalidKeyException ine)
-		    {
+				{
 			      ui3.invalidKey("Connect");
-		  
-		    }
-		    catch(AccessControlException ace)
-		    {
-		 	      ui.displayAlert("Connect: Unprivileged key.");
-		 	  }
+				}
+				catch(AccessControlException ace)
+				{
+					ui.displayAlert("Connect: Unprivileged key.");
+				}
 			}
-		
-	 return false;
+			return false;
 	}
 	
 	public boolean disconnect()
 	{
 		try{
-			chat.disconnect(k,callbacks);
+			chat.disconnect(chat_key,this);
 		}
 		catch(java.rmi.RemoteException e)
 		{
-			ui.displayAlert("Disconnect: "+serverremote);
+			ui.displayAlert("Disconnect: "+"Could not communicate with server.");
 			return false;
 		}
 		catch(InvalidKeyException e)
 		{
 			  ui3.invalidKey("Disconnect");
-		          return false;
+		      return false;
 		 }
 		try{
-			java.rmi.server.UnicastRemoteObject.unexportObject(callbacks,true);
+			java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
 		}
 		catch(java.rmi.RemoteException e)
 		{
-			//ui.displayAlert("Disconnect: "+serverremote);
 			return false;
 		}
 		return true;
 		
 	}
+	
 	public boolean sendMessage(String message)
 	{
 		try{
-			chat.sendMessage(k,message);
+			chat.sendMessage(chat_key,message);
 			return true;
 		}
 		catch(java.rmi.RemoteException e)
 		{
 			 try{
-			    java.rmi.server.UnicastRemoteObject.unexportObject(callbacks,true);
-		   }
-		   catch(java.rmi.RemoteException er)
-		   {}
-			ui.displayAlert("SendMessage: "+serverremote);
-			return false;
+			    java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
+			 }
+			 catch(java.rmi.RemoteException except){}
+			    ui.displayAlert("SendMessage: "+"Could not communicate with server.");
+			    return false;
 			}
 		catch(InvalidKeyException e)
 		{
 			  ui3.invalidKey("SendMessage");
-		  
 		}
 		return false;
 		}
@@ -353,7 +329,6 @@ public class Client implements ClientCallbacks, Stage3Backend
 	
 	public void receiveMessage(String msg) throws java.rmi.RemoteException
 	{
-		
 		  ui.displayMessage(msg);
 	}
 	
@@ -374,15 +349,13 @@ public class Client implements ClientCallbacks, Stage3Backend
 	
 	public String[] getTranscriptList()
 	{
-		
 		try{
-		     String[] temp2 = chat.getTranscriptList(k);
+		     String[] temp2 = chat.getTranscriptList(chat_key);
 		     return temp2;
 		}
 		catch(java.rmi.RemoteException e)
 		{
 			ui.displayAlert("GetTranscriptList: Could not communicate with server.");
-			//return null;
 		}
 		catch(InvalidKeyException e)
 		{
@@ -393,20 +366,19 @@ public class Client implements ClientCallbacks, Stage3Backend
 		 {
 		 	  ui.displayAlert("GetTranscriptList: Unprivileged key.");
 		 	}
-		//String[] is={"is","js"};
-		return null;
+		 return null;
 	}
 	
 	public void selectTranscript(String transcriptName)
 	{
-		scriptname=transcriptName;
+		tps=transcriptName;
 	}
 	
   public boolean shutdownAndSave(String transcriptName)
   {
   	try{
-  		chat.saveTranscript(k,transcriptName);
-  		chat.shutdown(k);
+  		chat.saveTranscript(chat_key,transcriptName);
+  		chat.shutdown(chat_key);
   	}
   	catch(java.rmi.RemoteException e)
   	{
@@ -414,22 +386,20 @@ public class Client implements ClientCallbacks, Stage3Backend
   		return false;
   	}
   	catch(InvalidKeyException e)
-		{
-			  ui3.invalidKey("SaveTranscript");
-		  
-		 }
-		 catch(AccessControlException e)
-		 {
-		 	  ui.displayAlert("SaveTranscript: Unprivileged key.");
-		 	}
-		 return true;
-		 
+	{
+		ui3.invalidKey("SaveTranscript");
+	}
+	catch(AccessControlException e)
+	{
+		 ui.displayAlert("SaveTranscript: Unprivileged key.");
+	}
+	return true;
   }
   
   public boolean shutdownAndAbort()
   {
   	try{
-  		chat.shutdown(k);
+  		chat.shutdown(chat_key);
   	}
   	catch(java.rmi.RemoteException e)
   	{
@@ -437,16 +407,15 @@ public class Client implements ClientCallbacks, Stage3Backend
   		return false;
   	}
   	catch(InvalidKeyException e)
-		{
-			  ui3.invalidKey("Shutdown");
+	{
+		ui3.invalidKey("Shutdown");
 		  
-		 }
-		 catch(AccessControlException e)
-		 {
-		 	  ui.displayAlert("Shutdown: Unprivileged key.");
-		 }
-		return true;
-		
+	}
+	catch(AccessControlException e)
+	{
+		 ui.displayAlert("Shutdown: Unprivileged key.");
+	}
+	return true;
   }
 }
 

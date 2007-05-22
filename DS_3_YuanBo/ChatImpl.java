@@ -24,40 +24,36 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
     private Hashtable<String, String> accounttable=new Hashtable<String, String>();
     private Vector acckeytable=new Vector();
 
-    public ChatImpl() throws java.rmi.RemoteException
-    {
-    	super();
-    }
-    
-     public ChatImpl(String boundURL, Naming naming,String name) throws java.rmi.RemoteException
+    public ChatImpl(String boundURL, Naming naming,String name) throws java.rmi.RemoteException
     {
       super();
+
+      this.naming=naming;
       this.boundURL=boundURL;
       server_name=name;
-      this.naming=naming;
       
       if(!data_folder.exists())
       {
       	data_folder.mkdir();
       }
+      
       if(!account.exists())
       {
       	try{
       	  account.createNewFile();
       	}
-      	catch(IOException e)
-      	{}
+      	catch(IOException e){}
       }else{
         try{
         BufferedReader br=new BufferedReader(new FileReader(account));
-        String username=new String();
-        String password=new String();
-        String pri     =new String();
+        String password="";
+        String pri="";
+        String username="";
         
         while((username=br.readLine())!=null)
         {
         	password=br.readLine();
-        	pri     =br.readLine();
+        	pri=br.readLine();
         	accounttable.put(username,password);
         	if(pri.equals(stringtrue))
         	{
@@ -66,53 +62,86 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
         }
         br.close();
         }
-        catch(Exception e)
-        {}
+        catch(Exception e){}
       }
-        	
     }
+ 
+    
+    public ChatImpl() throws java.rmi.RemoteException
+    {
+    	super();
+    }
+    
+    
+     public boolean createAccount(ChatKey creatorKey,String username,String password,boolean isPrivileged)
+     throws RemoteException,InvalidKeyException,AccessControlException
+     {
+    	 boolean done=false;
+
+if( !acckeytable.contains(creatorKey) )
+{
+InvalidKeyException ie=new InvalidKeyException();
+throw ie;
+}
+if(!creatorKey.amPrivileged())
+{
+AccessControlException e=new AccessControlException("e");
+throw e;
+}
+if(!accounttable.containsKey(username))
+{
+accounttable.put(username,password);
+if(isPrivileged){
+privilegetable.put(username,stringtrue);
+}
+savedata();
+done=true;
+}else{
+done=false;
+}
+return done;
+}
     
     public ChatKey login(String username,String password) throws RemoteException
     {
-    	String pw=new String();
-    	ChatKey k=new ChatKeyImpl(this);
+    	ChatKey key=new ChatKeyImpl(this);
+    	String pwd=new String();
     	
     	if(accounttable.containsKey(username))
     	{
-    		pw=(String) accounttable.get(username);
-    		if(pw.equals(password))
+    		pwd=accounttable.get(username);
+    		if(pwd.equals(password))
     		{
-    			acckeytable.add(k);
-			acckKeyVector.add(username);
-    			return k;
+    			acckeytable.add(key);
+    			acckKeyVector.add(username);
+    			return key;
     		}else{
-    			k=null;
+    			key=null;
     		}
     	}else{
-	 String admin="admin";
-	 String adpassword="initadmin";
-	 if(username.equals(admin)&&adpassword.equals(password))
-	 {
-	   accounttable.put(username,password);
-	   acckeytable.add(k);
-	   acckKeyVector.add(username);
-	   privilegetable.put(username,stringtrue);
-	   return k;
-	  }
-	 }
-	k=null;
-    	return k;
+    		String admin="admin";
+    		String adpassword="initadmin";
+    		if(username.equals(admin)&&adpassword.equals(password))
+    		{
+    			accounttable.put(username,password);
+    			acckeytable.add(key);
+    			acckKeyVector.add(username);
+    			privilegetable.put(username,stringtrue);
+    			return key;
+    		}
+    	}
+    	key=null;
+    	return key;
     }
     
     public boolean isPrivileged(ChatKey key) throws RemoteException
     {
-    	String username=new String();
+    	String um=new String();
     	if(acckeytable.contains(key))
     	{
     		int index= acckeytable.indexOf(key);
-		
-		username=(String) acckKeyVector.elementAt(index);
-    		if(privilegetable.containsKey(username))//????? if necessary?
+    		um=(String) acckKeyVector.elementAt(index);
+    		if(privilegetable.containsKey(um))
     		{
     			return true;
     		}
@@ -120,47 +149,17 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
     	return false;
     }
     
-    public boolean createAccount(ChatKey creatorKey,String username,String password,boolean isPrivileged)
-		                 throws RemoteException,InvalidKeyException,AccessControlException
-    {
-    	boolean test=false;
-    	
-    	if(acckeytable.contains(creatorKey))
-    	{
-    		if(creatorKey.amPrivileged())
-    		{
-    			if(!accounttable.containsKey(username))
-    			{
-    				accounttable.put(username,password);
-    				//System.out.println("create a new count "+username+",  "+password);
-				if(isPrivileged)
-    				{
-    					privilegetable.put(username,stringtrue);
-    				}
-    				save();
-    			  test=true;
-    			}else{
-    				test=false;
-				//System.out.println("didn't create a new count.");
-				
-    			}
-    		}else{
-    			AccessControlException e=new AccessControlException("access");
-    			throw e;
-    		}
-    	}else{
-    		InvalidKeyException ie=new InvalidKeyException();
-    		throw ie;
-    	}
-    		
-    	return test;
-    }
+
     
     public void setPrivilege(ChatKey adminKey,String username,boolean isPrivileged)
 		                     throws RemoteException,InvalidKeyException,AccessControlException
 		{
-			if(acckeytable.contains(adminKey))
+			if(!acckeytable.contains(adminKey))
 			{
+	    		InvalidKeyException ie=new InvalidKeyException();
+	    		throw ie;
+			}
+			
 				if(adminKey.amPrivileged())
 				{
 					if(accounttable.containsKey(username))
@@ -173,13 +172,13 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
 								if(!privilegetable.containsKey(username))
 								{
 									privilegetable.put(username,stringtrue);
-									save();
+									savedata();
 								}
 							}else{
 								if(privilegetable.containsKey(username))
 								{
 									privilegetable.remove(username);
-									save();
+									savedata();
 								}
 							}
 					  }
@@ -188,38 +187,81 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
 					AccessControlException e=new AccessControlException("access");
     			throw e;
     		}
-    	}else{
-    		InvalidKeyException ie=new InvalidKeyException();
-    		throw ie;
+    }
+    
+    public String serverName() throws RemoteException
+    {
+    	return server_name;
+    }
+    
+    public boolean connect(ChatKey key,ClientCallbacks cl) 
+		        throws RemoteException,InvalidKeyException
+    {
+    	 boolean tmpBoolean=false;
+    	
+    	if(acckeytable.contains(key))
+    	{
+	
+    		boolean clienttest=true;
+    		if(!clients.isEmpty())
+    		{
+    			for(int i=0;i<clients.size();i++)
+    			{
+    				if(clients.elementAt(i)!=null)
+    					clienttest=false;
+    		}
     	}
+    	
+    	if(clienttest)
+    	 {
+    	     clients.add(cl);
+    	     all_messages.clear();
+    	     tmpBoolean=true;
+    	  }else{
+    	  	clients.add(cl);
+    	  	tmpBoolean=false;
+    	    String msg=new String();
+    	    for(int i=0;i<all_messages.size();i++)
+    	    {
+    	    	msg=(String) all_messages.elementAt(i);
+    	    	cl.receiveMessage(msg);
+    	    }
+    	  }
+    	  
+    	}else{
+    		InvalidKeyException e=new InvalidKeyException();
+        throw e;    	
+    	}
+    	
+    	return tmpBoolean;
     }
     
     public void setPassword(ChatKey key,String username,String newPassword) 
 		      throws RemoteException,InvalidKeyException,AccessControlException
 		{
-			String user=new String();
+			String ur="";
 			
 			if(acckeytable.contains(key))
 			{
-				int index= acckeytable.indexOf(key);
-				user = (String) acckKeyVector.elementAt(index);
+				int tmpindex= acckeytable.indexOf(key);
+				ur = (String) acckKeyVector.elementAt(tmpindex);
 				
-				if(user.equals(username))
+				if(ur.equals(username))
 				{
 					accounttable.remove(username);
 					accounttable.put(username,newPassword);
-					save();
+					savedata();
 				}else{
 					if(key.amPrivileged())
 					{
 						if(accounttable.containsKey(username))
 						{
 						   accounttable.remove(username);
-					     accounttable.put(username,newPassword);
-					     save();
+						   accounttable.put(username,newPassword);
+						   savedata();
 					    }
 					}else{
-						AccessControlException e=new AccessControlException("access");
+						AccessControlException e=new AccessControlException("ae");
 						throw e;
 					}
 				}
@@ -232,129 +274,80 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
 		public void logout(ChatKey key)  
 		       throws RemoteException,InvalidKeyException
 		{
-			if(acckeytable.contains(key))
+			if(!acckeytable.contains(key))
 			{
-				int index = acckeytable.indexOf(key);
-				
-				acckKeyVector.removeElementAt(index);
-				acckeytable.remove(key);
-				
+			    InvalidKeyException e=new InvalidKeyException();
+			    throw e;
 			}else{
-		    InvalidKeyException e=new InvalidKeyException();
-		    throw e;
+				int tmpindex = acckeytable.indexOf(key);
+				
+				acckKeyVector.removeElementAt(tmpindex);
+				acckeytable.remove(key);
 		  }
 		}
 		
-    public String serverName() throws RemoteException
-    {
-    	return server_name;
-    }
-    
-    public boolean connect(ChatKey key,ClientCallbacks cl) 
-		        throws RemoteException,InvalidKeyException
-    {
-    	 boolean isSession=false;
-    	
-    	if(acckeytable.contains(key))
-    	{
-	
-	boolean clienttest=true;
-	 if(!clients.isEmpty())
-	 {
-	    for(int i=0;i<clients.size();i++)
-	    {
-	       if(clients.elementAt(i)!=null)
-	            clienttest=false;
-             }
-	 }
-    	
-    	if(clienttest)
-    	 {
-    	     clients.add(cl);
-    	     all_messages.clear();//?????
-    	     //transcript_list.clear();
-    	     isSession=true;
-    	  }else{
-    	  	clients.add(cl);
-    	  	isSession=false;
-    	    String msg=new String();
-    	    for(int i=0;i<all_messages.size();i++)
-    	    {
-    	    	msg=(String) all_messages.elementAt(i);
-    	    	//????exception
-    	    	cl.receiveMessage(msg);
-    	    }
-    	  }
-    	  
-    	}else{
-    		InvalidKeyException e=new InvalidKeyException();
-        throw e;    	
-    	}
-    	
-    	return isSession;
-    }
+
     
     public boolean connect(ChatKey key,ClientCallbacks cl,String transcriptName) 
 		throws RemoteException,FileNotFoundException,InvalidKeyException,AccessControlException
     {
-    	boolean isSession=false;
+    	boolean tmpBoolean=false;
     	 
     	 if(acckeytable.contains(key))
     	 {
     	 if(key.amPrivileged())
     	 {
     	 
-    	 File fi=new File(data_folder,transcriptName+postfix);
-	 boolean clienttest=true;
-	 if(!clients.isEmpty())
-	 {
-	    for(int i=0;i<clients.size();i++)
-	    {
-	       if(clients.elementAt(i)!=null)
-	            clienttest=false;
+    	 File fi=new File(data_folder, transcriptName + postfix);
+    	 boolean clienttest=true;
+    	 if(!clients.isEmpty())
+    	 {
+    		 for(int i=0;i<clients.size();i++)
+    		 {
+    			 if(clients.elementAt(i)!=null)
+    			 clienttest=false;
              }
-	 }
+    	 }
 	 
     	 if(clienttest)         
     	 {
-    	     clients.add(cl);
     	     all_messages.clear();
     	     transcript_list.clear();
-    	     if(fi.exists())
+    	     clients.add(cl);
+
+    	     if(!fi.exists())
     	     {
-    	     	 BufferedReader br=new BufferedReader(new FileReader(fi));
-    	       String s=new String();
-	       try{
-    	       while((s=br.readLine())!=null)
-    	       {
-    	       	     for(int j=0;j<clients.size();j++)
-	             {
-			   ((ClientCallbacks) (clients.elementAt(j))).receiveMessage(s);
-    	                   all_messages.add(s);
-		     }
-		 }
-    	        br.close();
-		
-    	        }catch(IOException e){}
-    	      isSession=true;
+	      	     FileNotFoundException fe=new FileNotFoundException(transcriptName);
+	      	     throw fe;
+    	     	 
     	      }else{
-    	      	     FileNotFoundException fe=new FileNotFoundException(transcriptName);
-    	      	     throw fe;
+    	    	 BufferedReader br=new BufferedReader(new FileReader(fi));
+     	         String s=new String();
+     	         try{
+     	        	 while((s=br.readLine())!=null)
+     	        	 {
+     	        		 for(int j=0;j<clients.size();j++)
+     	        		 {
+     	        			 ((ClientCallbacks) (clients.elementAt(j))).receiveMessage(s);
+     	        			 all_messages.add(s);
+     	        		 }
+     	        	 }
+     	        	 br.close();
+     	         }catch(IOException e){}
+     	         	tmpBoolean=true;
     	          }
-    	       
-    	      
     	  }else{
     	  	clients.add(cl);
-    	  	isSession=false;
-    	    String msg=new String();
+    	  	
+    	    String msg="";
+    	    tmpBoolean=false;
+    	    
     	    for(int i=0;i<all_messages.size();i++)
     	    {
     	    	msg=(String) all_messages.elementAt(i);
-    	    	//????exception
     	    	cl.receiveMessage(msg);
     	    }
     	     }
-    	  
     	}else{
     		AccessControlException e=new AccessControlException("access");
     		throw e;
@@ -364,68 +357,88 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
     	  throw ie;
     	}
     	
-    return isSession;
+    return tmpBoolean;
     }
+    
+    public String[] getTranscriptList(ChatKey key) 
+	throws RemoteException,InvalidKeyException,AccessControlException
+{
+	if(acckeytable.contains(key))
+	{
+	if(key.amPrivileged())
+	{
+	String[] strlist=data_folder.list();
+	String nul="";
+	for(int i=0;i<strlist.length;i++)
+	{
+		strlist[i]=strlist[i].replaceAll(postfix,nul); 
+	}
+  return strlist;
+  
+  }else{
+  	AccessControlException e=new AccessControlException("ae");
+  	throw e;
+  }
+  }else{
+  	InvalidKeyException ie=new InvalidKeyException();
+  	throw ie;
+  }
+}
     
    public void saveTranscript(ChatKey key,String transcriptName) 
 		throws RemoteException,InvalidKeyException,AccessControlException
     {
-    	
     	if(acckeytable.contains(key))
     	{
     	if(key.amPrivileged())
     	{
-    		 
-      File fi=new File(data_folder,transcriptName+postfix);
+    		File file=new File(data_folder,transcriptName+postfix);
     	
-    	String s=new String();
-    	if(fi.exists())
-    	{
-    		BufferedReader br=null;
-    		try{
-    		  br=new BufferedReader(new FileReader(fi));
-    	  }
-    	  catch(FileNotFoundException e)
-    	  {}
-    	  
-    		Vector savebuffer=new Vector();
-    		try{
-    		while((s=br.readLine())!=null)
+    		String str=new String();
+    		if(file.exists())
     		{
-    			savebuffer.add(s);
-    		}
+    			BufferedReader br=null;
+    			try{
+    				br=new BufferedReader(new FileReader(file));
+    	  }
+    	  catch(FileNotFoundException e){}
+    	  
+    		Vector<String> savebuffer=new Vector<String>();
+    		try{
+    			while((str=br.readLine())!=null)
+    			{
+    				savebuffer.add(str);
+    			}
     		br.close();
-    		fi.delete();
-    		fi.createNewFile();
-    		PrintWriter pw=new PrintWriter(new FileWriter(fi));
+    		file.delete();
+    		file.createNewFile();
+    		PrintWriter pw=new PrintWriter(new FileWriter(file));
     		for(int i=0;i<savebuffer.size();i++)
-    		{ pw.println((String) savebuffer.elementAt(i));
+    		{
+    			pw.println((String) savebuffer.elementAt(i));
     		}
     		for(int i=0;i<all_messages.size();i++)
     		{
     			pw.println((String) all_messages.elementAt(i));
     		}
+    		
     		pw.close();
     	}
-    	catch(IOException e)
-    	{}
+    	catch(IOException e){}
     	}else{
     		try{
-    		fi.createNewFile();
+    		file.createNewFile();
     	 }
-    	 catch(IOException e)
-    	 {}
-    	 	
+    	 catch(IOException e) {}
     		PrintWriter pw=null;
     		try{
-    		pw=new PrintWriter(new FileWriter(fi));
+    			pw=new PrintWriter(new FileWriter(file));
     	 }
-    	 catch(IOException e)
-    	 {}
-    		for(int i=0;i<all_messages.size();i++)
-    		{
-    			pw.println((String) all_messages.elementAt(i));
-    		}
+    	 catch(IOException e) {}
+    	for(int i=0;i<all_messages.size();i++)
+    	{
+    		pw.println((String) all_messages.elementAt(i));
+    	}
     		pw.close();
     	}
     	
@@ -440,61 +453,6 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
 
     }
     
-    public String[] getTranscriptList(ChatKey key) 
-		throws RemoteException,InvalidKeyException,AccessControlException
-    {
-    	//??????
-    	if(acckeytable.contains(key))
-    	{
-    	if(key.amPrivileged())
-    	{
-    	String[] ls=data_folder.list();
-    	String nul="";
-    	for(int i=0;i<ls.length;i++)
-    	{
-    		ls[i]=ls[i].replaceAll(postfix,nul); 
-    	}
-      return ls;
-      
-      }else{
-      	AccessControlException e=new AccessControlException("access");
-      	throw e;
-      }
-      }else{
-      	InvalidKeyException ie=new InvalidKeyException();
-      	throw ie;
-      }
-      	
-    	//return null;
-    }
-    
-    public void shutdown(ChatKey key) 
-		throws RemoteException,InvalidKeyException,AccessControlException
-    {
-    	if(acckeytable.contains(key))
-    	{
-    	if(key.amPrivileged())
-    	{
-    		
-    	try{
-    	naming.unbind(boundURL);
-    	 }
-    catch(Exception e)
-    {}
-    	
-    	java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
-      all_messages.clear();
-      System.exit(1);
-     }else{
-     	AccessControlException e=new AccessControlException("access");
-     	throw e;
-    }
-    }else{
-    	InvalidKeyException ie=new InvalidKeyException();
-      throw ie;
-    }
-    
-    }
     
     public void disconnect(ChatKey key,ClientCallbacks cl) 
 		throws RemoteException,InvalidKeyException
@@ -506,73 +464,95 @@ public class ChatImpl extends java.rmi.server.UnicastRemoteObject
     		InvalidKeyException ie=new InvalidKeyException();
     		throw ie;
     	}
-    	  
-    }
-   
-   
-    public void sendMessage(ChatKey key,String msg) 
-		throws RemoteException,InvalidKeyException
-    {
-    	if(acckeytable.contains(key))
-    	{
-    	all_messages.add(msg);
-    	
-	for(int i=0;i<clients.size();i++)
-    	{
-		if(clients.elementAt(i)!=null){
-		try{
-    	 ((ClientCallbacks) (clients.elementAt(i))).receiveMessage(msg);
-    		
-    		}
-		catch(java.rmi.RemoteException e)
-		{
-		 	
-			clients.setElementAt(null,i);
-		}
-		}
-    	}
-    
-    }else{
-    	InvalidKeyException ie=new InvalidKeyException();
-    	throw ie;
-    }
     }
     
-    private void save()
+    public void shutdown(ChatKey key) 
+	throws RemoteException,InvalidKeyException,AccessControlException
+{
+	if(acckeytable.contains(key))
+	{
+	if(key.amPrivileged())
+	{
+	try{
+	naming.unbind(boundURL);
+	 }
+catch(Exception e){}
+	java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
+  all_messages.clear();
+  System.exit(1);
+ }else{
+ 	AccessControlException e=new AccessControlException("access");
+ 	throw e;
+}
+}else{
+	InvalidKeyException ie=new InvalidKeyException();
+  throw ie;
+}
+
+}
+    
+    private void savedata()
     {
-    	String userName=new String();
-    	String passWord=new String();
-    	String isp     =new String();
-    	
+    	String pwd="";
+    	String privileged="";
+    	String u_name="";
+
     	try{
     	  if(account.exists())
     	  {
     		   account.delete();
-		   account.createNewFile();
+		       account.createNewFile();
     		   Enumeration users = accounttable.keys();
     		   Enumeration pw = accounttable.elements();
-    		   PrintWriter spw = new PrintWriter(new FileWriter(account));
+    		   PrintWriter writer = new PrintWriter(new FileWriter(account));
            
            while(users.hasMoreElements()) {
-                    userName = (String)users.nextElement();
-                    passWord = (String)pw.nextElement();
+                    u_name = (String)users.nextElement();
+                    pwd = (String)pw.nextElement();
                     
-                    if(privilegetable.containsKey(userName))
-
-                        isp  = stringtrue;
+                    if(!privilegetable.containsKey(u_name))
+                    	privileged  = stringfalse;
                     else
-                        isp  = stringfalse;
+                    	privileged  = stringtrue;
 
-                    spw.println(userName);
-                    spw.println(passWord);
-                    spw.println(isp);
+                    writer.println(u_name);
+                    writer.println(pwd);
+                    writer.println(privileged);
                 }
-            spw.close();
+           
+           	writer.close();
             }
           }
-          catch(IOException e)
-          {}
+          catch(IOException e){}
     
     }
     
+    public void sendMessage(ChatKey key,String msg) 
+	throws RemoteException,InvalidKeyException
+{
+	if(acckeytable.contains(key))
+	{
+	all_messages.add(msg);
+	
+for(int i=0;i<clients.size();i++)
+	{
+	if(clients.elementAt(i)!=null){
+	try{
+	 ((ClientCallbacks) (clients.elementAt(i))).receiveMessage(msg);
+		
+		}
+	catch(java.rmi.RemoteException e)
+	{
+	 	
+		clients.setElementAt(null,i);
+	}
+	}
+	}
+
+}else{
+	InvalidKeyException ie=new InvalidKeyException();
+	throw ie;
+}
+}
+
 }
