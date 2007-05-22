@@ -75,18 +75,13 @@ public class Client implements ClientCallbacks, Stage3Backend
 	{
 		boolean Privileged = false;
 		try{
-		  //Privileged = chat.isPrivileged(chat_key);
 		  Privileged = chat_key.amPrivileged();
 		}
-		catch(Exception e)
-		{
-		   
-		   //ui.displayAlert("isprivilege");
-		}
+		catch(Exception e){}
 	  return Privileged;
 	}
 	
-	public boolean isLoggedIn()//??
+	public boolean isLoggedIn()
 	{
 		if(chat_key!=null)
 		  return true;
@@ -94,16 +89,15 @@ public class Client implements ClientCallbacks, Stage3Backend
 		  return false;
 	}
 	
-	public boolean logout()//???
+	public boolean logout()
 	{
 		try{
 			chat.logout(chat_key);
 			chat_key=null;
-			try{//????
+			try{
 			    java.rmi.server.UnicastRemoteObject.unexportObject(this,true);
 		   }
-		  catch(java.rmi.RemoteException er)
-		  {}
+		  catch(java.rmi.RemoteException er){}
 		}
 		catch(RemoteException e)
 		{
@@ -112,7 +106,7 @@ public class Client implements ClientCallbacks, Stage3Backend
 		}
 		catch(InvalidKeyException e)
 		{
-			  ui3.invalidKey("Logout");
+			 ui3.invalidKey("Logout");
 		  
 		 }
 		 return true;
