@@ -11,6 +11,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.AccessControlException;
@@ -24,7 +26,7 @@ import java.util.LinkedList;
 
 public class ChatImpl 
 	extends java.rmi.server.UnicastRemoteObject 
-	implements Chat{
+	implements Chat, ClientCallbacks{
 	
 	// clients should login before connect to a existing session.
 	private Vector<ClientCallbacks> activeClients = new Vector<ClientCallbacks>();
@@ -44,6 +46,8 @@ public class ChatImpl
 	private LinkedList<String> loginedAccounts = new LinkedList<String>();
 	// keyToClient: <ChatKey, activeClients>
 	private Map<ChatKey, ClientCallbacks> keyToClient = new HashMap<ChatKey, ClientCallbacks>();
+	
+	private ChatPeer peerServer;
 	
     public ChatImpl() throws java.rmi.RemoteException
     {
@@ -596,5 +600,59 @@ public class ChatImpl
 		accounts.remove(username);
 		accounts.put(username, newPassword);
 		SaveAccounts();
+	}
+	
+	// JoinPeer::
+	//  FUNCTION: permits a logged in, privileged client to instruct the called server (the slave) to join the session 
+	//   running at another server (the master) such that (whilst the servers remain joined) all clients of the slave 
+	//   participate in the session running at the master (they receive the same messages as clients of the master, and
+	//   messages they send are received by the clients of the master). The master is identified by the peerURL 
+	//   parameter, which should be an RMI URL.
+	//	RETURN VALUE: true if peer (master) joined created, false otherwise.	
+	//  CALL CONSTRAINTS: the slave server must have no connected clients when this method is called, if it has
+	//   clients, the method should return false and not join the peer server. Only clients providing valid ChatKeys 
+	//   can call successfully, others get InvalidKeyException. Only clients providing privileged ChatKeys can call
+	//   successfully, other clients get AccessControlException. 
+	//  EXCEPTIONS: ClassCastException,MalformedURLException,NotBoundException are used to report problems in contacting
+	//   the peer (master) server.
+	//
+	public boolean joinPeer(ChatKey key,String peerURL)
+	throws RemoteException,ClassCastException,MalformedURLException,NotBoundException,
+		   InvalidKeyException,AccessControlException{
+		TestVadilityAndPrivilege(key);
+		
+		// Make sure there are no connected clients.
+		if( activeClients.size() > 0 ){
+			return false;
+		}
+		
+		peerServer = (ChatPeer) naming.lookup(peerURL);
+		java.rmi.server.UnicastRemoteObject.exportObject(this);
+		
+		peerServer.ConnectPeer(this);
+		
+		return true;
+	}
+	
+	// LeavePeer::
+	//  FUNCTION: permits a logged in, privileged client to instruct the called server (the slave) to leave any session
+	//   it has joined.
+	//  CALL CONSTRAINTS: Only clients providing valid ChatKeys can call successfully, others get InvalidKeyException.
+	//   Only clients providing privileged ChatKeys can call successfully, other clients get AccessControlException. 
+	public void leavePeer(ChatKey key)
+		throws RemoteException,InvalidKeyException,AccessControlException{
+		TestVadilityAndPrivilege(key);
+		
+		peerServer.Disconnect(this);
+		java.rmi.server.UnicastRemoteObject.unexportObject(this,true);	
+	}
+	
+	public void receiveMessage(String msg) throws java.rmi.RemoteException{
+	}
+	
+	public void ping() throws java.rmi.RemoteException{
+	}
+	
+	public void updatePrivilege(boolean isNowPrivileged) throws java.rmi.RemoteException{
 	}
 }

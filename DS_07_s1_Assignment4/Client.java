@@ -10,7 +10,7 @@ import java.security.AccessControlException;
 import java.security.InvalidKeyException;
 
 public class Client
-	implements ClientCallbacks, Stage3Backend{
+	implements ClientCallbacks, Stage4Backend{
 	protected Stage1UserInterface clientUIS1 = null;
 	protected Stage2UserInterface clientUIS2 = null;
 	protected Stage3UserInterface clientUIS3 = null;
@@ -440,4 +440,51 @@ public class Client
 	public void ping() throws java.rmi.RemoteException{
 		clientUIS3.pinged();
 	}
+	
+	public boolean joinPeer(String peerURL){
+		boolean joinSession = false;
+		
+		try{
+			joinSession = ca.joinPeer(chatKey, peerURL);
+		}
+		catch(RemoteException re){
+			clientUIS1.displayAlert("joinPeer: Could not communicate with server.");
+			return false;
+		}
+		catch(InvalidKeyException ie)
+		{
+			clientUIS3.invalidKey("joinPeer");
+			return false;
+		}
+		catch (java.rmi.NotBoundException e)
+		{
+			return false;
+		}
+		catch (java.net.MalformedURLException e)
+		{
+			return false;
+		}
+		
+		return joinSession;
+	}
+
+	public boolean leavePeer() {
+		boolean leaveSession = false;
+		try{
+			ca.leavePeer(chatKey);
+		}
+		catch(RemoteException re){
+			clientUIS1.displayAlert("joinPeer: Could not communicate with server.");
+			return false;
+		}
+		catch(InvalidKeyException ie)
+		{
+			clientUIS3.invalidKey("joinPeer");
+			return false;
+		}
+		
+		return leaveSession;
+	}
+	
+	
 }
