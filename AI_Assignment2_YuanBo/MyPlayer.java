@@ -28,41 +28,34 @@ public class MyPlayer implements PilesPlayer {
 			
 			return leaf;
 		}
+		
+		public Node[] GetChildren(){
+			return children;
+		}
 	}
-	
 
 	public void creatTree(Node parent) {
 		if(parent.isLeaf()) {
 			return;
 		}else{
 			int childrenIndex = 0;//Count children
-			if(parent.state[0] > 0) {//If the first token has element, list every children.
+			if(parent.state[0] > 0){ //If the first token has element, list every children.
 				byte temp = parent.state[0];//Save the first token
-				for (int i = 0; i < temp; i++) {
+				for (int i = 0; i < temp; i++){
 					parent.state[0] -= 1;
 					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
-//					parent.children[childrenIndex].SetPiles(parent.state);
-					if(parent.myturn) {
-						parent.children[childrenIndex].myturn = false;
-					} else {
-						parent.children[childrenIndex].myturn = true;
-					}
+						parent.children[childrenIndex].myturn = !parent.myturn;
 					creatTree(parent.children[childrenIndex]);//Recusion
 					childrenIndex++;//Chidren size + 1
 				}
 			 	parent.state[0] = temp;//Restore the second token
 			}
-			if(parent.state[1] > 0 && parent.state[1] != parent.state[0]) {//If the second token has element, list every children and ignore the same state
+			if(parent.state[1] > 0 && parent.state[1] != parent.state[0]){//If the second token has element, list every children and ignore the same state
 				byte temp = parent.state[1];//Save the second token
-				for (int i = 0; i < temp; i++) {
+				for (int i = 0; i < temp; i++){
 					parent.state[1] -= 1; 
 					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
-//					parent.children[childrenIndex].SetPiles(parent.state);
-					if(parent.myturn) {
-						parent.children[childrenIndex].myturn = false;
-					} else {
-						parent.children[childrenIndex].myturn = true;
-					}
+					parent.children[childrenIndex].myturn = !parent.myturn;
 					creatTree(parent.children[childrenIndex]);//Recusion
 					childrenIndex++;//Chidren size + 1
 				}
@@ -73,12 +66,7 @@ public class MyPlayer implements PilesPlayer {
 				for (int i = 0; i < temp; i++) {
 					parent.state[2] -= 1;
 					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
-//					parent.children[childrenIndex].SetPiles(parent.state);
-					if(parent.myturn) {
-						parent.children[childrenIndex].myturn = false;
-					} else {
-						parent.children[childrenIndex].myturn = true;
-					}
+					parent.children[childrenIndex].myturn = !parent.myturn;
 					creatTree(parent.children[childrenIndex]);//Recusion
 					childrenIndex++;//Chidren size + 1
 				}
@@ -87,39 +75,33 @@ public class MyPlayer implements PilesPlayer {
 		}
 	}
 	
-	/*===========================================================================
-		This method will load a Node, evaluate and return its minMax Value
-	============================================================================*/
 	public int minMax(Node parent) {
-		int selection = 0;//Initial minMax value
-		if(parent.state[0] == 0 && parent.state[1] == 0 && parent.state[2] == 0) {//If the node is a leaf, evaluate its minMax value
-			if(parent.myturn) {
+		int selection = 0;
+		if(parent.isLeaf()){
+			if(parent.myturn == true){
 				selection = 1;
-			} else {
-				selection = 0;
-			} 
-		} else {
-			if(parent.myturn) {//If the node is not a leaf and the Player is A, return 1 if it has a node which minMax value is 1, else return 0
-				for(int i = 0; i < parent.children.length; i++) {
-					if(parent.children[i] != null) {
-						if(minMax(parent.children[i]) == 1) {//Recusion, evaluate children's minMax value
-							selection = 1;
-							break;
-						} else {
-							selection = 0;
-						}
+			}
+			return selection;
+		}
+
+		if(parent.myturn == true){
+			for(int i = 0; i < parent.GetChildren().length; i++) {
+				if(parent.children[i] != null){
+					if(minMax(parent.children[i]) == 1) {
+						selection = 1;
+						break;
 					}
-				}		
-			} else {//If the node is not a leaf and the Player is B, return 0 if it has a node which minMax value is 0, else return 1
-				for(int i = 0; i < parent.children.length; i++) {
-					if(parent.children[i] != null) {
-						if(minMax(parent.children[i]) == 0){//Recusion, evaluate children's minMax value
-							selection = 0;
-							break;
-						} else {
-							selection = 1;
-						}
-					} 
+				}
+			}
+			return selection;
+		}
+		
+		selection = 1;
+		for(int i = 0; i < parent.GetChildren().length; i++){
+			if(parent.children[i] != null) {
+				if(minMax(parent.children[i]) == 0){
+					selection = 0;
+					break;
 				}
 			}
 		}
@@ -129,8 +111,6 @@ public class MyPlayer implements PilesPlayer {
 
 	public byte[] makeMove(byte otherPlayersMove[]) {
 		Node node = new Node(otherPlayersMove);//Initial node
-//		node.SetPiles(otherPlayersMove);
-		
 		node.myturn = true;
 	
 		creatTree(node);//creat tree
