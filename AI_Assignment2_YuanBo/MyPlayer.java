@@ -74,9 +74,10 @@ public class MyPlayer implements PilesPlayer {
 				parent.state[2] = temp;//Restore the third token
 			}
 		}
+		minMax(parent);
 	}
 	
-	public int minMax(Node parent) {
+	public int minMax(Node parent){
 		int selection = 0;
 		if(parent.isLeaf()){
 			if(parent.myturn == true){
@@ -112,26 +113,19 @@ public class MyPlayer implements PilesPlayer {
 		}
 		return selection;
 	}
-	
 
 	public byte[] makeMove(byte otherPlayersMove[]) {
-		Node node = new Node(otherPlayersMove);//Initial node
+		Node node = new Node(otherPlayersMove);
 		node.myturn = true;
-	
-		creatTree(node);//creat tree
-		minMax(node);
+
+		creatTree(node);
+		
 		for(int i=0; i<node.children.length; i++){
 			if(node.children[i].minimaxValue == 1){
 				return node.children[i].state;
 			}
 		}
-		for(int i = 0; i < node.children.length; i++) {//Try to find the child which its minMax value is 1 and return the child's state
-			if(node.children[i] != null) {
-			if(minMax(node.children[i]) == 1) {
-					return node.children[i].state;
-				}
-			}
-		}
-		return node.children[0].state;//If the game must lose, return the first child's state
+
+		return node.children[0].state;
 	}
 }
