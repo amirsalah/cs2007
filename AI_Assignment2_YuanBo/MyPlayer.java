@@ -1,9 +1,8 @@
 import java.util.Vector;
 
 /**
- * 
+ * The myplayer will take the move that maximizes the minimax value from its children.
  * @author YuanBo
- *
  */
 public class MyPlayer implements PilesPlayer {
 	private boolean firstMove = true;
@@ -12,6 +11,7 @@ public class MyPlayer implements PilesPlayer {
 		TreeNode root = new TreeNode(otherPlayersMove);
 		root.myturn = true;
 		
+		// The tree is generated when the player is first created
 		if(firstMove){
 			MinimaxTree(root);
 			firstMove = false;
@@ -26,6 +26,7 @@ public class MyPlayer implements PilesPlayer {
 		return root.children.get(0).pilesNums;
 	}
 	
+	// The inner tree node class used to produce a whole minimax tree
 	class TreeNode {
 		byte[] pilesNums = new byte[3];
 		boolean myturn;
@@ -42,6 +43,7 @@ public class MyPlayer implements PilesPlayer {
 			}
 		}
 		
+		// test if the node is a leaf
 		public boolean isLeaf(){
 			boolean leaf = true;
 			
@@ -55,11 +57,14 @@ public class MyPlayer implements PilesPlayer {
 			return leaf;
 		}
 		
+		// return all the children of current node
 		public Vector<TreeNode> GetChildren(){
 			return children;
 		}
 	}
 
+	// Generate minimax tree
+	// The tree is generated and then the minimax values are assigned from bottom to top
 	public void MinimaxTree(TreeNode parent){
 		if(parent.isLeaf()) {
 			return;
@@ -72,6 +77,7 @@ public class MyPlayer implements PilesPlayer {
 					parent.pilesNums[0]--;
 					parent.children.add(childrenID, new TreeNode(parent.pilesNums));
 					parent.children.get(childrenID).myturn = !parent.myturn;
+					// Recursively invoke
 					MinimaxTree(parent.children.get(childrenID));
 					childrenID++;
 				}
@@ -79,6 +85,7 @@ public class MyPlayer implements PilesPlayer {
 			}
 			
 			if(parent.pilesNums[1] > 0){
+				// prevent duplicated piles
 				if(parent.pilesNums[1] != parent.pilesNums[0]){
 					byte newPile = parent.pilesNums[1];
 					for (int i = 0; i < newPile; i++){
@@ -112,8 +119,9 @@ public class MyPlayer implements PilesPlayer {
 		minMax(parent);
 	}
 
-	public int minMax(TreeNode parent){
-		int MMV = 0;
+	// Assign the minimax to the tree with root: parent
+	private int minMax(TreeNode parent){
+		int MMV = 0; // Minimax value
 		parent.minimaxValue = 0;
 		if(parent.isLeaf()){
 			if(parent.myturn == true){
