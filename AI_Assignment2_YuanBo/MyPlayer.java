@@ -1,29 +1,47 @@
 
 public class MyPlayer implements PilesPlayer {
-
 	class Node {
-		byte [] state = new byte[3];//Hold the states of three tokens.
+		byte[] state = new byte[3];//Hold the states of three tokens.
 		boolean myturn;
-		Node [] children = new Node[12];//Hold the children
+		Node[] children = new Node[15];//Hold the children
+		
+		public Node(byte[] state){
+			this.state = state.clone();
+		}
 		
 		public void SetPiles(byte[] newPiles){
 			for(int i=0; i<3; i++){
 				state[i] = newPiles[i];
 			}
 		}
+		
+		// Test if the node is a leaf of tree
+		public boolean isLeaf(){
+			boolean leaf = true;
+			
+			for(int i=0; i<3; i++){
+				if(state[i] != 0){
+					leaf = false;
+					break;
+				}
+			}
+			
+			return leaf;
+		}
 	}
 	
 
 	public void creatTree(Node parent) {
-		if(parent.state[0] == 0 && parent.state[1] == 0 && parent.state[2] == 0) {//If the state of this node is {0, 0, 0}, it is the leaf of the tree, do nothing
-		} else {
+		if(parent.isLeaf()) {
+			return;
+		}else{
 			int childrenIndex = 0;//Count children
 			if(parent.state[0] > 0) {//If the first token has element, list every children.
 				byte temp = parent.state[0];//Save the first token
 				for (int i = 0; i < temp; i++) {
 					parent.state[0] -= 1;
-					parent.children[childrenIndex] = new Node();//Initial a new child
-					parent.children[childrenIndex].SetPiles(parent.state);
+					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
+//					parent.children[childrenIndex].SetPiles(parent.state);
 					if(parent.myturn) {
 						parent.children[childrenIndex].myturn = false;
 					} else {
@@ -38,8 +56,8 @@ public class MyPlayer implements PilesPlayer {
 				byte temp = parent.state[1];//Save the second token
 				for (int i = 0; i < temp; i++) {
 					parent.state[1] -= 1; 
-					parent.children[childrenIndex] = new Node();//Initial a new child
-					parent.children[childrenIndex].SetPiles(parent.state);
+					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
+//					parent.children[childrenIndex].SetPiles(parent.state);
 					if(parent.myturn) {
 						parent.children[childrenIndex].myturn = false;
 					} else {
@@ -54,8 +72,8 @@ public class MyPlayer implements PilesPlayer {
 				byte temp = parent.state[2];//Save the third token
 				for (int i = 0; i < temp; i++) {
 					parent.state[2] -= 1;
-					parent.children[childrenIndex] = new Node();//Initial a new child
-					parent.children[childrenIndex].SetPiles(parent.state);
+					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
+//					parent.children[childrenIndex].SetPiles(parent.state);
 					if(parent.myturn) {
 						parent.children[childrenIndex].myturn = false;
 					} else {
@@ -110,8 +128,8 @@ public class MyPlayer implements PilesPlayer {
 	
 
 	public byte[] makeMove(byte otherPlayersMove[]) {
-		Node node = new Node();//Initial node
-		node.SetPiles(otherPlayersMove);
+		Node node = new Node(otherPlayersMove);//Initial node
+//		node.SetPiles(otherPlayersMove);
 		
 		node.myturn = true;
 	
