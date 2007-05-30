@@ -1,27 +1,52 @@
+import java.util.Vector;
 
+/**
+ * 
+ * @author YuanBo
+ *
+ */
 public class MyPlayer implements PilesPlayer {
-	class Node {
-		byte[] state = new byte[3];//Hold the states of three tokens.
+	private boolean firstMove = true;
+	
+	public byte[] makeMove(byte otherPlayersMove[]){
+		TreeNode root = new TreeNode(otherPlayersMove);
+		root.myturn = true;
+		
+		if(firstMove){
+			MinimaxTree(root);
+			firstMove = false;
+		}
+		
+		for(int i=0; i<root.children.size(); i++){
+			if(root.children.get(i).minimaxValue == 1){
+				return root.children.get(i).pilesNums;
+			}
+		}
+
+		return root.children.get(0).pilesNums;
+	}
+	
+	class TreeNode {
+		byte[] pilesNums = new byte[3];
 		boolean myturn;
-		Node[] children = new Node[15];//Hold the children
+		Vector<TreeNode> children = new Vector<TreeNode>();
 		int minimaxValue;
 		
-		public Node(byte[] state){
-			this.state = state.clone();
+		public TreeNode(byte[] pilesNums){
+			this.pilesNums = pilesNums.clone();
 		}
 		
 		public void SetPiles(byte[] newPiles){
 			for(int i=0; i<3; i++){
-				state[i] = newPiles[i];
+				pilesNums[i] = newPiles[i];
 			}
 		}
 		
-		// Test if the node is a leaf of tree
 		public boolean isLeaf(){
 			boolean leaf = true;
 			
 			for(int i=0; i<3; i++){
-				if(state[i] != 0){
+				if(pilesNums[i] != 0){
 					leaf = false;
 					break;
 				}
@@ -30,102 +55,99 @@ public class MyPlayer implements PilesPlayer {
 			return leaf;
 		}
 		
-		public Node[] GetChildren(){
+		public Vector<TreeNode> GetChildren(){
 			return children;
 		}
 	}
 
-	public void creatTree(Node parent){
+	public void MinimaxTree(TreeNode parent){
 		if(parent.isLeaf()) {
 			return;
 		}else{
-			int childrenIndex = 0;//Count children
-			if(parent.state[0] > 0){ //If the first token has element, list every children.
-				byte temp = parent.state[0];//Save the first token
-				for (int i = 0; i < temp; i++){
-					parent.state[0] -= 1;
-					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
-						parent.children[childrenIndex].myturn = !parent.myturn;
-					creatTree(parent.children[childrenIndex]);//Recusion
-					childrenIndex++;//Chidren size + 1
+			
+			int childrenID = 0;
+			if(parent.pilesNums[0] > 0){
+				byte newPile = parent.pilesNums[0];
+				for (int i = 0; i < newPile; i++){
+					parent.pilesNums[0]--;
+					parent.children.add(childrenID, new TreeNode(parent.pilesNums));
+					parent.children.get(childrenID).myturn = !parent.myturn;
+					MinimaxTree(parent.children.get(childrenID));
+					childrenID++;
 				}
-			 	parent.state[0] = temp;//Restore the second token
+			 	parent.pilesNums[0] = newPile;
 			}
-			if(parent.state[1] > 0 && parent.state[1] != parent.state[0]){//If the second token has element, list every children and ignore the same state
-				byte temp = parent.state[1];//Save the second token
-				for (int i = 0; i < temp; i++){
-					parent.state[1] -= 1; 
-					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
-					parent.children[childrenIndex].myturn = !parent.myturn;
-					creatTree(parent.children[childrenIndex]);//Recusion
-					childrenIndex++;//Chidren size + 1
+			
+			if(parent.pilesNums[1] > 0){
+				if(parent.pilesNums[1] != parent.pilesNums[0]){
+					byte newPile = parent.pilesNums[1];
+					for (int i = 0; i < newPile; i++){
+						parent.pilesNums[1]--; 
+						parent.children.add(childrenID, new TreeNode(parent.pilesNums));
+						parent.children.get(childrenID).myturn = !parent.myturn;
+						MinimaxTree(parent.children.get(childrenID));
+						childrenID++;
+					}
+					parent.pilesNums[1] = newPile;
 				}
-				parent.state[1] = temp;//Restore the second token
 			}
-			if(parent.state[2] > 0 && parent.state[2] != parent.state[1] && parent.state[2] != parent.state[0]) {//If the third token has element, list every children and ignore the same state
-				byte temp = parent.state[2];//Save the third token
-				for (int i = 0; i < temp; i++) {
-					parent.state[2] -= 1;
-					parent.children[childrenIndex] = new Node(parent.state);//Initial a new child
-					parent.children[childrenIndex].myturn = !parent.myturn;
-					creatTree(parent.children[childrenIndex]);//Recusion
-					childrenIndex++;//Chidren size + 1
+			
+			if(parent.pilesNums[2] > 0) {
+				if(parent.pilesNums[2] != parent.pilesNums[1]){
+					if(parent.pilesNums[2] != parent.pilesNums[0]){
+						byte newPile = parent.pilesNums[2];
+						for (int i = 0; i < newPile; i++) {
+							parent.pilesNums[2]--;
+							parent.children.add(childrenID, new TreeNode(parent.pilesNums));
+							parent.children.get(childrenID).myturn = !parent.myturn;
+							MinimaxTree(parent.children.get(childrenID));
+							childrenID++;
+						}
+						parent.pilesNums[2] = newPile;
+					}
 				}
-				parent.state[2] = temp;//Restore the third token
 			}
 		}
+		
 		minMax(parent);
 	}
-	
-	public int minMax(Node parent){
-		int selection = 0;
+
+	public int minMax(TreeNode parent){
+		int MMV = 0;
+		parent.minimaxValue = 0;
 		if(parent.isLeaf()){
 			if(parent.myturn == true){
-				selection = 1;
+				MMV = 1;
 				parent.minimaxValue = 1;
 			}
-			return selection;
+			return MMV;
 		}
 
 		if(parent.myturn == true){
-			for(int i = 0; i < parent.GetChildren().length; i++) {
-				if(parent.children[i] != null){
-					if(minMax(parent.children[i]) == 1) {
-						selection = 1;
+			for(int i = 0; i < parent.GetChildren().size(); i++) {
+				if(parent.children.get(i) != null){
+					if(minMax(parent.children.get(i)) == 1) {
+						MMV = 1;
 						parent.minimaxValue = 1;
 						break;
 					}
 				}
 			}
-			return selection;
+			return MMV;
 		}
 		
-		selection = 1;
+		MMV = 1;
 		parent.minimaxValue = 1;
-		for(int i = 0; i < parent.GetChildren().length; i++){
-			if(parent.children[i] != null) {
-				if(minMax(parent.children[i]) == 0){
-					selection = 0;
+		for(int i = 0; i < parent.GetChildren().size(); i++){
+			if(parent.children.get(i) != null) {
+				if(minMax(parent.children.get(i)) == 0){
+					MMV = 0;
 					parent.minimaxValue = 0;
 					break;
 				}
 			}
 		}
-		return selection;
+		return MMV;
 	}
 
-	public byte[] makeMove(byte otherPlayersMove[]) {
-		Node node = new Node(otherPlayersMove);
-		node.myturn = true;
-
-		creatTree(node);
-		
-		for(int i=0; i<node.children.length; i++){
-			if(node.children[i].minimaxValue == 1){
-				return node.children[i].state;
-			}
-		}
-
-		return node.children[0].state;
-	}
 }
