@@ -4,6 +4,7 @@ public class MyPlayer implements PilesPlayer {
 		byte[] state = new byte[3];//Hold the states of three tokens.
 		boolean myturn;
 		Node[] children = new Node[15];//Hold the children
+		int minimaxValue;
 		
 		public Node(byte[] state){
 			this.state = state.clone();
@@ -34,7 +35,7 @@ public class MyPlayer implements PilesPlayer {
 		}
 	}
 
-	public void creatTree(Node parent) {
+	public void creatTree(Node parent){
 		if(parent.isLeaf()) {
 			return;
 		}else{
@@ -80,6 +81,7 @@ public class MyPlayer implements PilesPlayer {
 		if(parent.isLeaf()){
 			if(parent.myturn == true){
 				selection = 1;
+				parent.minimaxValue = 1;
 			}
 			return selection;
 		}
@@ -89,6 +91,7 @@ public class MyPlayer implements PilesPlayer {
 				if(parent.children[i] != null){
 					if(minMax(parent.children[i]) == 1) {
 						selection = 1;
+						parent.minimaxValue = 1;
 						break;
 					}
 				}
@@ -97,10 +100,12 @@ public class MyPlayer implements PilesPlayer {
 		}
 		
 		selection = 1;
+		parent.minimaxValue = 1;
 		for(int i = 0; i < parent.GetChildren().length; i++){
 			if(parent.children[i] != null) {
 				if(minMax(parent.children[i]) == 0){
 					selection = 0;
+					parent.minimaxValue = 0;
 					break;
 				}
 			}
@@ -114,12 +119,17 @@ public class MyPlayer implements PilesPlayer {
 		node.myturn = true;
 	
 		creatTree(node);//creat tree
+		minMax(node);
+		for(int i=0; i<node.children.length; i++){
+			if(node.children[i].minimaxValue == 1){
+				return node.children[i].state;
+			}
+		}
 		for(int i = 0; i < node.children.length; i++) {//Try to find the child which its minMax value is 1 and return the child's state
 			if(node.children[i] != null) {
 			if(minMax(node.children[i]) == 1) {
 					return node.children[i].state;
 				}
-			} else {
 			}
 		}
 		return node.children[0].state;//If the game must lose, return the first child's state
