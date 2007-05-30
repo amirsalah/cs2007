@@ -71,6 +71,25 @@ public class MyPlayer implements PilesPlayer {
 		}else{
 			
 			int childrenID = 0;
+			
+			for(int p=0; p<3; p++){
+				if( (p==0 && parent.pilesNums[p]>0)
+						|| (p==1 && parent.pilesNums[p]>0 && parent.pilesNums[p] != parent.pilesNums[0])
+						|| (p==2 && parent.pilesNums[p]>0 && parent.pilesNums[p] != parent.pilesNums[1] 
+						    && parent.pilesNums[p] != parent.pilesNums[0]) ){
+					byte newPile = parent.pilesNums[p];
+					for (int i = 0; i < newPile; i++){
+						parent.pilesNums[p]--;
+						parent.children.add(childrenID, new TreeNode(parent.pilesNums));
+						parent.children.get(childrenID).myturn = !parent.myturn;
+						// Recursively invoke
+						MinimaxTree(parent.children.get(childrenID));
+						childrenID++;
+					}
+				 	parent.pilesNums[p] = newPile;
+					}
+				}
+/*
 			if(parent.pilesNums[0] > 0){
 				byte newPile = parent.pilesNums[0];
 				for (int i = 0; i < newPile; i++){
@@ -114,8 +133,9 @@ public class MyPlayer implements PilesPlayer {
 					}
 				}
 			}
+			*/
+//		}
 		}
-		
 		minMax(parent);
 	}
 
