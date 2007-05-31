@@ -2,7 +2,7 @@ package stockpredictor.data;
 
 import java.util.ArrayList;
 
-public class StockPoint extends java.lang.Object{
+public class StockPoint {
 	private ArrayList<Double> dayStockPrices = new ArrayList<Double>(6);
 	private StockDate date = null;
 	private int adjCloseIndex = 5;
@@ -62,6 +62,25 @@ public class StockPoint extends java.lang.Object{
 	
 	public void SetDate(StockDate newDate){
 		date = newDate.clone();
+	}
+	
+	/**
+	 * Test to see if the given stock point is the same as current point
+	 * @param point the given stock point
+	 * @return true if the two points are the same, false otherwise
+	 */
+	public boolean equals(StockPoint point){
+		if(!date.equals(point.GetCalendar())){
+			return false;
+		}
+		
+		for(int i=0; i<dayStockPrices.size(); i++){
+			if(dayStockPrices.get(i) != point.GetPrices().get(i)){
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 }

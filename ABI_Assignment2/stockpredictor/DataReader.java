@@ -93,11 +93,26 @@ public class DataReader {
 				nextDayPoint = dayPoint.clone();
 				
 				dayDataStr = fileReader.readLine();
+				
+//				System.out.print(year);
+//				System.out.print("/");
+//				System.out.print(month);
+//				System.out.print("/");
+//				System.out.println(date);
+				
 			}
 		}
 		catch(IOException ioe){
 			System.out.println("Error in reading file");
 		}
+		for(int i=0; i<dowJonesStock.NumberOfPoints(); i++){
+			System.out.print(dowJonesStock.GetDate(i).GetYear());
+			System.out.print("/");
+			System.out.print(dowJonesStock.GetDate(i).GetMonth());
+			System.out.print("/");
+			System.out.println(dowJonesStock.GetDate(i).GetDate());
+		}
+		System.out.println("Reading finished");
 	}
 	
 	private enum Months{
@@ -151,6 +166,28 @@ public class DataReader {
 		// The initial added days are reversed since the data in cvs file is reversed.
 		Vector<StockPoint> reversedMissedDays = new Vector<StockPoint>();
 		
+		//The previous day is in the last year
+		if(previousDay.GetMonth() > currentDay.GetMonth()){
+			int endDay = 31;
+			
+			numMissedDays = currentDay.GetDate() + 30 - previousDay.GetDate();
+			
+			while(numMissedDays > 0){
+				StockPoint duplicatedPoint;
+				if(previousDay.GetDate() != endDay){
+					previousDay.SetDate(previousDay.GetDate() + 1);
+				}else{
+					previousDay.SetMonth(currentDay.GetMonth());
+					previousDay.SetDate(currentDay.GetDate() - numMissedDays);
+				}
+				
+				duplicatedPoint = previousPoint.clone();
+				duplicatedPoint.SetDate(previousDay);
+				reversedMissedDays.add(duplicatedPoint);
+				numMissedDays--;
+			}
+		}
+		
 		// The 2 days in different months
 		if(previousDay.GetMonth() < currentDay.GetMonth()){
 			int endDay = 31;
@@ -194,8 +231,11 @@ public class DataReader {
 				reversedMissedDays.add(duplicatedPoint);
 				numMissedDays--;
 			}
-		}else{
+		}
+		
+		
 			// The 2 days in the same month
+		if(currentDay.GetMonth() == previousDay.GetMonth()){
 			numMissedDays = currentDay.GetDate() - previousDay.GetDate() -1;
 			while(numMissedDays > 0){
 				StockPoint duplicatedPoint = previousPoint.clone();

@@ -1,38 +1,28 @@
 package stockpredictor.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class StockPointsSet
 {
-	private HashMap<String, ArrayList<Double>> stockPoints = new HashMap<String, ArrayList<Double>>();
-	private int adjCloseIndex = 5;
-
+	private ArrayList<StockPoint> allStockPoints = new ArrayList<StockPoint>();
+	
 	/**
 	 * Add a new stock data into the database storing stock prices
 	 * @param point the stock data in a specific day
 	 * @return true if add successfully
 	 */
-	public boolean AddPoint(StockPoint point)
-	{
-		if( stockPoints.put(point.GetCalendar().toString(), point.GetPrices()) != null )
-		{
-			System.out.print("Error: duplicated mapping  ");
-			System.out.println(point.GetCalendar().toString());
-			return false;
-		}
-		else
-			return true;
+	public boolean AddPoint(StockPoint point){
+		return allStockPoints.add(point);
 	}
 
 	/**
-	 * Get stock prices in a specific day
-	 * @param date the specific day
+	 * Get stock prices in a specific day, by the index of that day
+	 * @param point the specific day
 	 * @return the prices of that day
 	 */
-	public ArrayList<Double> GetStockPrices(StockDate date)
+	public ArrayList<Double> GetStockPrices(int pointIndex)
 	{
-		return stockPoints.get(date);
+		return allStockPoints.get(pointIndex).GetPrices();
 	}
 	
 	/**
@@ -40,22 +30,76 @@ public class StockPointsSet
 	 * @return the number
 	 */
 	public int Length(){
-		return stockPoints.size();
+		return allStockPoints.size();
+	}
+	
+	public boolean Contains(StockPoint point){
+		for(int i=0; i<allStockPoints.size(); i++){
+			if(allStockPoints.get(i).equals(point)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public double GetAdjClose(int pointIndex){
+		return allStockPoints.get(pointIndex).GetAdjClose();
 	}
 	
 	/**
-	 * Test if the specific date is a valid date
-	 * @param date The date to be tested
-	 * @return true if the date exists in the data set
+	 * Get the next point
+	 * @param point
+	 * @return the found next point, null if no next point
 	 */
-	public boolean ContainsDate(StockDate date){
-		boolean contain = false;
-		contain = stockPoints.containsKey(date.toString());
-		return contain;
+	public StockPoint NextPoint(StockPoint point){
+		for(int pointIndex=0; pointIndex<allStockPoints.size(); pointIndex++){
+			if(allStockPoints.get(pointIndex).equals(point)){
+				// Test if the point is the last one
+				if(pointIndex != allStockPoints.size() - 1){
+					return allStockPoints.get(pointIndex+1).clone();
+				}
+			}
+		}
+		
+		return null;
 	}
 	
-	public double GetAdjClose(StockDate date){
-		return stockPoints.get(date.toString()).get(adjCloseIndex);
+	public StockPoint GetPoint(int pointIndex){
+		return allStockPoints.get(pointIndex).clone();
 	}
 	
+	/**
+	 * Get the previous stock point
+	 * @param point
+	 * @return the valid previous stock point, null otherwise
+	 */
+	public StockPoint PreviousPoint(StockPoint point){
+		for(int pointIndex=0; pointIndex<allStockPoints.size(); pointIndex++){
+			if(allStockPoints.get(pointIndex).equals(point)){
+				// Test if the point is the last one
+				if(pointIndex != 0){
+					return allStockPoints.get(pointIndex-1).clone();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get the stock date in the specific position (by index)
+	 * @param pointIndex
+	 * @return stock date, null if the index is not valid
+	 */
+	public StockDate GetDate(int pointIndex){
+		if(pointIndex >= 0 && pointIndex < allStockPoints.size()){
+			return allStockPoints.get(pointIndex).GetCalendar().clone();
+		}
+		return null;
+	}
+	
+	public int NumberOfPoints(){
+		return allStockPoints.size();
+	}
 }
