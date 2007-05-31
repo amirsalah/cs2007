@@ -103,7 +103,7 @@ public class StockDate {
 		return yesterday;
 	}
 	
-	public StockDate PreviousValidDate(StockPointsSet dataSet) throws InvalidDateException{
+	public StockDate PreviousValidDate(StockPointsSet dataSet) {
 		StockDate yesterday = PreviousDate();
 		int counter;
 		
@@ -114,13 +114,14 @@ public class StockDate {
 			yesterday = yesterday.PreviousDate();
 		}
 		
-		if(counter == 99){
-			throw new InvalidDateException("No valid previous date in next " + String.valueOf(searchTimes) + "days ");
-		}else{
+//		if(counter == 99){
+//			throw new InvalidDateException("No valid previous date in next " + String.valueOf(searchTimes) + "days ");
+		
+//		}else{
 			return yesterday;
-		}
+//		}
 	}
-	
+	 
 	public StockDate PreviousNthValidDate(StockPointsSet dataSet, int n) throws InvalidDateException{
 		
 		if(n <= 0){
@@ -157,6 +158,23 @@ public class StockDate {
 		this.month = month;
 		this.date = date;
 	}
+	
+	/**
+	 * Get the value in the current date
+	 * @return year
+	 */
+	public int GetYear(){
+		return year;
+	}
+	
+	public int GetMonth(){
+		return month;
+	}
+	
+	public int GetDate(){
+		return date;
+	}
+	
 	
 	public StockDate clone(){
 		StockDate newDate = new StockDate(year, month, date);

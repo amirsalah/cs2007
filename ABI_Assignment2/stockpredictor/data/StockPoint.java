@@ -2,10 +2,11 @@ package stockpredictor.data;
 
 import java.util.ArrayList;
 
-public class StockPoint {
+public class StockPoint extends java.lang.Object{
 	private ArrayList<Double> dayStockPrices = new ArrayList<Double>(6);
 	private StockDate date = null;
 	private int adjCloseIndex = 5;
+	private double open, high, low, close, volume, adj_close;
 	
 	public StockPoint(StockDate date,
 			double open,
@@ -16,6 +17,12 @@ public class StockPoint {
 			double adj_close)
 	{
 		this.date = date;
+		this.open = open;
+		this.high = high;
+		this.low = low;
+		this.close = close;
+		this.volume = volume;
+		this.adj_close = adj_close;
 		dayStockPrices.add(open);
 		dayStockPrices.add(high);
 		dayStockPrices.add(low);
@@ -37,8 +44,7 @@ public class StockPoint {
 	 * Get the prices list of this stock point
 	 * @return prices: open, high, low and close
 	 */
-	public ArrayList<Double> GetPrices()
-	{
+	public ArrayList<Double> GetPrices(){
 		return dayStockPrices;
 	}
 	
@@ -49,4 +55,13 @@ public class StockPoint {
 	public double GetAdjClose(){
 		return dayStockPrices.get(adjCloseIndex);
 	}
+	
+	public StockPoint clone(){
+		return new StockPoint(date, open, high, low, close, volume, adj_close);
+	}
+	
+	public void SetDate(StockDate newDate){
+		date = newDate.clone();
+	}
+	
 }

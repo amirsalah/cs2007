@@ -12,10 +12,10 @@ public class StockDriver {
 		DataReader dowJonesReader = new DataReader("DOWJONES_data.csv");
 		
 //		Model predictionModel = new MovingAverageModel(dowJonesReader.GetPointsSet());		
-//		Model predictionModel = new SingleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.5);
+		Model predictionModel = new SingleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.9);
 		
 		/* Double exponential method, the 2nd parameter specify the alpha, 3rd specify the gamma value */
-		Model predictionModel = new DoubleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.90, 0.90);
+//		Model predictionModel = new DoubleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.90, 0.90);
 		
 		predictionModel.Predict();
 		DataWriter writer = new DataWriter("DOWJONES_predicted_data.csv");

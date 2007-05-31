@@ -33,7 +33,7 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 	
 	public void Predict(){
 		// Set the first date to predict its stock price
-		StockDate predictingDate = startDate.clone();
+ 		StockDate predictingDate = startDate.clone();
 		double predictedValue;
 		
 		try{
@@ -47,6 +47,9 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 					RecordPrediction(predictingDate, predictedValue);
 					// Parameters initialization for predicting next day
 					predictingDate = predictingDate.NextValidDate(dataSet);
+//					if(predictingDate.GetYear() == 2007 && predictingDate.GetMonth() == 1 && predictingDate.GetDate() == 24){
+	//					System.out.println();
+		//			}
 				}
 			}
 		}

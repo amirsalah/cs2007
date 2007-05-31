@@ -82,7 +82,10 @@ public class DataWriter {
 				endDate = endDate.PreviousValidDate(dataSet);
 			}
 		}
-		catch(InvalidDateException ide){
+//		catch(InvalidDateException ide){
+//			return;
+//		}
+		catch(Exception e){
 			return;
 		}
 			fileWriter.println();
