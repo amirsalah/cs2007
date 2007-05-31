@@ -93,13 +93,6 @@ public class DataReader {
 				nextDayPoint = dayPoint.clone();
 				
 				dayDataStr = fileReader.readLine();
-				
-//				System.out.print(year);
-//				System.out.print("/");
-//				System.out.print(month);
-//				System.out.print("/");
-//				System.out.println(date);
-				
 			}
 		}
 		catch(IOException ioe){
@@ -110,7 +103,9 @@ public class DataReader {
 			System.out.print("/");
 			System.out.print(dowJonesStock.GetDate(i).GetMonth());
 			System.out.print("/");
-			System.out.println(dowJonesStock.GetDate(i).GetDate());
+			System.out.print(dowJonesStock.GetDate(i).GetDate());
+			System.out.print(" ");
+			System.out.println(dowJonesStock.GetAdjClose(i));
 		}
 		System.out.println("Reading finished");
 	}
@@ -179,6 +174,7 @@ public class DataReader {
 				}else{
 					previousDay.SetMonth(currentDay.GetMonth());
 					previousDay.SetDate(currentDay.GetDate() - numMissedDays);
+					previousDay.SetYear(currentDay.GetYear());
 				}
 				
 				duplicatedPoint = previousPoint.clone();
@@ -195,9 +191,9 @@ public class DataReader {
 			if(previousDay.GetMonth() == 2){
 				endDay = 28;
 				numMissedDays = currentDay.GetDate() + 27 - previousDay.GetDate();
-				if(previousDay.GetYear() == 2000){
+				if(previousDay.GetYear() == 2000 || previousDay.GetYear() == 2004){
 					endDay = 29;
-					numMissedDays = currentDay.GetDate() + 29 - previousDay.GetDate();
+					numMissedDays = currentDay.GetDate() + 28 - previousDay.GetDate();
 				}
 			}
 			
@@ -232,7 +228,6 @@ public class DataReader {
 				numMissedDays--;
 			}
 		}
-		
 		
 			// The 2 days in the same month
 		if(currentDay.GetMonth() == previousDay.GetMonth()){
