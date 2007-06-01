@@ -41,23 +41,16 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 	}
 	
 	public void Predict(){
-		// Set the first date to predict its stock price
-		StockDate predictingDate = startDate.clone();
 		double predictedValue;
 		
-		try{
-			for(int i=0; i<(dataSet.Length() - numExistingPrices); i++){
-				int windows = numWindows;
-				predictedValue = PredictionWithTrend(predictingDate, windows);
+		for(int i=0; i<numPredictionDays; i++){
+			int windows = numWindows;
+			predictedValue = PredictionWithTrend(startIndex, windows);
 				
-				RecordPrediction(predictingDate, predictedValue);
-				// Parameters initialization for predicting next day
-				predictingDate = predictingDate.NextValidDate(dataSet);
-			}
+			StorePrediction(startIndex, predictedValue);
+			startIndex--;
 		}
-		catch(InvalidDateException ide){
-			return;
-		}
+
 	}
 
 	/**
@@ -66,19 +59,18 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 	 * @param predictingDate the day need to predict its adj. close
 	 * @param remainingWindows
 	 * @return the predicted value
-	 * @throws InvalidDateException
 	 */
-	private double PredictionWithTrend(StockDate predictingDate, int remainingWindows) throws InvalidDateException {
+	private double PredictionWithTrend(int startIndex, int remainingWindows){
 		int rWindows = remainingWindows - 1;
 		
 		if(remainingWindows == 1){
 			// The initial value for S(t)
-			return dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows));
+			return dataSet.GetAdjClose(startIndex + numWindows);
 		}
 		else{
-			double previousAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - remainingWindows + 1));
+			double previousAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows);
 			return alpha *  previousAdjClose + 
-			(1 - alpha) * (PredictionWithTrend(predictingDate, rWindows) + TrendExponentialSmoothing(predictingDate, remainingWindows));
+			(1 - alpha) * (PredictionWithTrend(startIndex, rWindows) + TrendExponentialSmoothing(startIndex, remainingWindows));
 		}
 	}
 	
@@ -88,22 +80,21 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 	 * @param predictingDate 
 	 * @param remainingWindows
 	 * @return b(t)
-	 * @throws InvalidDateException not a valid date
 	 */
-	private double TrendExponentialSmoothing(StockDate predictingDate, int remainingWindows) throws InvalidDateException {
+	private double TrendExponentialSmoothing(int startIndex, int remainingWindows){
 		int rWindows = remainingWindows - 1;
 		
 		if(remainingWindows == 2){
-			double lastAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows));
-			double last2ndAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - 1));
+			double lastAdjClose = dataSet.GetAdjClose(startIndex + numWindows);
+			double last2ndAdjClose = dataSet.GetAdjClose(startIndex + numWindows - 1);
 			// The initial value of B(t)
 			return last2ndAdjClose - lastAdjClose;
 		}
 		else{
-			double previousAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - remainingWindows + 1));
-			double previous2ndAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - remainingWindows + 2));
+			double previousAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows);
+			double previous2ndAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows + 1);
 			return gamma * (previousAdjClose - previous2ndAdjClose) + 
-				(1 - gamma) * TrendExponentialSmoothing(predictingDate, rWindows);
+				(1 - gamma) * TrendExponentialSmoothing(startIndex, rWindows);
 		}
 	}
 	

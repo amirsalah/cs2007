@@ -58,10 +58,9 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 	 * S(t) = alpha * Price(t-1) + (1 - alpha) * S(t - 1)
 	 * S(2) = adjClose(1);
 	 * 
-	 * @param predictingDate the date whose stock price to be predicted
+	 * @param startIndex the index of the date whose stock price to be predicted
 	 * @param remainingWindows the number of remaining windows
 	 * @return the predicted value
-	 * @throws InvalidDateException
 	 */
 	private double LimitedPrediction(int startIndex, int remainingWindows){
 		int rWindows = remainingWindows - 1;
