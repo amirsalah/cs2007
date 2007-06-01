@@ -15,7 +15,7 @@ import stockpredictor.*;
 public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 	private double alpha; // The smoothing factor
 	private int numWindows = 20; // the number of previous days to be considered
-	private int numExistingPrices = 20;
+	private int numExistingPrices = 29;
 	private boolean noWindows = false; // true if all the previous days are used for prediction
 	
 	
@@ -32,29 +32,18 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 	}
 	
 	public void Predict(){
-		// Set the first date to predict its stock price
- 		StockDate predictingDate = startDate.clone();
 		double predictedValue;
 		
-		try{
-			if(noWindows){
-				UnlimitedPrediction();
-			}else{
-				for(int i=0; i<(dataSet.Length() - numExistingPrices); i++){
-					int windows = numWindows;
-					predictedValue = LimitedPrediction(predictingDate, windows);
+		if(noWindows){
+			UnlimitedPrediction();
+		}else{
+			for(int i=0; i<numPredictionDays; i++){
+				int windows = numWindows;
+				predictedValue = LimitedPrediction(startIndex, windows);
 					
-					RecordPrediction(predictingDate, predictedValue);
-					// Parameters initialization for predicting next day
-					predictingDate = predictingDate.NextValidDate(dataSet);
-//					if(predictingDate.GetYear() == 2007 && predictingDate.GetMonth() == 1 && predictingDate.GetDate() == 24){
-	//					System.out.println();
-		//			}
-				}
+				StorePrediction(startIndex, predictedValue);
+				startIndex--;
 			}
-		}
-		catch(InvalidDateException ide){
-			return;
 		}
 	}
 	
@@ -74,14 +63,14 @@ public class SingleExponentialSmoothingModel extends TimeSeriesModel{
 	 * @return the predicted value
 	 * @throws InvalidDateException
 	 */
-	private double LimitedPrediction(StockDate predictingDate, int remainingWindows) throws InvalidDateException{
+	private double LimitedPrediction(int startIndex, int remainingWindows){
 		int rWindows = remainingWindows - 1;
 		
 		if(remainingWindows == 1){
-			return dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows));
+			return dataSet.GetAdjClose(startIndex + numWindows);
 		}else{
-			double previousAdjClose = dataSet.GetAdjClose(predictingDate.PreviousNthValidDate(dataSet, numWindows - remainingWindows + 1));
-			return alpha *  previousAdjClose + (1 - alpha) * LimitedPrediction(predictingDate, rWindows);
+			double previousAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows);
+			return alpha *  previousAdjClose + (1 - alpha) * LimitedPrediction(startIndex, rWindows);
 		}
 	}
 	

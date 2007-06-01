@@ -7,6 +7,7 @@ public class StockPoint {
 	private StockDate date = null;
 	private int adjCloseIndex = 5;
 	private double open, high, low, close, volume, adj_close;
+	private ArrayList<Double> predictedValues = new ArrayList<Double>(3);
 	
 	public StockPoint(StockDate date,
 			double open,
@@ -81,6 +82,24 @@ public class StockPoint {
 		}
 		
 		return true;
+	}
+	
+	public void SetPredictionValue(double predictedValue, double absError, double lmsError){
+		predictedValues.add(predictedValue);
+		predictedValues.add(absError);
+		predictedValues.add(lmsError);
+	}
+	
+	public double GetPredictedValue(){
+		return predictedValues.get(0);
+	}
+	
+	public double GetAbsError(){
+		return predictedValues.get(1);
+	}
+	
+	public double GetLmsError(){
+		return predictedValues.get(2);
 	}
 	
 }

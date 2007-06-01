@@ -1,6 +1,5 @@
 package stockpredictor.models;
 
-import stockpredictor.*;
 import stockpredictor.data.*;
 
 /**
@@ -10,7 +9,6 @@ import stockpredictor.data.*;
 public class MovingAverageModel extends TimeSeriesModel {
 	private double[] weights = new double[20];
 	private int numWindows;
-	
 	
 	public MovingAverageModel(StockPointsSet dataSet){
 		super(dataSet);
@@ -30,31 +28,18 @@ public class MovingAverageModel extends TimeSeriesModel {
 	
 	public void Predict(){
 		// Set the first date to predict its stock price
-		StockDate predictingDate = startDate.clone();
-		StockDate previousDate;
 		double predictedValue;
 		
-		for(int i=0; i<(dataSet.Length() - numWindows); i++){
+		for(int i=0; i<numPredictionDays; i++){
 			predictedValue = 0;
-			previousDate = predictingDate.clone();
 			
-			try{
-				for(int j=0; j<numWindows; j++){
-					previousDate = previousDate.PreviousValidDate(dataSet);
-					predictedValue += weights[j] * dataSet.GetAdjClose(previousDate);
-				}
-				
-				RecordPrediction(predictingDate, predictedValue);
-				// Parameters initialization for predicting next day
-				predictingDate = predictingDate.NextValidDate(dataSet);
-				previousDate = predictingDate.PreviousValidDate(dataSet);
+			for(int j=0; j<numWindows; j++){
+				double privousV = dataSet.GetAdjClose(startIndex + j + 1);
+				predictedValue += weights[j] * privousV;
 			}
-			catch(InvalidDateException ide){
-				System.out.println(ide.getMessage());
-				break;
-			}
-
+			
+			StorePrediction(startIndex, predictedValue);
+			startIndex--;
 		}
 	}
-	
 }

@@ -98,16 +98,6 @@ public class DataReader {
 		catch(IOException ioe){
 			System.out.println("Error in reading file");
 		}
-		for(int i=0; i<dowJonesStock.NumberOfPoints(); i++){
-			System.out.print(dowJonesStock.GetDate(i).GetYear());
-			System.out.print("/");
-			System.out.print(dowJonesStock.GetDate(i).GetMonth());
-			System.out.print("/");
-			System.out.print(dowJonesStock.GetDate(i).GetDate());
-			System.out.print(" ");
-			System.out.println(dowJonesStock.GetAdjClose(i));
-		}
-		System.out.println("Reading finished");
 	}
 	
 	private enum Months{

@@ -65,8 +65,25 @@ public class StockPointsSet
 		return null;
 	}
 	
+	/**
+	 * Get the index of specific date in the stock points set.
+	 * @param date 
+	 * @return the index, -1 if the date is not valid
+	 */
+	public int GetIndex(StockDate date){
+		int index = -1;
+		
+		for(int i=0; i<allStockPoints.size(); i++){
+			if(allStockPoints.get(i).GetCalendar().equals(date)){
+				return i;
+			}
+		}
+		
+		return index;
+	}
+	
 	public StockPoint GetPoint(int pointIndex){
-		return allStockPoints.get(pointIndex).clone();
+		return allStockPoints.get(pointIndex);
 	}
 	
 	/**

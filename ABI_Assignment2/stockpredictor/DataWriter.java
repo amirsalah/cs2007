@@ -29,8 +29,6 @@ public class DataWriter {
 	 * @param predictionModel the model that contains predicted values (after invoking Pridict() method)
 	 */
 	public void WriteRecordToFile(Model predictionModel){
-		HashMap<String, ArrayList<Double>> predictedValues = predictionModel.GetPredictionPoints();
-		StockDate endDate = predictionModel.GetEndDate();;
 		StockPointsSet dataSet = predictionModel.GetActualPoints();;
 		
 		String dateStr;
@@ -41,11 +39,6 @@ public class DataWriter {
 		
 		String tempStr;
 		
-		// The index of generated values in the arraylists
-		int indexPredictedValue = 0;
-		int indexAdjError = 1;
-		int indexLmsError = 2;
-		
 		double absError = 0.0;
 		double lmsError = 0.0;
 		
@@ -54,44 +47,37 @@ public class DataWriter {
 		
 		// Write title for each column to the file
 		fileWriter.println("Date,Adj.Close*,Prediction,ABS Error,LMS Error");
-		try{
-			for(int i=0; i<predictedValues.size(); i++){
-				//Transfer all the data into String type
-				dateStr = endDate.toString();
-				adjCloseStr = String.valueOf(dataSet.GetAdjClose(endDate));
-				predictedValueStr = String.valueOf(predictedValues.get(endDate.toString()).get(indexPredictedValue));
-				
-				absError = predictedValues.get(endDate.toString()).get(indexAdjError);
-				absErrorStr = String.valueOf(absError);
-				
-				lmsError =  predictedValues.get(endDate.toString()).get(indexLmsError);
-				lmsErrorStr = String.valueOf(lmsError);
+		
+		int numDays = dataSet.Length() - 29;
+		for(int i=0; i<numDays; i++){
+			//Transfer all the data into String type
+			dateStr = dataSet.GetPoint(i).GetCalendar().toString();
+			adjCloseStr = String.valueOf(dataSet.GetAdjClose(i));
+			predictedValueStr = String.valueOf(dataSet.GetPoint(i).GetPredictedValue());
+			
+			absError =dataSet.GetPoint(i).GetAbsError() ;
+			absErrorStr = String.valueOf(absError);
 
-				// sum all the errors
-				sumAbsErrors += absError;
-				sumLmsErrors += lmsError;
+			lmsError =  dataSet.GetPoint(i).GetLmsError();
+			lmsErrorStr = String.valueOf(lmsError);
 
-				// Add "," as token to be parsed by Microsoft Excel
-				tempStr = dateStr + "," + adjCloseStr + ","
-							+ predictedValueStr + ","
-							+ absErrorStr + ","
-							+ lmsErrorStr;
+			// Sum all the errors
+			sumAbsErrors += absError;
+			sumLmsErrors += lmsError;
+
+			// Add "," as token to be parsed by Microsoft Excel
+			tempStr = dateStr + "," + adjCloseStr + ","
+						+ predictedValueStr + ","
+						+ absErrorStr + ","
+						+ lmsErrorStr;
 				
-				fileWriter.println(tempStr);
-				
-				endDate = endDate.PreviousValidDate(dataSet);
-			}
+			fileWriter.println(tempStr);
 		}
-//		catch(InvalidDateException ide){
-//			return;
-//		}
-		catch(Exception e){
-			return;
-		}
-			fileWriter.println();
-			fileWriter.println("Average ABS error: " + (double)sumAbsErrors/predictedValues.size() + ",");
-			fileWriter.println("Average LMS error: " + (double)sumLmsErrors/predictedValues.size() + ",");
-			fileWriter.close();
+
+		fileWriter.println();
+		fileWriter.println("Average ABS error: " + (double)sumAbsErrors/(dataSet.Length() - 29) + ",");
+		fileWriter.println("Average LMS error: " + (double)sumLmsErrors/(dataSet.Length() - 29) + ",");
+		fileWriter.close();
 	}
 		
 }

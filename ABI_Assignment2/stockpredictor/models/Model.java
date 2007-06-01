@@ -16,12 +16,16 @@ public abstract class Model {
 	protected StockDate startDate;
 	protected StockDate endDate;
 	protected StockPointsSet dataSet;
+	protected int numPredictionDays;
+	protected int startIndex;
 
 	
 	public Model(StockPointsSet dataSet){
 		startDate = new StockDate(2000, 2, 24);
 		endDate = new StockDate(2007, 1, 25);
 		this.dataSet = dataSet;
+		numPredictionDays = dataSet.Length() - 29; // There are 29 days before 2000/2/24
+		startIndex = dataSet.GetIndex(startDate);
 	}
 	
 	/**
@@ -31,45 +35,36 @@ public abstract class Model {
 	
 	/**
 	 * Return least mean square error(LMS Error)
-	 * @param actualValue
+	 * @param index the index of predicting date in the data Set (dowJonesStock)
 	 * @param predictedValue
-	 * @return
+	 * @return the LMS error value
 	 */
-	public double LMSError(StockDate date, double predictedValue){
-		double actualValue = dataSet.GetAdjClose(date);
+	public double LMSError(int index, double predictedValue){
+		double actualValue = dataSet.GetAdjClose(index);
 		return Math.pow(actualValue - predictedValue, 2)/(double)2;
 	}
 
-	public double AbsError(StockDate date, double predictedValue){
-		double actualValue = dataSet.GetAdjClose(date);
+	public double AbsError(int index, double predictedValue){
+		double actualValue = dataSet.GetAdjClose(index);
 		return Math.abs(actualValue - predictedValue);
 	}
 	
 	/**
 	 *  Record the predicted value into a arraylist, with date as key
-	 * @param date the day to predict
+	 * @param predictingDate the day to predict
 	 * @param predictedValue the predicted value in the day
 	 */
-	public void RecordPrediction(StockDate date, double predictedValue){
+	public void StorePrediction(int index, double predictedValue){
 		double absError;
 		double lmsError;
-		ArrayList<Double> results = new ArrayList<Double>(numResults);
 		
-		absError = AbsError(date, predictedValue);
-		lmsError = LMSError(date, predictedValue);
-		results.add(predictedValue);
-		results.add(absError);
-		results.add(lmsError);
-
-		predictedValues.put(date.toString(), results);
+		absError = AbsError(index, predictedValue);
+		lmsError = LMSError(index, predictedValue);
+		dataSet.GetPoint(index).SetPredictionValue(predictedValue, absError, lmsError);
 	}
 	
 	public StockPointsSet GetActualPoints(){
 		return dataSet;
-	}
-	
-	public HashMap<String, ArrayList<Double>> GetPredictionPoints(){
-		return predictedValues;
 	}
 	
 	public StockDate GetStartDate(){
