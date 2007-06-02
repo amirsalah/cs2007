@@ -232,6 +232,7 @@ public class DataReader {
 		}
 		
 		for(int i=reversedMissedDays.size()-1; i>=0; i--){
+			reversedMissedDays.get(i).SetWeekend(true);
 			dowJonesStock.AddPoint(reversedMissedDays.get(i));
 		}
 		

@@ -14,6 +14,11 @@ public class StockPoint {
 	private double open, high, low, close, volume, adj_close;
 	private ArrayList<Double> predictedValues = new ArrayList<Double>(3);
 	
+	//Variables for optimization
+	private boolean weekend = false;
+	private double balance;
+	private double shares;
+	private double sharesBuy = 0;
 	
 	
 	public StockPoint(StockDate date,
@@ -109,4 +114,43 @@ public class StockPoint {
 		return predictedValues.get(2);
 	}
 	
+	public void SetWeekend(boolean isWeekend){
+		weekend = isWeekend;
+	}
+	
+	public double GetBalance(){
+		return balance;
+	}
+	
+	public double GetShares(){
+		return shares;
+	}
+	
+	public void SetBalance(double newBalance){
+		balance = newBalance;
+	}
+	
+	public void SetShares(double newShares){
+		shares = newShares;
+	}
+	
+	public void BankingInit(StockPoint yesterday){
+		balance = yesterday.GetBalance() + 1; // Got 1 dollar each day
+		shares = yesterday.shares;
+	}
+	
+	public void BuyMax(){
+		double availableBalance = balance * 0.997; // 0.3% transaction lost
+		shares += availableBalance/adj_close;
+		balance = 0;
+	}
+	
+	public void SellMax(){
+		balance += shares * adj_close * 0.997; // 0.3% transaction lost
+		shares = 0;
+	}
+	
+	public boolean isWeekend(){
+		return weekend;
+	}
 }

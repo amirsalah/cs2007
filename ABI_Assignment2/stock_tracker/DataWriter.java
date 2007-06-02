@@ -71,7 +71,7 @@ public class DataWriter {
 			/***
 			 * Generate new .cvs file.
 			 */
-			String openStr = String.valueOf(dataSet.GetStockPrices(i).get(0));
+/*			String openStr = String.valueOf(dataSet.GetStockPrices(i).get(0));
 			String highStr = String.valueOf(dataSet.GetStockPrices(i).get(1));
 			String lowStr = String.valueOf(dataSet.GetStockPrices(i).get(2));
 			String closeStr = String.valueOf(dataSet.GetStockPrices(i).get(3));
@@ -84,12 +84,12 @@ public class DataWriter {
 			+ closeStr + ","
 			+ volumeStr + ","
 			+ adjCloseStr;
-			
+*/			
 			// Add "," as token to be parsed by Microsoft Excel
-//			tempStr = dateStr + "," + adjCloseStr + ","
-//						+ predictedValueStr + ","
-//						+ absErrorStr + ","
-//						+ lmsErrorStr;
+			tempStr = dateStr + "," + adjCloseStr + ","
+						+ predictedValueStr + ","
+						+ absErrorStr + ","
+						+ lmsErrorStr;
 				
 			fileWriter.println(tempStr);
 		}

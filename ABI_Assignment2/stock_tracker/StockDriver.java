@@ -5,7 +5,7 @@
 =========================================================*/
 package stock_tracker;
 
-import stock_tracker.models.*;
+import stock_tracker.optimization.*;
 
 /**
  * @author Bo CHEN
@@ -20,11 +20,15 @@ public class StockDriver {
 //		Model predictionModel = new SingleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.86);
 		
 		/* Double exponential method, the 2nd parameter specify the alpha, 3rd specify the gamma value */
-		Model predictionModel = new DoubleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.90, 0.80);
+//		Model predictionModel = new DoubleExponentialSmoothingModel(dowJonesReader.GetPointsSet(), 0.90, 0.80);
 		
-		predictionModel.Predict();
-		DataWriter writer = new DataWriter("DOWJONES_predicted_data.csv");
-		writer.WriteRecordToFile(predictionModel);
+//		predictionModel.Predict();
+//		DataWriter writer = new DataWriter("DOWJONES_predicted_data.csv");
+//		writer.WriteRecordToFile(predictionModel);
+		
+//		Optimization optimizor = new PermanentHolder(dowJonesReader.GetPointsSet());
+		Optimization optimizor = new PermanentBuyer(dowJonesReader.GetPointsSet());
+		System.out.println("Earned: $" + optimizor.optimize());
 	}
 
 }
