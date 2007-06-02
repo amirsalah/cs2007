@@ -1,7 +1,9 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 27th, May 2007
+=========================================================*/
 package stock_tracker.models;
-
-import java.util.HashMap;
-import java.util.ArrayList;
 
 import stock_tracker.data.StockDate;
 import stock_tracker.data.StockPointsSet;
@@ -12,7 +14,6 @@ import stock_tracker.data.StockPointsSet;
  */
 public abstract class Model {
 	protected int numResults = 3;
-	protected HashMap<String, ArrayList<Double>> predictedValues = new HashMap<String, ArrayList<Double>>(numResults);
 	protected StockDate startDate;
 	protected StockDate endDate;
 	protected StockPointsSet dataSet;

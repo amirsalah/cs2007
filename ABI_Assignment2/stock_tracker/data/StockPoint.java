@@ -1,3 +1,8 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 27th, May 2007
+=========================================================*/
 package stock_tracker.data;
 
 import java.util.ArrayList;
@@ -8,6 +13,8 @@ public class StockPoint {
 	private int adjCloseIndex = 5;
 	private double open, high, low, close, volume, adj_close;
 	private ArrayList<Double> predictedValues = new ArrayList<Double>(3);
+	
+	
 	
 	public StockPoint(StockDate date,
 			double open,

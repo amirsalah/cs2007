@@ -1,3 +1,8 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 27th, May 2007
+=========================================================*/
 package stock_tracker;
 
 import stock_tracker.models.*;
