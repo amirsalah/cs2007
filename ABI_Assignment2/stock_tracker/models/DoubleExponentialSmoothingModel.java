@@ -1,5 +1,7 @@
 package stock_tracker.models;
 
+import java.util.Vector;
+
 import stock_tracker.data.StockPointsSet;
 
 /**
@@ -16,7 +18,11 @@ import stock_tracker.data.StockPointsSet;
 public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 	private double alpha;  // The smoothing factor
 	private double gamma;  // The smoothing factor of global trend
-	private int numWindows = 20; // The number of previous days to be considered in prediction
+	private int numWindows_Long = 25; // The number of previous days to be considered in prediction
+	private int numWindows_Short = 5;
+	private int currentNumWindows;
+	private Vector<Integer> shortNthDaysPrediction = new Vector<Integer>();
+	private Vector<Integer> longNthDaysPrediction = new Vector<Integer>();
 	
 	public DoubleExponentialSmoothingModel(StockPointsSet dataSet, double alpha, double gamma){
 		super(dataSet);
@@ -37,17 +43,43 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 		this.gamma = gamma;
 	}
 	
+	private void ModelConfig(){
+		numWindows_Long = 25;
+		longNthDaysPrediction.add(5);
+		longNthDaysPrediction.add(10);
+		longNthDaysPrediction.add(20);
+		longNthDaysPrediction.add(30);
+			
+		numWindows_Short = 5;
+		shortNthDaysPrediction.add(1);
+		shortNthDaysPrediction.add(3);
+		shortNthDaysPrediction.add(5);
+		shortNthDaysPrediction.add(7);
+	}
+	
 	public void Predict(){
 		double predictedValue;
+		ModelConfig();
 		
 		for(int i=0; i<numPredictionDays; i++){
-			int windows = numWindows;
-			predictedValue = PredictionWithTrend(startIndex, windows);
-				
-			StorePrediction(startIndex, predictedValue);
+			// Long term prediction
+			int windows = numWindows_Long;
+			currentNumWindows = numWindows_Long;
+			for(int j=0; j<longNthDaysPrediction.size(); j++){
+				predictedValue = PredictionWithTrend(startIndex, windows, longNthDaysPrediction.get(j));
+				dataSet.GetPoint(startIndex).SetLongTermPredictions(predictedValue);
+			}
+			
+			// Short term prediction
+			windows = numWindows_Short;
+			currentNumWindows = numWindows_Short;
+			for(int j=0; j<longNthDaysPrediction.size(); j++){
+				predictedValue = PredictionWithTrend(startIndex, windows, shortNthDaysPrediction.get(j));
+				dataSet.GetPoint(startIndex).SetShortTermPredictions(predictedValue);
+			}
+			
 			startIndex--;
 		}
-
 	}
 
 	/**
@@ -57,17 +89,17 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 	 * @param remainingWindows
 	 * @return the predicted value
 	 */
-	private double PredictionWithTrend(int startIndex, int remainingWindows){
+	private double PredictionWithTrend(int startIndex, int remainingWindows, int NthDay){
 		int rWindows = remainingWindows - 1;
 		
 		if(remainingWindows == 1){
 			// The initial value for S(t)
-			return dataSet.GetAdjClose(startIndex + numWindows);
+			return dataSet.GetAdjClose(startIndex + currentNumWindows);
 		}
 		else{
-			double previousAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows);
+			double previousAdjClose = dataSet.GetAdjClose(startIndex + currentNumWindows - rWindows);
 			return alpha *  previousAdjClose + 
-			(1 - alpha) * (PredictionWithTrend(startIndex, rWindows) + TrendExponentialSmoothing(startIndex, remainingWindows));
+			(1 - alpha) * (PredictionWithTrend(startIndex, rWindows, NthDay) + NthDay * TrendExponentialSmoothing(startIndex, remainingWindows));
 		}
 	}
 	
@@ -82,14 +114,14 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 		int rWindows = remainingWindows - 1;
 		
 		if(remainingWindows == 2){
-			double lastAdjClose = dataSet.GetAdjClose(startIndex + numWindows);
-			double last2ndAdjClose = dataSet.GetAdjClose(startIndex + numWindows - 1);
+			double lastAdjClose = dataSet.GetAdjClose(startIndex + currentNumWindows);
+			double last2ndAdjClose = dataSet.GetAdjClose(startIndex + currentNumWindows - 1);
 			// The initial value of B(t)
 			return last2ndAdjClose - lastAdjClose;
 		}
 		else{
-			double previousAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows);
-			double previous2ndAdjClose = dataSet.GetAdjClose(startIndex + numWindows - rWindows + 1);
+			double previousAdjClose = dataSet.GetAdjClose(startIndex + currentNumWindows - rWindows);
+			double previous2ndAdjClose = dataSet.GetAdjClose(startIndex + currentNumWindows - rWindows + 1);
 			return gamma * (previousAdjClose - previous2ndAdjClose) + 
 				(1 - gamma) * TrendExponentialSmoothing(startIndex, rWindows);
 		}

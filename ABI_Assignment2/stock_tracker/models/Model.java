@@ -75,5 +75,5 @@ public abstract class Model {
 	public StockDate GetEndDate(){
 		return endDate;
 	}
-	
+
 }

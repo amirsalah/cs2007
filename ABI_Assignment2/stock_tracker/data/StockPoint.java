@@ -20,6 +20,9 @@ public class StockPoint {
 	private double shares;
 	private double sharesBuy = 0;
 	
+	private ArrayList<Double> shortTermPredictions = new ArrayList<Double>();
+	private ArrayList<Double> longTermPredictions = new ArrayList<Double>();
+	
 	
 	public StockPoint(StockDate date,
 			double open,
@@ -152,5 +155,30 @@ public class StockPoint {
 	
 	public boolean isWeekend(){
 		return weekend;
+	}
+	
+	
+	public void SetLongTermPredictions(double predictionValue){
+		longTermPredictions.add(predictionValue);
+	}
+	
+	public void SetShortTermPredictions(double predictionValue){
+		shortTermPredictions.add(predictionValue);
+	}
+	
+	public boolean isIncreasing(){
+		if( (shortTermPredictions.get(0) - adj_close) > 0 ){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public double ShortIncreasingRate(){
+		return (shortTermPredictions.get(2) - adj_close) / (double)5.0; // 5 days further
+	}
+	
+	public double LongIncreasingRate(){
+		return (longTermPredictions.get(2) - adj_close) / (double)5.0; // 20 days further
 	}
 }
