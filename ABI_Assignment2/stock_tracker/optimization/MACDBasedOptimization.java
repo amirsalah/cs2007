@@ -27,6 +27,18 @@ public class MACDBasedOptimization extends Optimization{
 				continue;
 			}
 			
+			// MACD implementation
+			if(today.isIncreasing()){
+				if(today.ShortIncreasingRate() > today.LongIncreasingRate()){
+					today.BuyMax();
+				}
+			}
+			
+//			if(today.isDecreasing()){
+//				if(today.ShortDecreasingRate() > today.LongDecreasingRate()){
+//					today.SellMax();
+//				}
+//			}
 			
 		}
 		

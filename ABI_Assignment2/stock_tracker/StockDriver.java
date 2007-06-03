@@ -5,8 +5,7 @@
 =========================================================*/
 package stock_tracker;
 
-import stock_tracker.optimization.MACDBasedOptimization;
-import stock_tracker.optimization.Optimization;
+import stock_tracker.optimization.*;
 
 /**
  * @author Bo CHEN
@@ -29,6 +28,7 @@ public class StockDriver {
 		
 //		Optimization optimizor = new PermanentHolder(dowJonesReader.GetPointsSet());
 		Optimization optimizor = new MACDBasedOptimization(dowJonesReader.GetPointsSet());
+//		Optimization optimizor = new PermanentBuyer(dowJonesReader.GetPointsSet());
 		System.out.println("Earned: $" + optimizor.optimize());
 	}
 
