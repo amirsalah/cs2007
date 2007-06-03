@@ -169,6 +169,10 @@ public class StockPoint {
 		return weekend;
 	}
 	
+	public double GetSharesBuy(){
+		return sharesBuy;
+	}
+	
 	
 	public void SetLongTermPredictions(double predictionValue){
 		longTermPredictions.add(predictionValue);
@@ -187,7 +191,7 @@ public class StockPoint {
 	}
 	
 	public boolean isDecreasing(){
-		if( (shortTermPredictions.get(1) - adj_close) < 0 ){
+		if( (shortTermPredictions.get(1) - adj_close) < -20 ){
 			return true;
 		}else{
 			return false;

@@ -34,11 +34,11 @@ public class MACDBasedOptimization extends Optimization{
 				}
 			}
 			
-//			if(today.isDecreasing()){
-//				if(today.ShortDecreasingRate() > today.LongDecreasingRate()){
-//					today.SellMax();
-//				}
-//			}
+			if(today.isDecreasing()){
+				if(today.ShortDecreasingRate() > today.LongDecreasingRate()){
+					today.SellMax();
+				}
+			}
 			
 		}
 		

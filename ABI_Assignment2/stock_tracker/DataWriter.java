@@ -31,8 +31,8 @@ public class DataWriter {
 	 * The data is sorted by its dates
 	 * @param predictionModel the model that contains predicted values (after invoking Pridict() method)
 	 */
-	public void WriteRecordToFile(Model predictionModel){
-		StockPointsSet dataSet = predictionModel.GetActualPoints();;
+	public void WriteRecordToFile(StockPointsSet givenDataSet){
+		StockPointsSet dataSet = givenDataSet;;
 		
 		String dateStr;
 		String adjCloseStr;
@@ -42,6 +42,10 @@ public class DataWriter {
 		
 		String tempStr;
 		
+		String sharesBuyStr;
+		String balanceStr;
+		String sharesStr;
+		
 		double absError = 0.0;
 		double lmsError = 0.0;
 		
@@ -49,24 +53,24 @@ public class DataWriter {
 		double sumLmsErrors = 0.0;
 		
 		// Write title for each column to the file
-		fileWriter.println("Date,Adj.Close*,Prediction,ABS Error,LMS Error");
+		fileWriter.println("Date,Adj.Close*,Buy/Sell,Bank,Shares");
 		
 		int numDays = dataSet.Length() - 29;
 		for(int i=0; i<numDays; i++){
 			//Transfer all the data into String type
 			dateStr = dataSet.GetPoint(i).GetCalendar().toString();
 			adjCloseStr = String.valueOf(dataSet.GetAdjClose(i));
-			predictedValueStr = String.valueOf(dataSet.GetPoint(i).GetPredictedValue());
+//			predictedValueStr = String.valueOf(dataSet.GetPoint(i).GetPredictedValue());
 			
-			absError =dataSet.GetPoint(i).GetAbsError() ;
-			absErrorStr = String.valueOf(absError);
+//			absError =dataSet.GetPoint(i).GetAbsError() ;
+//			absErrorStr = String.valueOf(absError);
 
-			lmsError =  dataSet.GetPoint(i).GetLmsError();
-			lmsErrorStr = String.valueOf(lmsError);
+//			lmsError =  dataSet.GetPoint(i).GetLmsError();
+//			lmsErrorStr = String.valueOf(lmsError);
 
 			// Sum all the errors
-			sumAbsErrors += absError;
-			sumLmsErrors += lmsError;
+//			sumAbsErrors += absError;
+//			sumLmsErrors += lmsError;
 
 			/***
 			 * Generate new .cvs file.
@@ -85,18 +89,23 @@ public class DataWriter {
 			+ volumeStr + ","
 			+ adjCloseStr;
 */			
+			sharesBuyStr = String.valueOf(dataSet.GetPoint(i).GetSharesBuy());
+			balanceStr = String.valueOf(dataSet.GetPoint(i).GetBalance());
+			sharesStr = String.valueOf(dataSet.GetPoint(i).GetShares());
+			
 			// Add "," as token to be parsed by Microsoft Excel
-			tempStr = dateStr + "," + adjCloseStr + ","
-						+ predictedValueStr + ","
-						+ absErrorStr + ","
-						+ lmsErrorStr;
+			tempStr = dateStr + "," 
+						+ adjCloseStr + ","
+						+ sharesBuyStr + ","
+						+ balanceStr + ","
+						+ sharesStr;
 				
 			fileWriter.println(tempStr);
 		}
 
-		fileWriter.println();
-		fileWriter.println("Average ABS error: " + (double)sumAbsErrors/(dataSet.Length() - 29) + ",");
-		fileWriter.println("Average LMS error: " + (double)sumLmsErrors/(dataSet.Length() - 29) + ",");
+//		fileWriter.println();
+//		fileWriter.println("Average ABS error: " + (double)sumAbsErrors/(dataSet.Length() - 29) + ",");
+//		fileWriter.println("Average LMS error: " + (double)sumLmsErrors/(dataSet.Length() - 29) + ",");
 		fileWriter.close();
 	}
 		

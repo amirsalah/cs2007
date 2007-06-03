@@ -24,12 +24,14 @@ public class StockDriver {
 		
 //		predictionModel.Predict();
 //		DataWriter writer = new DataWriter("DOWJONES_predicted_data.csv");
-//		writer.WriteRecordToFile(predictionModel);
+//		writer.WriteRecordToFile(dowJonesReader.GetPointsSet());
 		
 //		Optimization optimizor = new PermanentHolder(dowJonesReader.GetPointsSet());
 		Optimization optimizor = new MACDBasedOptimization(dowJonesReader.GetPointsSet());
 //		Optimization optimizor = new PermanentBuyer(dowJonesReader.GetPointsSet());
 		System.out.println("Earned: $" + optimizor.optimize());
+		DataWriter writer = new DataWriter("DOWJONES_Stock_activities_Nosales.csv");
+		writer.WriteRecordToFile(dowJonesReader.GetPointsSet());
 	}
 
 }
