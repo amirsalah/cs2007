@@ -5,7 +5,6 @@
 =========================================================*/
 package stock_tracker;
 
-import stock_tracker.models.*;
 import stock_tracker.data.*;
 
 import java.io.BufferedWriter;
@@ -36,9 +35,9 @@ public class DataWriter {
 		
 		String dateStr;
 		String adjCloseStr;
-		String predictedValueStr;
-		String absErrorStr;
-		String lmsErrorStr;
+//		String predictedValueStr;
+//		String absErrorStr;
+//		String lmsErrorStr;
 		
 		String tempStr;
 		
@@ -46,11 +45,11 @@ public class DataWriter {
 		String balanceStr;
 		String sharesStr;
 		
-		double absError = 0.0;
-		double lmsError = 0.0;
+//		double absError = 0.0;
+//		double lmsError = 0.0;
 		
-		double sumAbsErrors = 0.0;
-		double sumLmsErrors = 0.0;
+//		double sumAbsErrors = 0.0;
+//		double sumLmsErrors = 0.0;
 		
 		// Write title for each column to the file
 		fileWriter.println("Date,Adj.Close*,Buy/Sell,Bank,Shares");
