@@ -48,7 +48,7 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 		longNthDaysPrediction.add(5);
 		longNthDaysPrediction.add(10);
 		longNthDaysPrediction.add(20);
-		longNthDaysPrediction.add(30);
+		longNthDaysPrediction.add(35);
 			
 		numWindows_Short = 5;
 		shortNthDaysPrediction.add(1);

@@ -19,9 +19,6 @@ public class StockPoint {
 	private double balance;
 	private double shares;
 	private double sharesBuy = 0;
-	private boolean buy = false;
-	private boolean sell = false;
-	private boolean hold = true;
 	
 	private ArrayList<Double> shortTermPredictions = new ArrayList<Double>();
 	private ArrayList<Double> longTermPredictions = new ArrayList<Double>();
@@ -150,8 +147,6 @@ public class StockPoint {
 		shares += availableBalance/adj_close;
 		balance = 0;
 		
-		hold = false;
-		buy = true;
 		sharesBuy = availableBalance/adj_close;
 	}
 	
@@ -159,9 +154,6 @@ public class StockPoint {
 		balance += shares * adj_close * 0.997; // 0.3% transaction lost
 		sharesBuy = -shares;
 		shares = 0;
-		
-		hold = false;
-		sell = true;
 		
 	}
 	
@@ -183,7 +175,7 @@ public class StockPoint {
 	}
 	
 	public boolean isIncreasing(){
-		if( (shortTermPredictions.get(1) - adj_close) > 0 ){ // Set the threshold value
+		if( (longTermPredictions.get(1) - adj_close) > 0 && (shortTermPredictions.get(1) - adj_close) > 0){ // Set the threshold value
 			return true;
 		}else{
 			return false;
@@ -191,7 +183,7 @@ public class StockPoint {
 	}
 	
 	public boolean isDecreasing(){
-		if( (shortTermPredictions.get(1) - adj_close) < -20 ){
+		if( (longTermPredictions.get(1) - adj_close) < -10 && (shortTermPredictions.get(1) - adj_close) < -10){
 			return true;
 		}else{
 			return false;
@@ -203,7 +195,7 @@ public class StockPoint {
 	}
 	
 	public double LongIncreasingRate(){
-		return (longTermPredictions.get(2) - adj_close) / (double)5.0; // 20 days further
+		return (longTermPredictions.get(2) - adj_close) / (double)20.0; // 20 days further
 	}
 	
 	public double ShortDecreasingRate(){
@@ -211,6 +203,6 @@ public class StockPoint {
 	}
 	
 	public double LongDecreasingRate(){
-		return (adj_close - longTermPredictions.get(2)) / (double)5.0;
+		return (adj_close - longTermPredictions.get(2)) / (double)20.0;
 	}
 }
