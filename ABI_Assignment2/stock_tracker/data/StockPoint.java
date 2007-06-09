@@ -13,6 +13,7 @@ public class StockPoint {
 	private int adjCloseIndex = 5;
 	private double open, high, low, close, volume, adj_close;
 	private ArrayList<Double> predictedValues = new ArrayList<Double>(3);
+	private int OBV;
 	
 	//Variables for optimization
 	private boolean weekend = false;
@@ -205,4 +206,13 @@ public class StockPoint {
 	public double LongDecreasingRate(){
 		return (adj_close - longTermPredictions.get(2)) / (double)20.0;
 	}
+	
+	public void SetOBV(int obv){
+		this.OBV = obv;
+	}
+	
+	public int GetOBV(){
+		return OBV;
+	}
+	
 }

@@ -15,7 +15,6 @@ import stock_tracker.data.StockPointsSet;
 public abstract class Model {
 	protected int numResults = 3;
 	protected StockDate startDate;
-	protected StockDate endDate;
 	protected StockPointsSet dataSet;
 	protected int numPredictionDays;
 	protected int startIndex;
@@ -23,7 +22,6 @@ public abstract class Model {
 	
 	public Model(StockPointsSet dataSet){
 		startDate = new StockDate(2000, 2, 24);
-		endDate = new StockDate(2007, 1, 25);
 		this.dataSet = dataSet;
 		numPredictionDays = dataSet.Length() - 29; // There are 29 days before 2000/2/24
 		startIndex = dataSet.GetIndex(startDate);
@@ -33,6 +31,17 @@ public abstract class Model {
 	 * Predict the stock prices based on the previous data
 	 */
 	public abstract void Predict();
+	
+	/**
+	 * Set the new starting date for prediction
+	 * @param year
+	 * @param month
+	 * @param day
+	 */
+	public void SetStartDate(int year, int month, int day){
+		startDate = new StockDate(year, month, day);
+		startIndex = dataSet.GetIndex(startDate);
+	}
 	
 	/**
 	 * Return least mean square error(LMS Error)
@@ -71,9 +80,6 @@ public abstract class Model {
 	public StockDate GetStartDate(){
 		return startDate;
 	}
-	
-	public StockDate GetEndDate(){
-		return endDate;
-	}
+
 
 }

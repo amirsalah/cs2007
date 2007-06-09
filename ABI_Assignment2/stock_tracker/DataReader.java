@@ -22,6 +22,8 @@ import stock_tracker.data.StockPointsSet;
 public class DataReader {
 	private BufferedReader fileReader;
 	private StockPointsSet dowJonesStock = new StockPointsSet();
+	private StockPointsSet simulationData = new StockPointsSet();
+	private boolean simulationStage = false;
 	
 	public DataReader(String fileName){
 		try{
@@ -29,8 +31,74 @@ public class DataReader {
 		}catch(IOException ioe){
 			System.out.println("Could not find the file: " + fileName);
 		}
+		if(fileName.equalsIgnoreCase("DOWJONES_Simulation_data.csv")){
+			simulationStage = true;
+		}
 		
-		StoreData();
+		if(simulationStage){
+			StoreSimulationData();
+		}else{
+			StoreData();
+		}
+	}
+		
+	private void StoreSimulationData(){
+		String dayDataStr = null;
+		String[] dayDataList = null;
+		String[] dateStr = null;
+		int month = 0;
+		int year = 0;
+		int date = 0;
+		Double open = 0.0;
+		Double high = 0.0;
+		Double low = 0.0;
+		Double close = 0.0;
+		Double volume = 0.0;
+		Double adj_close = 0.0;
+		
+		StockPoint dayPoint;
+		
+		try{
+			dayDataStr = fileReader.readLine();
+			while(dayDataStr != null){
+				dayDataList = dayDataStr.split(",");
+				// Process next line, if the current string line is not valid data
+				if (dayDataList.length < 7){
+					dayDataStr = fileReader.readLine();
+					continue;
+				}
+				
+				// Get the date (first strings of lines)
+				dateStr = dayDataList[0].split("-");
+				try
+				{
+					open = Double.valueOf(dayDataList[1]);
+					high = Double.valueOf(dayDataList[2]);
+					low = Double.valueOf(dayDataList[3]);
+					close = Double.valueOf(dayDataList[4]);
+					volume = Double.valueOf(dayDataList[5]);
+					adj_close = Double.valueOf(dayDataList[6]);
+					
+					year = Integer.valueOf(dateStr[2]);
+					month = Integer.valueOf(dateStr[1]);
+					date = Integer.valueOf(dateStr[0]);
+				}
+				catch(NumberFormatException nfe){
+					dayDataStr = fileReader.readLine();
+					continue;
+				}
+				// Save date into StockDate
+				StockDate stockDate = new StockDate(year, month, date);
+				
+				dayPoint = new StockPoint(stockDate, open, high, low, close, volume, adj_close);
+				
+				simulationData.AddPoint(dayPoint);
+				dayDataStr = fileReader.readLine();
+			}
+		}
+		catch(IOException ioe){
+			System.out.println("Error in reading file");
+		}
 	}
 	
 	private void StoreData(){
@@ -137,6 +205,10 @@ public class DataReader {
 	
 	public StockPointsSet GetPointsSet(){
 		return dowJonesStock;
+	}
+	
+	public StockPointsSet GetSimulationData(){
+		return simulationData;
 	}
 	
 	/**
