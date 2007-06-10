@@ -5,6 +5,18 @@ import stock_tracker.data.*;
 import stock_tracker.models.DoubleExponentialSmoothingModel;
 import stock_tracker.optimization.*;
 
+/**
+ * Hybrid optimization system, combining double exponential smoothing prediction,
+ * fuzzy rules base system, and evolutionary algorithm.
+ * 
+ * The evolutionary algorithm is used to evlove the fuzzy trading rules sets, 
+ * which are used to make trading decision.
+ * 
+ * Note: the system is initilized with simulation data: dow jones data from 1995-2000
+ * and the best system is selected using EA algorithm.
+ * @author Bo CHEN
+ *
+ */
 public class FL_EC_Hybrid_System extends Optimization{
 	private StockPointsSet simulationData;
 	private boolean simulationStage = true;

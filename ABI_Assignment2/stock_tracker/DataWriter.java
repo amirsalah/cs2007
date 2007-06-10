@@ -35,21 +35,11 @@ public class DataWriter {
 		
 		String dateStr;
 		String adjCloseStr;
-//		String predictedValueStr;
-//		String absErrorStr;
-//		String lmsErrorStr;
-		
 		String tempStr;
 		
 		String sharesBuyStr;
 		String balanceStr;
 		String sharesStr;
-		
-//		double absError = 0.0;
-//		double lmsError = 0.0;
-		
-//		double sumAbsErrors = 0.0;
-//		double sumLmsErrors = 0.0;
 		
 		// Write title for each column to the file
 		fileWriter.println("Date,Adj.Close*,Buy/Sell,Bank,Shares");
@@ -59,54 +49,14 @@ public class DataWriter {
 			//Transfer all the data into String type
 			dateStr = dataSet.GetPoint(i).GetCalendar().toString();
 			adjCloseStr = String.valueOf(dataSet.GetAdjClose(i));
-//			predictedValueStr = String.valueOf(dataSet.GetPoint(i).GetPredictedValue());
-			
-//			absError =dataSet.GetPoint(i).GetAbsError() ;
-//			absErrorStr = String.valueOf(absError);
-
-//			lmsError =  dataSet.GetPoint(i).GetLmsError();
-//			lmsErrorStr = String.valueOf(lmsError);
-
-			// Sum all the errors
-//			sumAbsErrors += absError;
-//			sumLmsErrors += lmsError;
 
 			/***
 			 * Generate new .cvs file.
 			 */
-/*			String openStr = String.valueOf(dataSet.GetStockPrices(i).get(0));
-			String highStr = String.valueOf(dataSet.GetStockPrices(i).get(1));
-			String lowStr = String.valueOf(dataSet.GetStockPrices(i).get(2));
-			String closeStr = String.valueOf(dataSet.GetStockPrices(i).get(3));
-			String volumeStr = String.valueOf(dataSet.GetStockPrices(i).get(4));
-			
-			tempStr = dateStr + "," 
-			+ openStr + ","
-			+ highStr + ","
-			+ lowStr + ","
-			+ closeStr + ","
-			+ volumeStr + ","
-			+ adjCloseStr;
-*/
 			sharesBuyStr = String.valueOf(dataSet.GetPoint(i).GetSharesBuy());
 			balanceStr = String.valueOf(dataSet.GetPoint(i).GetBalance());
 			sharesStr = String.valueOf(dataSet.GetPoint(i).GetShares());
-			/**
-			 * Used to produce stock graph
-			 */
-			/*			
-			if(dataSet.GetPoint(i).GetSharesBuy() > 0){
-				sharesBuyStr = "12000";
-			}
-			
-			if(dataSet.GetPoint(i).GetSharesBuy() < 0){
-				sharesBuyStr = "8000";
-			}
-			
-			if(dataSet.GetPoint(i).GetSharesBuy() == 0){
-				sharesBuyStr = "10000";
-			}
-*/
+
 			// Add "," as token to be parsed by Microsoft Excel
 			tempStr = dateStr + "," 
 						+ adjCloseStr + ","

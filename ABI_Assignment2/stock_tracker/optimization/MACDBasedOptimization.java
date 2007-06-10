@@ -28,14 +28,14 @@ public class MACDBasedOptimization extends Optimization{
 			
 			// MACD implementation
 			if(today.isIncreasing()){
-				if(today.ShortIncreasingRate()/(double)20 > today.LongIncreasingRate()){
+				if(today.ShortIncreasingRate()/(double)GetSLIncreaseRate() > today.LongIncreasingRate()){
 					// buy shares with all the available bank balance
 					today.BuyMax();
 				}
 			}
 			
 			if(today.isDecreasing()){
-				if(today.ShortDecreasingRate()/(double)19 > today.LongDecreasingRate()){
+				if(today.ShortDecreasingRate()/(double)GetSLDecreaseRate() > today.LongDecreasingRate()){
 					// Sell all the holding shares
 					today.SellMax();
 				}

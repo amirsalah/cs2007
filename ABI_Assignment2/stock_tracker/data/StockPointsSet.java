@@ -74,9 +74,6 @@ public class StockPointsSet
 		int index = -1;
 		
 		for(int i=0; i<allStockPoints.size(); i++){
-			if(i == 1230){
-				System.out.println();
-			}
 			if(allStockPoints.get(i).GetCalendar().equals(date)){
 				return i;
 			}
