@@ -1,7 +1,10 @@
 package stock_tracker.optimization.hybrid_system;
 
-import stock_tracker.data.*;
+import java.util.Random;
 import java.util.Vector;
+
+import stock_tracker.data.StockPoint;
+import stock_tracker.data.StockPointsSet;
 
 /**
  * The Fuzzy logic system, with trading rules,
@@ -260,10 +263,12 @@ public class FuzzyLogicRules {
 	}
 	
 	public void RandamizeRules(){
-		
+		Random random = new Random();
+		previousNDays = random.nextInt(29);
 	}
 	
 	public void Mutation(){
-		
+		Random random = new Random();
+		previousNDays = previousNDays + (random.nextInt(19) - 10);
 	}
 }
