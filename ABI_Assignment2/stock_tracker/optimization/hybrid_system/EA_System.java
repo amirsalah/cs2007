@@ -27,8 +27,8 @@ public class EA_System extends Optimization{
 	private double mutationRate = 0.3;
 
 	
-	public EA_System(StockPointsSet dataSet){
-		super(dataSet);
+	public EA_System(StockPointsSet dataSet, StockPointsSet actualSet){
+		super(actualSet);
 		this.dataSet = dataSet;
 	}
 	
@@ -87,6 +87,9 @@ public class EA_System extends Optimization{
 		return population.get(bestIndex);
 	}
 	
+	/**
+	 * Initialize the population
+	 */
 	private void InitPopulation(){
 		for(int i=0; i<population.size(); i++){
 			FuzzyLogicRules newRulesSet = new FuzzyLogicRules(dataSet);
