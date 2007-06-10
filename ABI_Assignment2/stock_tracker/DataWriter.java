@@ -87,11 +87,26 @@ public class DataWriter {
 			+ closeStr + ","
 			+ volumeStr + ","
 			+ adjCloseStr;
-*/			
+*/
 			sharesBuyStr = String.valueOf(dataSet.GetPoint(i).GetSharesBuy());
 			balanceStr = String.valueOf(dataSet.GetPoint(i).GetBalance());
 			sharesStr = String.valueOf(dataSet.GetPoint(i).GetShares());
+			/**
+			 * Used to produce stock graph
+			 */
+			/*			
+			if(dataSet.GetPoint(i).GetSharesBuy() > 0){
+				sharesBuyStr = "12000";
+			}
 			
+			if(dataSet.GetPoint(i).GetSharesBuy() < 0){
+				sharesBuyStr = "8000";
+			}
+			
+			if(dataSet.GetPoint(i).GetSharesBuy() == 0){
+				sharesBuyStr = "10000";
+			}
+*/
 			// Add "," as token to be parsed by Microsoft Excel
 			tempStr = dateStr + "," 
 						+ adjCloseStr + ","
@@ -102,9 +117,6 @@ public class DataWriter {
 			fileWriter.println(tempStr);
 		}
 
-//		fileWriter.println();
-//		fileWriter.println("Average ABS error: " + (double)sumAbsErrors/(dataSet.Length() - 29) + ",");
-//		fileWriter.println("Average LMS error: " + (double)sumLmsErrors/(dataSet.Length() - 29) + ",");
 		fileWriter.close();
 	}
 		

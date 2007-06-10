@@ -11,7 +11,7 @@ import java.util.Vector;
  * @author Bo CHEN
  */
 public class FuzzyLogicRules {
-	private int numRules = 5; // The number of rules in the rule base system
+	private int numRules = 2; // The number of rules in the rule base system
 	private StockPointsSet dataSet; 
 	private StockPoint today;
 	
@@ -36,7 +36,7 @@ public class FuzzyLogicRules {
 	public double BuyRecommend(StockPoint today){
 		
 		double sumRatings = 0;
-		this.today = today.clone();
+		this.today = today;
 		
 		for(int i=0; i<numRules; i++){
 			sumRatings += EvaluateRule(i);
@@ -50,21 +50,21 @@ public class FuzzyLogicRules {
 		double buyRate;
 		
 		switch(ruleID){
-		case 1:
+		case 0:
 			buyRate = MovingAveragesBuySignal();
 			break;
-		case 2:
+		case 1:
 			buyRate = MovingAveragesSellSignal();
 			break;
-		case 3:
-			buyRate = S_And_R();
-			break;
-		case 4:
-			buyRate = OBV();
-			break;
-		case 5:
-			buyRate = PriceMovement();
-			break;
+//		case 2:
+//			buyRate = S_And_R();
+//			break;
+//		case 3:
+//			buyRate = OBV();
+//			break;
+//		case 4:
+//			buyRate = PriceMovement();
+//			break;
 		default:
 			buyRate = 0.5;
 		break;

@@ -18,6 +18,7 @@ public abstract class Model {
 	protected StockPointsSet dataSet;
 	protected int numPredictionDays;
 	protected int startIndex;
+	protected boolean simulationStage = false;
 
 	
 	public Model(StockPointsSet dataSet){
@@ -41,6 +42,13 @@ public abstract class Model {
 	public void SetStartDate(int year, int month, int day){
 		startDate = new StockDate(year, month, day);
 		startIndex = dataSet.GetIndex(startDate);
+	}
+	
+	public void SetSimulationStage(boolean newStage){
+		simulationStage = newStage;
+		if(simulationStage){
+			numPredictionDays = dataSet.Length() - 30;
+		}
 	}
 	
 	/**

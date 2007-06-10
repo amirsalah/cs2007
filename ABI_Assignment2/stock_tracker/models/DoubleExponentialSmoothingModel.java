@@ -24,6 +24,7 @@ public class DoubleExponentialSmoothingModel extends TimeSeriesModel {
 	private Vector<Integer> shortNthDaysPrediction = new Vector<Integer>();
 	private Vector<Integer> longNthDaysPrediction = new Vector<Integer>();
 	
+	
 	public DoubleExponentialSmoothingModel(StockPointsSet dataSet, double alpha, double gamma){
 		super(dataSet);
 		

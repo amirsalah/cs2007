@@ -6,6 +6,7 @@
 package stock_tracker;
 
 import stock_tracker.optimization.*;
+import stock_tracker.optimization.hybrid_system.*;
 
 /**
  * @author Bo CHEN
@@ -28,10 +29,11 @@ public class StockDriver {
 		
 //		Optimization optimizor = new PermanentHolder(dowJonesReader.GetPointsSet());
 //		Optimization optimizor = new MACDBasedOptimization(dowJonesReader.GetPointsSet());
+//		Optimization optimizor = new RandomBuyer(dowJonesReader.GetPointsSet());
 //		Optimization optimizor = new PermanentBuyer(dowJonesReader.GetPointsSet());
 		Optimization optimizor = new FL_EC_Hybrid_System(dowJonesReader.GetPointsSet());
-		System.out.println("Earned: $" + optimizor.optimize());
-		DataWriter writer = new DataWriter("DOWJONES_Stock_activities_Nosales.csv");
+		System.out.println("Cash out at 2007/1/25: $" + optimizor.optimize());
+		DataWriter writer = new DataWriter("DOWJONES_Stock_activities.csv");
 		writer.WriteRecordToFile(dowJonesReader.GetPointsSet());
 	}
 

@@ -79,9 +79,9 @@ public class DataReader {
 					volume = Double.valueOf(dayDataList[5]);
 					adj_close = Double.valueOf(dayDataList[6]);
 					
-					year = Integer.valueOf(dateStr[2]);
+					year = Integer.valueOf(dateStr[0]);
 					month = Integer.valueOf(dateStr[1]);
-					date = Integer.valueOf(dateStr[0]);
+					date = Integer.valueOf(dateStr[2]);
 				}
 				catch(NumberFormatException nfe){
 					dayDataStr = fileReader.readLine();
