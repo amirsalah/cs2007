@@ -28,6 +28,7 @@ public class FL_EC_Hybrid_System extends Optimization{
 	}
 	
 	public double optimize(){
+		FuzzyLogicRules bestFLRulesSet;
 		if(simulationStage){
 			// Initialize optimization model with historical data
 			DoubleExponentialSmoothingModel predictionModel = new DoubleExponentialSmoothingModel(simulationData, 0.4, 0.4);
@@ -45,31 +46,8 @@ public class FL_EC_Hybrid_System extends Optimization{
 			simulationData.GetPoint(startIndex + 1).SetBalance(0);
 			simulationData.GetPoint(startIndex + 1).SetShares(0);
 			
-			
-			FuzzyLogicRules FLsimulation = new FuzzyLogicRules(simulationData);
-			
-			for(int i=0; i<numPredictionDays; i++){
-				// initialize the current account by yesterday's values.
-				StockPoint yesterday = simulationData.GetPoint(startIndex - i + 1);
-				StockPoint today = simulationData.GetPoint(startIndex - i);
-				today.BankingInit(yesterday);			
-				double buyRate = FLsimulation.BuyRecommend(today);
-				
-				if(FLsimulation.BuyRecommend(today) >= 0.8){
-					today.BuyMax();
-					System.out.println("Buy:" + today.GetCalendar());
-				}
-				
-				if(FLsimulation.BuyRecommend(today) <= 0.2){
-					today.SellMax();
-					System.out.println("Sell:" + today.GetCalendar());
-				}
-				
-			}
-			
-			StockPoint lastDay = simulationData.GetPoint(startIndex - numPredictionDays + 1);
-			lastDay.SellMax();
-			System.out.println(lastDay.GetBalance());
+			EA_System eaSystem = new EA_System(simulationData);
+			bestFLRulesSet = eaSystem.evolve();
 			
 			simulationStage = false;
 		}
@@ -79,6 +57,7 @@ public class FL_EC_Hybrid_System extends Optimization{
 		startIndex = dataSet.GetIndex(startDate);
 		numPredictionDays = dataSet.Length() - 29; // There are 29 days before 2000/2/24
 		startIndex = dataSet.GetIndex(startDate);
+		
 		
 		return 0;
 	}

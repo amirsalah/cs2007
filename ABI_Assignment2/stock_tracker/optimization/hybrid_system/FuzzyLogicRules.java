@@ -233,7 +233,7 @@ public class FuzzyLogicRules {
 		for(int i=0; i<20; i++){
 			totalMovement += Math.abs(dataSet.GetAdjClose(todayIndex + i) - dataSet.GetAdjClose(todayIndex + i + 1));
 		}
-		
+
 		averageMovement = totalMovement/20;
 		
 		if(averageMovement > 500){
@@ -257,5 +257,13 @@ public class FuzzyLogicRules {
 		}
 		
 		return buyRate;
+	}
+	
+	public void RandamizeRules(){
+		
+	}
+	
+	public void Mutation(){
+		
 	}
 }
