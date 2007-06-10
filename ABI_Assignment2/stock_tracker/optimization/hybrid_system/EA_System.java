@@ -39,16 +39,16 @@ public class EA_System extends Optimization{
 		for(int i=0; i<numGenerations; i++){
 			fitnessValues.clear();
 			//Evaluate each individual in the population
-			for(int index = 0; index < population.size(); index++){
+			for(int index = 0; index < numIndividuals; index++){
 				double fitness;
 				fitness = Evaluate_FLRulesSet(population.get(i));
 				fitnessValues.add(fitness); //New fitness values for the new population
 			}
 			
 			// new children by tournament selection
-			for(int index=0; index<population.size(); index++){
-				int index1 = random.nextInt(population.size());
-				int index2 = random.nextInt(population.size());
+			for(int index=0; index<numIndividuals; index++){
+				int index1 = random.nextInt(numIndividuals);
+				int index2 = random.nextInt(numIndividuals);
 				children.add(TournamentSelection(index1, index2));
 			}
 			
@@ -77,7 +77,7 @@ public class EA_System extends Optimization{
 		double highestFitness = fitnessValues.get(0);
 		int bestIndex = 0;
 		//Select best rule set
-		for(int i=0; i<population.size(); i++){
+		for(int i=0; i<numIndividuals; i++){
 			
 			if(fitnessValues.get(i)> highestFitness){
 				highestFitness = fitnessValues.get(i);
@@ -91,7 +91,7 @@ public class EA_System extends Optimization{
 	 * Initialize the population
 	 */
 	private void InitPopulation(){
-		for(int i=0; i<population.size(); i++){
+		for(int i=0; i<numIndividuals; i++){
 			FuzzyLogicRules newRulesSet = new FuzzyLogicRules(dataSet);
 			newRulesSet.RandamizeRules();
 			population.add(newRulesSet);
@@ -113,12 +113,10 @@ public class EA_System extends Optimization{
 			
 			if(rulesSet.BuyRecommend(today) >= 0.8){
 				today.BuyMax();
-				System.out.println("Buy:" + today.GetCalendar());
 			}
 			
 			if(rulesSet.BuyRecommend(today) <= 0.2){
 				today.SellMax();
-				System.out.println("Sell:" + today.GetCalendar());
 			}
 			
 		}
@@ -146,5 +144,13 @@ public class EA_System extends Optimization{
 	
 	public double optimize(){
 		return 0;
+	}
+	
+	public void SetStartIndex(int index){
+		startIndex = index;
+	}
+	
+	public void SetNumPredictionDays(int num){
+		numPredictionDays = num;
 	}
 }

@@ -15,7 +15,6 @@ import stock_tracker.optimization.*;
  * Note: the system is initilized with simulation data: dow jones data from 1995-2000
  * and the best system is selected using EA algorithm.
  * @author Bo CHEN
- *
  */
 public class FL_EC_Hybrid_System extends Optimization{
 	private StockPointsSet simulationData;
@@ -49,6 +48,8 @@ public class FL_EC_Hybrid_System extends Optimization{
 			simulationData.GetPoint(startIndex + 1).SetShares(0);
 			
 			EA_System eaSystem = new EA_System(simulationData, dataSet);
+			eaSystem.SetStartIndex(startIndex);
+			eaSystem.SetNumPredictionDays(numPredictionDays);
 			bestFLRulesSet = eaSystem.evolve();
 			
 			simulationStage = false;
@@ -88,7 +89,6 @@ public class FL_EC_Hybrid_System extends Optimization{
 		StockPoint lastDay = dataSet.GetPoint(startIndex - numPredictionDays + 1);
 		lastDay.SellMax();
 		return lastDay.GetBalance();
-
 	}
 	
 }
