@@ -3,6 +3,11 @@ import java.util.*;
 
 public class fileProcess {
 	private  Vector<Double> adjclose = new Vector<Double>();
+	public Vector<Double> open = new Vector<Double>();
+	public Vector<Double> high = new Vector<Double>();
+	public Vector<Double> low = new Vector<Double>();
+	public Vector<Double> volume = new Vector<Double>();
+	
 	private  Vector<String> dates = new Vector<String>();
 
 	public Vector<String> LoadDate(){
@@ -11,6 +16,11 @@ public class fileProcess {
 		String[] subDay = null; // strings contains data of ONE day
 		String date = null;
 		double adj_close = 0.0;
+		double open_d = 0;
+		double high_d = 0;
+		double low_d = 0;
+		double volume_d = 0;
+		
 
 		try{
 			Reader = new BufferedReader(new FileReader("DOWJONES_full_data.csv"));
@@ -27,6 +37,19 @@ public class fileProcess {
 				// Get the adj close value and save it
 				adj_close = Double.valueOf(subDay[6]);
 				adjclose.add(adj_close);
+				
+				// Get open value
+				open_d = Double.valueOf(subDay[1]);
+				open.add(open_d);
+				
+				high_d = Double.valueOf(subDay[2]);
+				high.add(high_d);
+				
+				low_d = Double.valueOf(subDay[3]);
+				low.add(low_d);
+				
+				volume_d = Double.valueOf(subDay[5]);
+				volume.add(volume_d);
 				
 				// Next line is read
 				oneDay = Reader.readLine();
