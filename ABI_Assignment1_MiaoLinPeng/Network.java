@@ -56,13 +56,14 @@ public class Network {
     	double oy=0;
     	int cycle=0;
     	double oy1,iy,q,u1;
+    	
     	for(int i=0;i<20;i++){
     		weight[i]=Oweight();
     	}
 
     	midweight=Oweight();
+    	
     	for(int a=0;a<wholenum-20+1;a++){
-
     		for(int j=0;j<20;j++){
     			input[j]=Double.parseDouble(Wdata[wholenum-j-a][6])/100000;//the input must between 0--1, so /100000
     		}
@@ -82,7 +83,7 @@ public class Network {
     		u1=Xworu(midinput,midweight);
     		oy=Su(u1);
     		result[wholenum-20-a]=oy*100000*ii+jj*rresult[wholenum-20-a];//predict price, the very first value will very near 1*100000.
-    		//result[wholenum-20-a]=oy*100000;
+//    		result[wholenum-20-a]=oy*100000;
     		/////////////////////////////////////////
     		iy=Double.parseDouble(Wdata[wholenum-20-a][6])/100000;//now we know the true value;because we must compare true value and predict value, so true value/100000
     		q=iy-oy;                                               //error between true value and predict value
