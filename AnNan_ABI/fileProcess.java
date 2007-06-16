@@ -52,7 +52,7 @@ public class fileProcess {
 			Writer.println("Date" + "," + "Adj.close" + "," + "Prediction P" + "," + "ABS Error" + "," + "LMS Error");
 			for(int i = 0; i < adjclose.size()-20; i++)
 			{
-				Writer.println(dates.get(dates.size() - 1 - i) + "," + 
+				Writer.println(dates.get(dates.size() - 21 - i) + "," + 
 						adjclose.get(adjclose.size() - 21 -i) + "," + 
 						predictedData.get(i) + "," +ABSCol.get(i) + 
 						"," + LMSCol.get(i));
