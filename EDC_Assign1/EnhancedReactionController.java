@@ -18,13 +18,13 @@ public class EnhancedReactionController implements Controller{
 	
 	// Different stages of the system
 	private enum Stages{
-		noCoin, coinInserted, DelayPeriod, WaitingUser, DisplayResult, GameOver
+		NoCoin, CoinInserted, DelayPeriod, WaitingUser, DisplayResult, GameOver
 	}
 	private Stages currentStage;
 
 	
 	public EnhancedReactionController(){
-		currentStage = Stages.noCoin;
+		currentStage = Stages.NoCoin;
 	}
 	
     //Connect controller to gui
@@ -49,14 +49,25 @@ public class EnhancedReactionController implements Controller{
     public void coinInserted(){
 //    	numCoins++;
 		gui.setDisplay("press GO!");
-		currentStage = Stages.coinInserted;
+		currentStage = Stages.CoinInserted;
 		timesCounter = 0;
+		delay = 10000;
     }
 
 
     //Called to deliver a TICK to the controller
     public void tick(){
     	switch(currentStage){
+    	case CoinInserted:
+    		// abort the game if the user didn't press go/stop button
+    		if(delay <= 0){
+    			currentStage = Stages.NoCoin;
+    			gui.setDisplay("insert coin");
+    		}else{
+    			delay -= 10;
+    		}
+    		break;
+    		
     	case DelayPeriod:
     		// delay expires, stage transformed to wait for the user reaction
     		if(delay <= 0){
@@ -79,28 +90,27 @@ public class EnhancedReactionController implements Controller{
     	case DisplayResult:
     		// Display result for a single game for 3 seconds
     		if(delay <=0){
-				gui.setDisplay("insert coin");
+    			if(timesCounter < 3){
+    				currentStage = Stages.CoinInserted;
+    				goStopPressed();
+    			}
+    			if(timesCounter == 3){
+    				currentStage = Stages.GameOver;
+    			}
     		}else{
     			delay -= 10;
     			gui.setDisplay(String.valueOf(reactionTimes[timesCounter - 1]));
-    		}
-    		
-    		// User has played 3 times
-    		if(timesCounter == 3){
-    			currentStage = Stages.GameOver;
-    		}else{
-    			currentStage = Stages.coinInserted;
-    			goStopPressed();
     		}
     		break;
     		
     	case GameOver:
     		currentTime = 0;
     		// Display the average time for 5 seconds
-    		if(delay <=0){
+    		if(finalResultDelay <=0){
 				gui.setDisplay("insert coin");
+				finalResultDelay = 0;
     		}else{
-    			delay -= 10;
+    			finalResultDelay -= 10;
     			gui.setDisplay(String.valueOf(averageTime));
     		}
     		break;
@@ -111,7 +121,7 @@ public class EnhancedReactionController implements Controller{
 	public void goStopPressed() {
 		// State transformed if the button is pressed.
 		switch(currentStage){
-			case coinInserted:
+			case CoinInserted:
 				delay = rnGenerator.getRandom(1000, 2500); // millisecond
 				
 				// The system display "waiting" in the delay period
@@ -121,7 +131,7 @@ public class EnhancedReactionController implements Controller{
 				
 				// User pressed the button before the delay expire
 			case DelayPeriod:
-				currentStage = Stages.noCoin;
+				currentStage = Stages.NoCoin;
 				gui.setDisplay("insert coin");
 				break;
 				
@@ -141,13 +151,22 @@ public class EnhancedReactionController implements Controller{
 						averageTime += reactionTimes[i];
 					}
 					averageTime = averageTime/(double)3.0;
-					currentStage = Stages.GameOver;
 				}
+				break;
+				
+			case DisplayResult:
+    			if(timesCounter < 3){
+    				currentStage = Stages.CoinInserted;
+    				goStopPressed();
+    			}
+    			if(timesCounter == 3){
+    				currentStage = Stages.GameOver;
+    			}
 				break;
 				
 				// User pressed the go/stop button while displaying the reaction time value
 			case GameOver:
-				currentStage = Stages.noCoin;
+				currentStage = Stages.NoCoin;
 				gui.setDisplay("insert coin");
 				timesCounter = 0;
 				break;
