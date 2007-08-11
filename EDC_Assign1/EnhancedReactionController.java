@@ -48,7 +48,7 @@ public class EnhancedReactionController implements Controller{
     //Called whenever a coin is inserted into the machine
     public void coinInserted(){
 //    	numCoins++;
-		gui.setDisplay("press GO!");
+		gui.setDisplay("Press GO!");
 		currentStage = Stages.CoinInserted;
 		timesCounter = 0;
 		delay = 10000;
