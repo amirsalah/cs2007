@@ -1,11 +1,11 @@
-import java.util.List;
-import java.util.Set;
-
 /*=======================================================
   @Author: Bo CHEN
   Student ID: 1139520
   Date: 3rd, Sept 2007
 =========================================================*/
+
+import java.util.List;
+import java.util.Set;
 
 public class FsaImpl implements FsaSim, Fsa{
 	public FsaImpl(){
