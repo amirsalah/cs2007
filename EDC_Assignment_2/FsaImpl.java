@@ -3,18 +3,21 @@
   Student ID: 1139520
   Date: 3rd, Sept 2007
 =========================================================*/
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeSet;
-import java.util.HashSet;
 
 public class FsaImpl implements FsaSim, Fsa{
 	private Hashtable<String, State> statesSet = new Hashtable<String, State>();
 	private TreeSet<Transition> transitionsSet = new TreeSet<Transition>();
-	private Hashtable<String, State> initialStatesSet = new Hashtable<String, State>();
+//	private Hashtable<String, State> initialStatesSet = new Hashtable<String, State>();
+//	private Hashtable<String, State> currentStatesSet = new Hashtable<String, State>();
+	private ArrayList<String> initialStatesNames = new ArrayList<String>();
+	private ArrayList<String> currentStatesNames = new ArrayList<String>();
 	
 	public FsaImpl(){
 		
@@ -142,6 +145,11 @@ public class FsaImpl implements FsaSim, Fsa{
      * Check if the given even name is valid
      */
     private boolean IsValidEvent(String eventName){
+    	//Epsilon transition event
+    	if( (eventName.length() == 1) && eventName.equalsIgnoreCase("?") ){
+    		return true;
+    	}
+    	
     	for(int i=0; i<eventName.length(); i++){
     		if( !Character.isLetter(eventName.charAt(i)) ){
     			return false;
@@ -186,12 +194,14 @@ public class FsaImpl implements FsaSim, Fsa{
     //Throws IllegalArgumentException if the state s is not in the FSA
     public void addInitialState(State s)
       throws IllegalArgumentException{
+    	
     	String stateName = s.getName();
     	if( !statesSet.containsKey(stateName) ){
     		throw new IllegalArgumentException("Add initial state");
     	}
     	
-    	initialStatesSet.put(stateName, s);
+//    	initialStatesSet.put(stateName, s);
+    	initialStatesNames.add(stateName);
     }
 
 
@@ -199,23 +209,42 @@ public class FsaImpl implements FsaSim, Fsa{
     //If the state does not exist, returns without error
     public void removeInitialState(State s){
     	String stateName = s.getName();
-    	if( !initialStatesSet.containsKey(stateName) ){
-    		throw new IllegalArgumentException("remove a initial state");
+    	
+    	if( !statesSet.containsKey(stateName) ){
+    		return;
     	}
     	
-    	initialStatesSet.remove(stateName);
+    	//initialStatesSet.remove(stateName);
+    	
+    	for(int i=0; i<initialStatesNames.size(); i++){
+    		if(initialStatesNames.get(i).equals(stateName)){
+    			initialStatesNames.remove(i);
+    			return;
+    		}
+    	}
     }
 
 
     //Return the set of initial states of this Fsa
     public Set<State> getInitialStates(){
+    	/*
     	Set<State> allStates = new HashSet<State>();
     	Set<String> allStatesName = initialStatesSet.keySet();
     	Iterator<String> itr = allStatesName.iterator();
-    	statesSet.
+
     	//Add all existing states into a set
     	while(itr.hasNext()){
-    		allStates.add(statesSet.get(itr.next()));
+    		allStates.add(initialStatesSet.get(itr.next()));
+    	}
+    	
+    	return allStates;
+    	*/
+    	Set<State> allStates = new HashSet<State>();
+    	String stateName = null;
+    	
+    	for(int i=0; i<initialStatesNames.size(); i++){
+    		stateName = initialStatesNames.get(i);
+    		allStates.add(statesSet.get(stateName));
     	}
     	
     	return allStates;
@@ -224,7 +253,15 @@ public class FsaImpl implements FsaSim, Fsa{
 
     //Returns a set containing all the current states of this FSA
     public Set<State> getCurrentStates(){
+    	Set<State> allStates = new HashSet<State>();
+    	String stateName = null;
     	
+    	for(int i=0; i<currentStatesNames.size(); i++){
+    		stateName = currentStatesNames.get(i);
+    		allStates.add(statesSet.get(stateName));
+    	}
+    	
+    	return allStates;
     }
     
 
@@ -242,7 +279,10 @@ public class FsaImpl implements FsaSim, Fsa{
     
     //Reset the simulation to its initial state(s)
     public void reset(){
-    	
+    	statesSet.clear();
+    	initialStatesNames.clear();
+    	transitionsSet.clear();
+    	currentStatesNames.clear();
     }
     
     //Take one step in the simulation
@@ -250,6 +290,7 @@ public class FsaImpl implements FsaSim, Fsa{
     //by this transition
     //Returns null if the event is not handled in this state
     public List<String> step(String event){
+    	List<String> outputs = new ArrayList<String>();
     	
     }
 }
