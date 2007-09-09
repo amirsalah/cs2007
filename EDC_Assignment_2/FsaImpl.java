@@ -14,7 +14,7 @@ import java.util.TreeSet;
 
 public class FsaImpl implements FsaSim, Fsa{
 	private Hashtable<String, State> statesSet = new Hashtable<String, State>();
-	private TreeSet<Transition> transitionsSet = new TreeSet<Transition>();
+	private HashSet<Transition> transitionsSet = new HashSet<Transition>();
 //	private Hashtable<String, State> initialStatesSet = new Hashtable<String, State>();
 //	private Hashtable<String, State> currentStatesSet = new Hashtable<String, State>();
 	private ArrayList<String> initialStatesNames = new ArrayList<String>();
@@ -292,7 +292,7 @@ public class FsaImpl implements FsaSim, Fsa{
     //for each initial state in the FSA, a line (terminated by \n)
     //  INITIAL followed the name of the state
     public String toString(){
-    	String LinesOutput = null;
+    	String LinesOutput = "";
     	
     	//Output all states
     	Set<State> allStates = null;
@@ -384,8 +384,8 @@ class StateImpl implements State{
 	private int xPos;
 	private int yPos;
 	private String stateName;
-	private TreeSet<Transition> transitionsFromSet = new TreeSet<Transition>();
-	private TreeSet<Transition> transitionsToSet = new TreeSet<Transition>();
+	private HashSet<Transition> transitionsFromSet = new HashSet<Transition>();
+	private HashSet<Transition> transitionsToSet = new HashSet<Transition>();
 	
 //	private FsaImpl fsa;  //The finate state machine in which the state works
 	
@@ -468,8 +468,8 @@ class StateImpl implements State{
 }
 
 class TransitionImpl implements Transition{
-	private State fromState;
-	private State toState;
+	private State fromState = null;
+	private State toState = null;
 	private String eventName = null;
 	private String output = null;
 	
@@ -479,7 +479,6 @@ class TransitionImpl implements Transition{
 		this.eventName = eventName;
 		this.output = output;
 		toState = to;
-		
 	}
 	
     //Return the from-state of this transition

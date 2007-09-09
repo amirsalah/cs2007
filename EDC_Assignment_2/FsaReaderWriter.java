@@ -62,7 +62,7 @@ public class FsaReaderWriter implements FsaIo{
     			toState = recordItems.get(4);
     			event = recordItems.get(2);
     			output = recordItems.get(3);
-    			f.newTransition(f.findState(fromState), f.findState(toState), event, output);
+    			f.newTransition((StateImpl)f.findState(fromState), (StateImpl)f.findState(toState), event, output);
     		}
     		
     		//Store initial states
