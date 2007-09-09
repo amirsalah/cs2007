@@ -210,20 +210,9 @@ public class FsaImpl implements FsaSim, Fsa{
     		
     		if(t.equals(checkedTransition)){
     			transitionsSet.remove(checkedTransition);
-    			//Modify all the relevant states 
-    			//unnecessary, because there is only one copy Transition in the fsa
-    			//the transition references are stored in the States.
-    			Set<State> allStates = getStates();
-    			Iterator itrStates = allStates.iterator();
-    			while(itrStates.hasNext()){
-    				((StateImpl)itrStates.next()).DeleteTransitionFrom(t);
-    				((StateImpl)itrStates.next()).DeleteTransitionTo(t);
-    			}
     			return;
     		}
     	}
-    	
-    	return;
     }
 
 

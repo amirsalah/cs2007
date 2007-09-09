@@ -24,7 +24,7 @@ public class FsaReaderWriter implements FsaIo{
 	
     public void read(Reader r, Fsa f) 
     throws IOException, FsaFormatException{
-    	BufferedReader reader = new BufferedReader(r);
+    	BufferedReader reader1 = new BufferedReader(r);
     	String line = null;
     	
     	StringTokenizer tokens = null;
@@ -37,7 +37,7 @@ public class FsaReaderWriter implements FsaIo{
     	String initialState = null;
     	
     	//Retrieve all lines
-    	while((line = reader.readLine()) != null){
+    	while((line = reader1.readLine()) != null){
     		tokens = new StringTokenizer(line);
     		recordItems.clear(); //New record
     		
@@ -54,6 +54,25 @@ public class FsaReaderWriter implements FsaIo{
     		//Store states into fsa
     		if(recordItems.get(0).equals("STATE")){
     			f.newState(recordItems.get(1), Integer.valueOf(recordItems.get(2)), Integer.valueOf(recordItems.get(3)));
+    		}
+    		   		
+    	}
+    	reader1.close();
+    	
+    	//Second pass
+    	BufferedReader reader2 = new BufferedReader(r);
+    	while((line = reader2.readLine()) != null){
+    		tokens = new StringTokenizer(line);
+    		recordItems.clear(); //New record
+    		
+    		while(tokens.hasMoreTokens()){
+    			recordItems.add(tokens.nextToken());
+    		}
+    		
+    		//Check if the number of items is valid
+    		int numItems = recordItems.size();
+    		if(numItems != 2 && numItems != 4 && numItems != 5){
+    			continue;
     		}
     		
     		//Store transitions into fsa
@@ -72,7 +91,7 @@ public class FsaReaderWriter implements FsaIo{
     		}
     	}
     	
-    	reader.close();
+    	reader2.close();
     }
     
     
