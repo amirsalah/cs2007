@@ -4,6 +4,7 @@
   Date: 3rd, Sept 2007
 =========================================================*/
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -350,7 +351,29 @@ public class FsaImpl implements FsaSim, Fsa{
     	}
     	
     	List<String> outputs = new ArrayList<String>();
-    	Collections.
+    	StateImpl validState = null;
+    	TransitionImpl tmpTransition = null;
+    	ArrayList<State> workingStates = new ArrayList<State>();
+    	Set<Transition> allTransitions = new HashSet<Transition>();
+    	ArrayList<Transition> workingTransitions = new ArrayList<Transition>();
+    	Iterator itr = allTransitions.iterator();
+    	
+    	//Iterate the current states
+    	for(int i=0; i<currentStatesNames.size(); i++){
+    		validState = (StateImpl)statesSet.get(currentStatesNames.get(i));
+    		allTransitions = validState.transitionsFrom();
+    		while(itr.hasNext()){
+    			tmpTransition = (TransitionImpl)itr.next();
+    			//A transition affected by the given event
+    			if(tmpTransition.eventName().equals(event) || tmpTransition.eventName().equals("?")){
+    				workingTransitions.add(tmpTransition);
+    				outputs.add(tmpTransition.output());
+    			}
+    		}
+    	}
+    	
+    	Collections.sort(outputs);
+    	return outputs;
     }
 }
 
