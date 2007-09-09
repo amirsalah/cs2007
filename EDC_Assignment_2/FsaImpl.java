@@ -367,7 +367,10 @@ public class FsaImpl implements FsaSim, Fsa{
     			//A transition affected by the given event
     			if(tmpTransition.eventName().equals(event) || tmpTransition.eventName().equals("?")){
     				workingTransitions.add(tmpTransition);
-    				outputs.add(tmpTransition.output());
+    				//Remove empty output
+    				if(!tmpTransition.output().equals("-")){
+    					outputs.add(tmpTransition.output());
+    				}
     			}
     		}
     	}
