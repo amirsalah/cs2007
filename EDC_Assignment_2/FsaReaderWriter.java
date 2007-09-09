@@ -70,8 +70,6 @@ public class FsaReaderWriter implements FsaIo{
     			initialState = recordItems.get(1);
     			f.addInitialState(f.findState(initialState));
     		}
-    		
-    		continue;
     	}
     	
     	reader.close();
@@ -84,5 +82,6 @@ public class FsaReaderWriter implements FsaIo{
     	BufferedWriter writer = new BufferedWriter(w);
     	writer.append(f.toString());
     	writer.flush();
+    	writer.close();
     }
 }

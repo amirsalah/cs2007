@@ -10,7 +10,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class FsaImpl implements FsaSim, Fsa{
 	private Hashtable<String, State> statesSet = new Hashtable<String, State>();
@@ -95,7 +94,6 @@ public class FsaImpl implements FsaSim, Fsa{
     			transitionsSet.remove(aTransition);
     		}
     	}
-    	
     }
 
 
@@ -168,6 +166,10 @@ public class FsaImpl implements FsaSim, Fsa{
     		return true;
     	}
     	
+    	if( eventName == null){
+    		return true;
+    	}
+    	
     	for(int i=0; i<eventName.length(); i++){
     		if( !Character.isLetter(eventName.charAt(i)) ){
     			return false;
@@ -183,6 +185,10 @@ public class FsaImpl implements FsaSim, Fsa{
     private boolean IsValidOutput(String output){
     	//Special value "-" is also valid
     	if( (output.length() == 1) && (output.equalsIgnoreCase("-")) ){
+    		return true;
+    	}
+    	
+    	if(output == null){
     		return true;
     	}
     	
@@ -204,7 +210,9 @@ public class FsaImpl implements FsaSim, Fsa{
     		
     		if(t.equals(checkedTransition)){
     			transitionsSet.remove(checkedTransition);
-    			//Modify all the relevant states
+    			//Modify all the relevant states 
+    			//unnecessary, because there is only one copy Transition in the fsa
+    			//the transition references are stored in the States.
     			Set<State> allStates = getStates();
     			Iterator itrStates = allStates.iterator();
     			while(itrStates.hasNext()){
@@ -310,18 +318,18 @@ public class FsaImpl implements FsaSim, Fsa{
     	allStates = getStates();
     	Iterator itr = allStates.iterator();
     	while(itr.hasNext()){
-    		LinesOutput = LinesOutput + "STATE" + itr.next().toString() + "\n";
+    		LinesOutput = LinesOutput + "STATE " + itr.next().toString() + "\n";
     	}
     	
     	//Output transitions
     	itr = transitionsSet.iterator();
     	while(itr.hasNext()){
-    		LinesOutput = LinesOutput + "TRANSITION" + itr.next().toString() + "\n";
+    		LinesOutput = LinesOutput + "TRANSITION " + itr.next().toString() + "\n";
     	}
     	
     	//Output initial states
     	for(int i=0; i<initialStatesNames.size(); i++){
-    		LinesOutput = LinesOutput + "INITIAL" + initialStatesNames.get(i) + "\n";
+    		LinesOutput = LinesOutput + "INITIAL " + initialStatesNames.get(i) + "\n";
     	}
     	
     	return LinesOutput;
