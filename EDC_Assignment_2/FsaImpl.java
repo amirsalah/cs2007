@@ -274,15 +274,36 @@ public class FsaImpl implements FsaSim, Fsa{
     //for each initial state in the FSA, a line (terminated by \n)
     //  INITIAL followed the name of the state
     public String toString(){
+    	String LinesOutput = null;
     	
+    	//Output all states
+    	Set<State> allStates = null;
+    	allStates = getStates();
+    	Iterator itr = allStates.iterator();
+    	while(itr.hasNext()){
+    		LinesOutput = LinesOutput + "STATE" + itr.next().toString() + "\n";
+    	}
+    	
+    	//Output transitions
+    	itr = transitionsSet.iterator();
+    	while(itr.hasNext()){
+    		LinesOutput = LinesOutput + "TRANSITION" + itr.next().toString() + "\n";
+    	}
+    	
+    	//Output initial states
+    	for(int i=0; i<initialStatesNames.size(); i++){
+    		LinesOutput = LinesOutput + "INITIAL" + initialStatesNames.get(i) + "\n";
+    	}
+    	
+    	return LinesOutput;
     }
     
     //Reset the simulation to its initial state(s)
     public void reset(){
-    	statesSet.clear();
-    	initialStatesNames.clear();
-    	transitionsSet.clear();
-    	currentStatesNames.clear();
+//    	statesSet.clear();
+//    	initialStatesNames.clear();
+//    	transitionsSet.clear();
+    	currentStatesNames = (ArrayList<String>)initialStatesNames.clone();
     }
     
     //Take one step in the simulation
