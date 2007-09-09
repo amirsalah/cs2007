@@ -200,11 +200,22 @@ public class FsaImpl implements FsaSim, Fsa{
     public void removeTransition(Transition t){
     	Iterator itr = transitionsSet.iterator();
     	while(itr.hasNext()){
-    		if(t.equals(itr.next())){
-    			itr.remove();
+    		Transition checkedTransition = (Transition)itr.next();
+    		
+    		if(t.equals(checkedTransition)){
+    			transitionsSet.remove(checkedTransition);
+    			//Modify all the relevant states
+    			Set<State> allStates = getStates();
+    			Iterator itrStates = allStates.iterator();
+    			while(itrStates.hasNext()){
+    				((StateImpl)itrStates.next()).DeleteTransitionFrom(t);
+    				((StateImpl)itrStates.next()).DeleteTransitionTo(t);
+    			}
     			return;
     		}
     	}
+    	
+    	return;
     }
 
 
@@ -401,6 +412,20 @@ class StateImpl implements State{
 	 */
 	public void AddTransitionFrom(Transition from){
 		transitionsFromSet.add(from);
+	}
+	
+	/*
+	 * Delete a existing transition in the fromSet
+	 */
+	public void DeleteTransitionFrom(Transition from){
+		transitionsFromSet.remove(from);
+	}
+	
+	/*
+	 * Delete a existing transition in the toSet
+	 */
+	public void DeleteTransitionTo(Transition to){
+		transitionsToSet.remove(to);
 	}
 	
 	/*
