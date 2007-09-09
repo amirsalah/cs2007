@@ -75,10 +75,25 @@ public class FsaImpl implements FsaSim, Fsa{
     //Remove a state from the FSA
     //If the state does not exist, returns without error
     public void removeState(State s){
-    	if( !statesSet.containsKey(s.getName()) ){
+    	String stateName = s.getName();
+    	if( !statesSet.containsKey(stateName) ){
     		return;
     	}
     	
+    	//Remove the state
+    	statesSet.remove(stateName);
+    	initialStatesNames.remove(stateName);
+    	currentStatesNames.remove(stateName);
+    	
+    	//Remove the corresponding transition(s)
+    	Iterator itr = transitionsSet.iterator();
+    	Transition aTransition = null;
+    	while(itr.hasNext()){
+    		aTransition = (Transition)itr.next();
+    		if(aTransition.fromState().equals(s) || aTransition.toState().equals(s)){
+    			transitionsSet.remove(aTransition);
+    		}
+    	}
     	
     }
 
@@ -126,7 +141,7 @@ public class FsaImpl implements FsaSim, Fsa{
     	}
     	
     	//Check the vadility of the event name
-    	if( !IsValidEvent(eventName) ){
+    	if( !IsValidEventName(eventName) ){
     		throw new IllegalArgumentException("New Transition");
     	}
     	
@@ -136,6 +151,8 @@ public class FsaImpl implements FsaSim, Fsa{
     	}
     	
     	Transition newTransition = new TransitionImpl(from, to, eventName, output);
+    	((StateImpl)from).AddTransitionFrom(newTransition);
+    	((StateImpl)to).AddTransitionTo(newTransition);
     	transitionsSet.add(newTransition);
     	
     	return newTransition;
@@ -144,7 +161,7 @@ public class FsaImpl implements FsaSim, Fsa{
     /*
      * Check if the given even name is valid
      */
-    private boolean IsValidEvent(String eventName){
+    private boolean IsValidEventName(String eventName){
     	//Epsilon transition event
     	if( (eventName.length() == 1) && eventName.equalsIgnoreCase("?") ){
     		return true;
@@ -306,13 +323,34 @@ public class FsaImpl implements FsaSim, Fsa{
     	currentStatesNames = (ArrayList<String>)initialStatesNames.clone();
     }
     
+    /*
+     * Check if the given event is handled in this fsa
+     */ 
+    private boolean IsValidEvent(String event){
+    	Iterator itr = transitionsSet.iterator();
+    	Transition aTransition = null;
+    	
+    	while(itr.hasNext()){
+    		aTransition = (Transition)itr.next();
+    		if(aTransition.eventName().equals(event)){
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    }
+    
     //Take one step in the simulation
     //Returns a list of outputs, sorted in ascending order, generated 
     //by this transition
     //Returns null if the event is not handled in this state
     public List<String> step(String event){
-    	List<String> outputs = new ArrayList<String>();
+    	if( !IsValidEvent(event) ){
+    		return null;
+    	}
     	
+    	List<String> outputs = new ArrayList<String>();
+    	Collections.
     }
 }
 
@@ -344,6 +382,17 @@ class StateImpl implements State{
 	 */
 	public void AddTransitionTo(Transition to){
 		transitionsToSet.add(to);
+	}
+	
+	/*
+	 * Test if the given state is equals this state
+	 */
+	public boolean Equals(State state){
+		if(stateName == state.getName()){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
     //Return a set containing all transitions FROM this state
