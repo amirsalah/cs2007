@@ -14,8 +14,6 @@ import java.util.Set;
 public class FsaImpl implements FsaSim, Fsa{
 	private Hashtable<String, State> statesSet = new Hashtable<String, State>();
 	private HashSet<Transition> transitionsSet = new HashSet<Transition>();
-//	private Hashtable<String, State> initialStatesSet = new Hashtable<String, State>();
-//	private Hashtable<String, State> currentStatesSet = new Hashtable<String, State>();
 	private ArrayList<String> initialStatesNames = new ArrayList<String>();
 	private ArrayList<String> currentStatesNames = new ArrayList<String>();
 	
@@ -133,6 +131,9 @@ public class FsaImpl implements FsaSim, Fsa{
       String eventName, String output) 
       throws IllegalArgumentException{
     	//Check the existance of fromState & toState
+    	if(from == null || to == null){
+    		throw new IllegalArgumentException("New Transition");
+    	}
     	String fromStateName = from.getName();
     	String toStateName = to.getName();
     	if( !statesSet.containsKey(fromStateName) || !statesSet.containsKey(toStateName)){
@@ -180,7 +181,7 @@ public class FsaImpl implements FsaSim, Fsa{
     }
 
     /*
-     * Check if the given even name is valid
+     * Check if the given event name is valid
      */
     private boolean IsValidOutput(String output){
     	//Special value "-" is also valid
@@ -226,7 +227,6 @@ public class FsaImpl implements FsaSim, Fsa{
     		throw new IllegalArgumentException("Add initial state");
     	}
     	
-//    	initialStatesSet.put(stateName, s);
     	initialStatesNames.add(stateName);
     }
 
@@ -240,8 +240,6 @@ public class FsaImpl implements FsaSim, Fsa{
     		return;
     	}
     	
-    	//initialStatesSet.remove(stateName);
-    	
     	for(int i=0; i<initialStatesNames.size(); i++){
     		if(initialStatesNames.get(i).equals(stateName)){
     			initialStatesNames.remove(i);
@@ -253,18 +251,6 @@ public class FsaImpl implements FsaSim, Fsa{
 
     //Return the set of initial states of this Fsa
     public Set<State> getInitialStates(){
-    	/*
-    	Set<State> allStates = new HashSet<State>();
-    	Set<String> allStatesName = initialStatesSet.keySet();
-    	Iterator<String> itr = allStatesName.iterator();
-
-    	//Add all existing states into a set
-    	while(itr.hasNext()){
-    		allStates.add(initialStatesSet.get(itr.next()));
-    	}
-    	
-    	return allStates;
-    	*/
     	Set<State> allStates = new HashSet<State>();
     	String stateName = null;
     	
@@ -386,6 +372,10 @@ public class FsaImpl implements FsaSim, Fsa{
     	Collections.sort(outputs);
     	return outputs;
     }
+    
+    public HashSet<Transition> GetTransitions(){
+    	return transitionsSet;
+    }
 }
 
 class StateImpl implements State{
@@ -395,13 +385,10 @@ class StateImpl implements State{
 	private HashSet<Transition> transitionsFromSet = new HashSet<Transition>();
 	private HashSet<Transition> transitionsToSet = new HashSet<Transition>();
 	
-//	private FsaImpl fsa;  //The finate state machine in which the state works
-	
 	public StateImpl(String name, int x, int y){
 		stateName = name;
 		xPos = x;
 		yPos = y;
-//		this.fsa = fsa;
 	}
 	
 	/*
