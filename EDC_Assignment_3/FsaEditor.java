@@ -10,14 +10,14 @@ public class FsaEditor {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		JFrame mainFrame = new edc3();
-		mainFrame.show();
+		JFrame mainFrame = new FsaFrame();
+		mainFrame.setVisible(true);
 	}
 
 }
 
-class edc3 extends JFrame {
-	public edc3() {
+class FsaFrame extends JFrame {
+	public FsaFrame() {
 		initComponents();
 	}
 
@@ -41,14 +41,6 @@ class edc3 extends JFrame {
 		// TODO add your code here
 	}
 
-	private void useBasicRenderer_MouseClicked(MouseEvent e) {
-		// TODO add your code here
-	}
-
-	private void useMyRenderer_MouseClicked(MouseEvent e) {
-		// TODO add your code here
-	}
-
 	private void newTransition_MouseClicked(MouseEvent e) {
 		// TODO add your code here
 	}
@@ -62,6 +54,14 @@ class edc3 extends JFrame {
 	}
 
 	private void unsetInitialState_MouseClicked(MouseEvent e) {
+		// TODO add your code here
+	}
+
+	private void useBasicRenderer_MouseClicked(MouseEvent e) {
+		// TODO add your code here
+	}
+
+	private void useMyRenderer_MouseClicked(MouseEvent e) {
 		// TODO add your code here
 	}
 
@@ -98,9 +98,12 @@ class edc3 extends JFrame {
 		menu3 = new JMenu();
 		menuItem10 = new JMenuItem();
 		menuItem11 = new JMenuItem();
+		menu4 = new JMenu();
+		menuItem12 = new JMenuItem();
+		menuItem13 = new JMenuItem();
 		label1 = new JLabel();
 		scrollPane1 = new JScrollPane();
-		textPane1 = new JTextPane();
+		textArea1 = new JTextArea();
 		label2 = new JLabel();
 		button1 = new JButton();
 		button2 = new JButton();
@@ -258,6 +261,21 @@ class edc3 extends JFrame {
 					menu3.add(menuItem11);
 				}
 				menuBar1.add(menu3);
+
+				//======== menu4 ========
+				{
+					menu4.setText("Help");
+					menu4.setBackground(UIManager.getColor("Button.background"));
+
+					//---- menuItem12 ----
+					menuItem12.setText("Help contents");
+					menu4.add(menuItem12);
+
+					//---- menuItem13 ----
+					menuItem13.setText("About...");
+					menu4.add(menuItem13);
+				}
+				menuBar1.add(menu4);
 			}
 			dialogPane.add(menuBar1, BorderLayout.NORTH);
 		}
@@ -271,7 +289,7 @@ class edc3 extends JFrame {
 
 		//======== scrollPane1 ========
 		{
-			scrollPane1.setViewportView(textPane1);
+			scrollPane1.setViewportView(textArea1);
 		}
 		contentPane.add(scrollPane1);
 		scrollPane1.setBounds(225, 385, 400, 115);
@@ -290,7 +308,7 @@ class edc3 extends JFrame {
 			}
 		});
 		contentPane.add(button1);
-		button1.setBounds(25, 385, 65, 25);
+		button1.setBounds(25, 385, 90, 25);
 
 		//---- button2 ----
 		button2.setText("Step");
@@ -301,7 +319,7 @@ class edc3 extends JFrame {
 			}
 		});
 		contentPane.add(button2);
-		button2.setBounds(25, 427, 65, 25);
+		button2.setBounds(25, 427, 90, 25);
 
 		//---- button3 ----
 		button3.setText("Play");
@@ -312,7 +330,7 @@ class edc3 extends JFrame {
 			}
 		});
 		contentPane.add(button3);
-		button3.setBounds(25, 469, 65, button3.getPreferredSize().height);
+		button3.setBounds(25, 469, 90, button3.getPreferredSize().height);
 
 		//---- label3 ----
 		label3.setText("Display Area");
@@ -359,9 +377,12 @@ class edc3 extends JFrame {
 	private JMenu menu3;
 	private JMenuItem menuItem10;
 	private JMenuItem menuItem11;
+	private JMenu menu4;
+	private JMenuItem menuItem12;
+	private JMenuItem menuItem13;
 	private JLabel label1;
 	private JScrollPane scrollPane1;
-	private JTextPane textPane1;
+	private JTextArea textArea1;
 	private JLabel label2;
 	private JButton button1;
 	private JButton button2;
