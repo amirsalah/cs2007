@@ -1,3 +1,8 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 5th, Oct 2007
+=========================================================*/
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -5,15 +10,11 @@ import javax.swing.border.*;
 	
 public class FsaEditor {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		JFrame mainFrame = new FsaFrame();
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
 	}
-
 }
 
 class FsaFrame extends JFrame {
@@ -82,34 +83,34 @@ class FsaFrame extends JFrame {
 		// Generated using JFormDesigner non-commercial license
 		dialogPane = new JPanel();
 		menuBar1 = new JMenuBar();
-		menu1 = new JMenu();
-		menuItem1 = new JMenuItem();
-		menuItem2 = new JMenuItem();
+		fileMenu = new JMenu();
+		loadFsaMenuItem = new JMenuItem();
+		storeFsaMenuItem = new JMenuItem();
 		separator1 = new JSeparator();
-		menuItem3 = new JMenuItem();
+		loadEventsMenuItem = new JMenuItem();
 		separator2 = new JSeparator();
-		menuItem4 = new JMenuItem();
-		menu2 = new JMenu();
-		menuItem5 = new JMenuItem();
-		menuItem6 = new JMenuItem();
-		menuItem7 = new JMenuItem();
-		menuItem8 = new JMenuItem();
-		menuItem9 = new JMenuItem();
-		menu3 = new JMenu();
-		menuItem10 = new JMenuItem();
-		menuItem11 = new JMenuItem();
-		menu4 = new JMenu();
-		menuItem12 = new JMenuItem();
-		menuItem13 = new JMenuItem();
-		label1 = new JLabel();
+		quitMenuItem = new JMenuItem();
+		editMenu = new JMenu();
+		newStateMenuItem = new JMenuItem();
+		newTransitionMenuItem = new JMenuItem();
+		renameStateMenuItem = new JMenuItem();
+		setInitialStateMenuItem = new JMenuItem();
+		unsetInitialStateMenuItem = new JMenuItem();
+		OptionsMenu = new JMenu();
+		useBasicRenderMenuItem = new JMenuItem();
+		myRenderMenuItem = new JMenuItem();
+		helpMenu = new JMenu();
+		helpContentsMenuItem = new JMenuItem();
+		aboutMenuItem = new JMenuItem();
+		messageLabel = new JLabel();
 		scrollPane1 = new JScrollPane();
-		textArea1 = new JTextArea();
-		label2 = new JLabel();
-		button1 = new JButton();
-		button2 = new JButton();
-		button3 = new JButton();
-		label3 = new JLabel();
-		layeredPane1 = new JLayeredPane();
+		messagesArea = new JTextArea();
+		controlLabel = new JLabel();
+		resetButton = new JButton();
+		stepButton = new JButton();
+		playButton = new JButton();
+		displayLabel = new JLabel();
+		displayArea = new JLayeredPane();
 
 		//======== this ========
 		setTitle("FSA");
@@ -125,219 +126,219 @@ class FsaFrame extends JFrame {
 			{
 				menuBar1.setBackground(UIManager.getColor("Button.background"));
 
-				//======== menu1 ========
+				//======== fileMenu ========
 				{
-					menu1.setText("File");
-					menu1.setBackground(UIManager.getColor("Button.background"));
+					fileMenu.setText("File");
+					fileMenu.setBackground(UIManager.getColor("Button.background"));
 
-					//---- menuItem1 ----
-					menuItem1.setText("LoadFSA...");
-					menuItem1.addMouseListener(new MouseAdapter() {
+					//---- loadFsaMenuItem ----
+					loadFsaMenuItem.setText("LoadFSA...");
+					loadFsaMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							LoadFSA_MouseClicked(e);
 						}
 					});
-					menu1.add(menuItem1);
+					fileMenu.add(loadFsaMenuItem);
 
-					//---- menuItem2 ----
-					menuItem2.setText("StoreFSA...");
-					menuItem2.addMouseListener(new MouseAdapter() {
+					//---- storeFsaMenuItem ----
+					storeFsaMenuItem.setText("StoreFSA...");
+					storeFsaMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							StoreFSA_MouseClicked(e);
 						}
 					});
-					menu1.add(menuItem2);
-					menu1.add(separator1);
+					fileMenu.add(storeFsaMenuItem);
+					fileMenu.add(separator1);
 
-					//---- menuItem3 ----
-					menuItem3.setText("Loadevents...");
-					menuItem3.addMouseListener(new MouseAdapter() {
+					//---- loadEventsMenuItem ----
+					loadEventsMenuItem.setText("Loadevents...");
+					loadEventsMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							Loadevents_MouseClicked(e);
 						}
 					});
-					menu1.add(menuItem3);
-					menu1.add(separator2);
+					fileMenu.add(loadEventsMenuItem);
+					fileMenu.add(separator2);
 
-					//---- menuItem4 ----
-					menuItem4.setText("Quit");
-					menuItem4.addMouseListener(new MouseAdapter() {
+					//---- quitMenuItem ----
+					quitMenuItem.setText("Quit");
+					quitMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							Quit_MouseClicked(e);
 						}
 					});
-					menu1.add(menuItem4);
+					fileMenu.add(quitMenuItem);
 				}
-				menuBar1.add(menu1);
+				menuBar1.add(fileMenu);
 
-				//======== menu2 ========
+				//======== editMenu ========
 				{
-					menu2.setText("Edit");
-					menu2.setBackground(UIManager.getColor("Button.background"));
+					editMenu.setText("Edit");
+					editMenu.setBackground(UIManager.getColor("Button.background"));
 
-					//---- menuItem5 ----
-					menuItem5.setText("newState");
-					menuItem5.setForeground(SystemColor.textInactiveText);
-					menuItem5.addMouseListener(new MouseAdapter() {
+					//---- newStateMenuItem ----
+					newStateMenuItem.setText("newState");
+					newStateMenuItem.setForeground(SystemColor.textInactiveText);
+					newStateMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							newState_MouseClicked(e);
 						}
 					});
-					menu2.add(menuItem5);
+					editMenu.add(newStateMenuItem);
 
-					//---- menuItem6 ----
-					menuItem6.setText("newTransition");
-					menuItem6.setForeground(SystemColor.textInactiveText);
-					menuItem6.addMouseListener(new MouseAdapter() {
+					//---- newTransitionMenuItem ----
+					newTransitionMenuItem.setText("newTransition");
+					newTransitionMenuItem.setForeground(SystemColor.textInactiveText);
+					newTransitionMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							newTransition_MouseClicked(e);
 						}
 					});
-					menu2.add(menuItem6);
+					editMenu.add(newTransitionMenuItem);
 
-					//---- menuItem7 ----
-					menuItem7.setText("renameState");
-					menuItem7.setForeground(SystemColor.textInactiveText);
-					menuItem7.addMouseListener(new MouseAdapter() {
+					//---- renameStateMenuItem ----
+					renameStateMenuItem.setText("renameState");
+					renameStateMenuItem.setForeground(SystemColor.textInactiveText);
+					renameStateMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							renameState_MouseClicked(e);
 						}
 					});
-					menu2.add(menuItem7);
+					editMenu.add(renameStateMenuItem);
 
-					//---- menuItem8 ----
-					menuItem8.setText("setInitialState");
-					menuItem8.setForeground(SystemColor.textInactiveText);
-					menuItem8.addMouseListener(new MouseAdapter() {
+					//---- setInitialStateMenuItem ----
+					setInitialStateMenuItem.setText("setInitialState");
+					setInitialStateMenuItem.setForeground(SystemColor.textInactiveText);
+					setInitialStateMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							setInitialState_MouseClicked(e);
 						}
 					});
-					menu2.add(menuItem8);
+					editMenu.add(setInitialStateMenuItem);
 
-					//---- menuItem9 ----
-					menuItem9.setText("unsetInitialState");
-					menuItem9.setForeground(SystemColor.textInactiveText);
-					menuItem9.addMouseListener(new MouseAdapter() {
+					//---- unsetInitialStateMenuItem ----
+					unsetInitialStateMenuItem.setText("unsetInitialState");
+					unsetInitialStateMenuItem.setForeground(SystemColor.textInactiveText);
+					unsetInitialStateMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							unsetInitialState_MouseClicked(e);
 						}
 					});
-					menu2.add(menuItem9);
+					editMenu.add(unsetInitialStateMenuItem);
 				}
-				menuBar1.add(menu2);
+				menuBar1.add(editMenu);
 
-				//======== menu3 ========
+				//======== OptionsMenu ========
 				{
-					menu3.setText("Options");
+					OptionsMenu.setText("Options");
 
-					//---- menuItem10 ----
-					menuItem10.setText("useBasicRenderer");
-					menuItem10.addMouseListener(new MouseAdapter() {
+					//---- useBasicRenderMenuItem ----
+					useBasicRenderMenuItem.setText("useBasicRenderer");
+					useBasicRenderMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							useBasicRenderer_MouseClicked(e);
 						}
 					});
-					menu3.add(menuItem10);
+					OptionsMenu.add(useBasicRenderMenuItem);
 
-					//---- menuItem11 ----
-					menuItem11.setText("useMyRenderer");
-					menuItem11.addMouseListener(new MouseAdapter() {
+					//---- myRenderMenuItem ----
+					myRenderMenuItem.setText("useMyRenderer");
+					myRenderMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							useMyRenderer_MouseClicked(e);
 						}
 					});
-					menu3.add(menuItem11);
+					OptionsMenu.add(myRenderMenuItem);
 				}
-				menuBar1.add(menu3);
+				menuBar1.add(OptionsMenu);
 
-				//======== menu4 ========
+				//======== helpMenu ========
 				{
-					menu4.setText("Help");
-					menu4.setBackground(UIManager.getColor("Button.background"));
+					helpMenu.setText("Help");
+					helpMenu.setBackground(UIManager.getColor("Button.background"));
 
-					//---- menuItem12 ----
-					menuItem12.setText("Help contents");
-					menu4.add(menuItem12);
+					//---- helpContentsMenuItem ----
+					helpContentsMenuItem.setText("Help contents");
+					helpMenu.add(helpContentsMenuItem);
 
-					//---- menuItem13 ----
-					menuItem13.setText("About...");
-					menu4.add(menuItem13);
+					//---- aboutMenuItem ----
+					aboutMenuItem.setText("About...");
+					helpMenu.add(aboutMenuItem);
 				}
-				menuBar1.add(menu4);
+				menuBar1.add(helpMenu);
 			}
 			dialogPane.add(menuBar1, BorderLayout.NORTH);
 		}
 		contentPane.add(dialogPane);
 		dialogPane.setBounds(0, 0, 411, 45);
 
-		//---- label1 ----
-		label1.setText("Messages and Output");
-		contentPane.add(label1);
-		label1.setBounds(new Rectangle(new Point(225, 360), label1.getPreferredSize()));
+		//---- messageLabel ----
+		messageLabel.setText("Messages and Output");
+		contentPane.add(messageLabel);
+		messageLabel.setBounds(new Rectangle(new Point(225, 360), messageLabel.getPreferredSize()));
 
 		//======== scrollPane1 ========
 		{
-			scrollPane1.setViewportView(textArea1);
+			scrollPane1.setViewportView(messagesArea);
 		}
 		contentPane.add(scrollPane1);
 		scrollPane1.setBounds(225, 385, 400, 115);
 
-		//---- label2 ----
-		label2.setText("Control Area");
-		contentPane.add(label2);
-		label2.setBounds(25, 360, 95, 20);
+		//---- controlLabel ----
+		controlLabel.setText("Control Area");
+		contentPane.add(controlLabel);
+		controlLabel.setBounds(25, 360, 95, 20);
 
-		//---- button1 ----
-		button1.setText("Reset");
-		button1.addMouseListener(new MouseAdapter() {
+		//---- resetButton ----
+		resetButton.setText("Reset");
+		resetButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				resetButton_MouseClicked(e);
 			}
 		});
-		contentPane.add(button1);
-		button1.setBounds(25, 385, 90, 25);
+		contentPane.add(resetButton);
+		resetButton.setBounds(25, 385, 90, 25);
 
-		//---- button2 ----
-		button2.setText("Step");
-		button2.addMouseListener(new MouseAdapter() {
+		//---- stepButton ----
+		stepButton.setText("Step");
+		stepButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				stepButton_MouseClicked(e);
 			}
 		});
-		contentPane.add(button2);
-		button2.setBounds(25, 427, 90, 25);
+		contentPane.add(stepButton);
+		stepButton.setBounds(25, 427, 90, 25);
 
-		//---- button3 ----
-		button3.setText("Play");
-		button3.addMouseListener(new MouseAdapter() {
+		//---- playButton ----
+		playButton.setText("Play");
+		playButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				playButton_MouseClicked(e);
 			}
 		});
-		contentPane.add(button3);
-		button3.setBounds(25, 469, 90, button3.getPreferredSize().height);
+		contentPane.add(playButton);
+		playButton.setBounds(25, 469, 90, playButton.getPreferredSize().height);
 
-		//---- label3 ----
-		label3.setText("Display Area");
-		contentPane.add(label3);
-		label3.setBounds(15, 45, 105, label3.getPreferredSize().height);
-		contentPane.add(layeredPane1);
-		layeredPane1.setBounds(30, 70, 590, 285);
+		//---- displayLabel ----
+		displayLabel.setText("Display Area");
+		contentPane.add(displayLabel);
+		displayLabel.setBounds(15, 45, 105, displayLabel.getPreferredSize().height);
+		contentPane.add(displayArea);
+		displayArea.setBounds(30, 70, 590, 285);
 
 		{ // compute preferred size
 			Dimension preferredSize = new Dimension();
@@ -361,33 +362,33 @@ class FsaFrame extends JFrame {
 	// Generated using JFormDesigner non-commercial license
 	private JPanel dialogPane;
 	private JMenuBar menuBar1;
-	private JMenu menu1;
-	private JMenuItem menuItem1;
-	private JMenuItem menuItem2;
+	private JMenu fileMenu;
+	private JMenuItem loadFsaMenuItem;
+	private JMenuItem storeFsaMenuItem;
 	private JSeparator separator1;
-	private JMenuItem menuItem3;
+	private JMenuItem loadEventsMenuItem;
 	private JSeparator separator2;
-	private JMenuItem menuItem4;
-	private JMenu menu2;
-	private JMenuItem menuItem5;
-	private JMenuItem menuItem6;
-	private JMenuItem menuItem7;
-	private JMenuItem menuItem8;
-	private JMenuItem menuItem9;
-	private JMenu menu3;
-	private JMenuItem menuItem10;
-	private JMenuItem menuItem11;
-	private JMenu menu4;
-	private JMenuItem menuItem12;
-	private JMenuItem menuItem13;
-	private JLabel label1;
+	private JMenuItem quitMenuItem;
+	private JMenu editMenu;
+	private JMenuItem newStateMenuItem;
+	private JMenuItem newTransitionMenuItem;
+	private JMenuItem renameStateMenuItem;
+	private JMenuItem setInitialStateMenuItem;
+	private JMenuItem unsetInitialStateMenuItem;
+	private JMenu OptionsMenu;
+	private JMenuItem useBasicRenderMenuItem;
+	private JMenuItem myRenderMenuItem;
+	private JMenu helpMenu;
+	private JMenuItem helpContentsMenuItem;
+	private JMenuItem aboutMenuItem;
+	private JLabel messageLabel;
 	private JScrollPane scrollPane1;
-	private JTextArea textArea1;
-	private JLabel label2;
-	private JButton button1;
-	private JButton button2;
-	private JButton button3;
-	private JLabel label3;
-	private JLayeredPane layeredPane1;
+	private JTextArea messagesArea;
+	private JLabel controlLabel;
+	private JButton resetButton;
+	private JButton stepButton;
+	private JButton playButton;
+	private JLabel displayLabel;
+	private JLayeredPane displayArea;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 }
