@@ -16,7 +16,7 @@ public class SimpleRenderer
     }
 
 
-    public Shape  drawInitialTransition(Graphics2D g, State s)
+    public Shape  drawInitialTransition(Graphics2D g, State s, boolean isSelected)
     {
 	int x1= s.getXCoord();
 	int y1= s.getYCoord();

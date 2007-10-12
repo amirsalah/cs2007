@@ -2,7 +2,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 
 public interface FsaRenderer
-{	    
+{
     //Draw an initial transistion on state s
     //Returns the Shape that was drawn
     public Shape drawInitialTransition(Graphics2D gra2d, State s, 
