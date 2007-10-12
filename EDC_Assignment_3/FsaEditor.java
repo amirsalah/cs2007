@@ -3,10 +3,36 @@
   Student ID: 1139520
   Date: 5th, Oct 2007
 =========================================================*/
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 	
 public class FsaEditor {
 
@@ -22,11 +48,39 @@ class FsaFrame extends JFrame {
 		initComponents();
 	}
 
-	private void LoadFSA_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+	private void LoadFSA_MouseClicked(ActionEvent e) {
+		String filePath = null;
+		try{
+			// Choose the file containing fsa info.
+			int loadFileResult = fileChooser.showOpenDialog(this); 
+			if(loadFileResult == JFileChooser.APPROVE_OPTION){
+				messagesArea.setText("");
+				filePath = fileChooser.getSelectedFile().getPath();
+				fileR = new FileReader(filePath);
+			}
+		}
+		catch(FileNotFoundException fnfe){
+			System.out.println("File not found");
+		}catch(IOException ioe){
+            System.out.println("IO error!");
+        }
+		
+		try{
+			fsaRW.read(fileR, fsa);
+		}
+		catch(FsaFormatException ffe){
+			System.out.println("fsa exception");
+		}
+		catch(IOException ioe){
+			System.out.println("fsa io exception");
+		}
+	}
+	
+	private void FsaInit(){
+		
 	}
 
-	private void StoreFSA_MouseClicked(MouseEvent e) {
+	private void StoreFSA_MouseClicked(ActionEvent e) {
 		// TODO add your code here
 	}
 
@@ -111,7 +165,9 @@ class FsaFrame extends JFrame {
 		playButton = new JButton();
 		displayLabel = new JLabel();
 		displayArea = new JLayeredPane();
-
+		
+		fileChooser = new JFileChooser();
+		
 		//======== this ========
 		setTitle("FSA");
 		Container contentPane = getContentPane();
@@ -133,9 +189,8 @@ class FsaFrame extends JFrame {
 
 					//---- loadFsaMenuItem ----
 					loadFsaMenuItem.setText("LoadFSA...");
-					loadFsaMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					loadFsaMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							LoadFSA_MouseClicked(e);
 						}
 					});
@@ -146,7 +201,7 @@ class FsaFrame extends JFrame {
 					storeFsaMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
-							StoreFSA_MouseClicked(e);
+//							StoreFSA_MouseClicked(e);
 						}
 					});
 					fileMenu.add(storeFsaMenuItem);
@@ -391,4 +446,10 @@ class FsaFrame extends JFrame {
 	private JLabel displayLabel;
 	private JLayeredPane displayArea;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
+	
+	private JFileChooser fileChooser;
+	private FileReader fileR = null;
+	private FileWriter fileW = null;
+	private FsaReaderWriter fsaRW = new FsaReaderWriter();;
+	private Fsa fsa = new FsaImpl();;
 }
