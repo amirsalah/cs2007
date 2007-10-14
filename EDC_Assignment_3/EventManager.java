@@ -1,24 +1,75 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 
 public class EventManager implements EventSeq {
+	private ArrayList<String> events = new ArrayList<String>();
+	private int eventNum = 0;
+	
     //Read an event sequence from the given Reader.
     public void read(Reader r)
       throws IOException, EventFileException{
+    	BufferedReader reader = new BufferedReader(r);
+    	String line = null;
+    	StringTokenizer tokens = null;
     	
+    	String eventName = null;
+    	
+    	//Retrieve all lines
+    	while((line = reader.readLine()) != null){
+    		tokens = new StringTokenizer(line);
+    		
+    		// Get the 1st element from current line
+    		if(tokens.hasMoreTokens()){
+    			eventName = tokens.nextToken();
+    			if(IsValidEventName(eventName)){
+    				events.add(eventName);
+    			}
+    		}
+    	}
+    }
+    
+    /*
+     * Check if the given even name is valid
+     */
+    private boolean IsValidEventName(String eventName){
+    	//Epsilon transition event
+    	if( (eventName.length() == 1) && eventName.equalsIgnoreCase("?") ){
+    		return true;
+    	}
+    	
+    	if( eventName == null){
+    		return false;
+    	}
+    	
+    	for(int i=0; i<eventName.length(); i++){
+    		if( !Character.isLetter(eventName.charAt(i)) ){
+    			return false;
+    		}
+    	}
+    	
+    	return true;
     }
 
     //Reset the event sequence to its starting position
     public void reset(){
-    	
+    	eventNum = 0;
     }
 
 
     //Return the next event in the sequence
     //Returns null, if there are no more events
     public String nextEvent(){
-    	
+    	if(eventNum >= events.size() - 1){
+    		return null;
+    	}else{
+    		String nextEvent = events.get(eventNum);
+    		eventNum++;
+    		return nextEvent;
+    	}
     }
 
 
@@ -30,6 +81,51 @@ public class EventManager implements EventSeq {
     //  [eva,evb,evc,evd->eve,evf,evg]   ...In the middle...
     //  [eva,evb->]       ...At the end
     public String toString(){
+    	String output = null;
     	
+    	// The NEXT event is the 1st event
+    	if(eventNum == 0){
+    		output += "[->";
+    		for(int i=0; i<events.size(); i++){
+    			output += events.get(i);
+    			output += ",";
+    		}
+    		output = output.substring(0, output.length()-2); // eliminate the last comma
+    		output += "]";
+    	}
+    	
+    	// The NEXT event is in the middle
+    	if(eventNum > 0 && eventNum < (events.size()-1)){
+    		output += "[";
+    		for(int i=0; i<eventNum; i++){
+    			output += events.get(i);
+    			output += ",";
+    		}
+    		
+    		output = output.substring(0, output.length()-2); // eliminate the last comma
+    		
+    		output += "->";
+    		
+    		for(int i=eventNum; i<events.size(); i++){
+    			output += events.get(i);
+    			output += ",";
+    		}
+    		
+    		output = output.substring(0, output.length()-2); // eliminate the last comma
+    	}
+    	
+    	// The NEXT event is at the end
+    	if(eventNum == (events.size()-1)){
+    		output += "[";
+    		for(int i=0; i<events.size(); i++){
+    			output += events.get(i);
+    			output += ",";
+    		}
+    		
+    		output = output.substring(0, output.length()-2); // eliminate the last comma
+    		output += "->]";
+    	}
+    	
+    	return output;
     }
 }
