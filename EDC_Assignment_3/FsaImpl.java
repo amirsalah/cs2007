@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class FsaImpl implements FsaSim, Fsa{
 	private Hashtable<String, State> statesSet = new Hashtable<String, State>();
-	private HashSet<Transition> transitionsSet = new HashSet<Transition>();
+	private Set<Transition> transitionsSet = new HashSet<Transition>();
 	private ArrayList<String> initialStatesNames = new ArrayList<String>();
 	private ArrayList<String> currentStatesNames = new ArrayList<String>();
 	
@@ -120,7 +120,7 @@ public class FsaImpl implements FsaSim, Fsa{
     	return allStates;
     }
     
-
+    
     //Create a new Transition and add it to this FSA
     //Returns the new transition.
     //Throws IllegalArgumentException if:
@@ -373,7 +373,7 @@ public class FsaImpl implements FsaSim, Fsa{
     	return outputs;
     }
     
-    public HashSet<Transition> GetTransitions(){
+    public Set<Transition> GetTransitions(){
     	return transitionsSet;
     }
 }

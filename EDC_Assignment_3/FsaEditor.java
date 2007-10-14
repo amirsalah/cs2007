@@ -76,6 +76,7 @@ class FsaFrame extends JFrame {
 			System.out.println("fsa io exception");
 		}
 		
+		displayArea.LoadFsa(fsa);
 	}
 	
 	private void FsaInit(){
@@ -166,9 +167,9 @@ class FsaFrame extends JFrame {
 		stepButton = new JButton();
 		playButton = new JButton();
 		displayLabel = new JLabel();
-		displayArea = new JLayeredPane();
+		displayArea = new FsaDisplayPanel();
 		
-		fileChooser = new JFileChooser();
+		fileChooser = new JFileChooser(System.getProperty( "user.dir" ));
 		
 		//======== this ========
 		setTitle("FSA");
@@ -412,11 +413,8 @@ class FsaFrame extends JFrame {
 		}
 		pack();
 		setLocationRelativeTo(getOwner());
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
 	}
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner non-commercial license
 	private JPanel dialogPane;
 	private JMenuBar menuBar1;
 	private JMenu fileMenu;
@@ -446,8 +444,7 @@ class FsaFrame extends JFrame {
 	private JButton stepButton;
 	private JButton playButton;
 	private JLabel displayLabel;
-	private JLayeredPane displayArea;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+	private FsaDisplayPanel displayArea;
 	
 	private JFileChooser fileChooser;
 	private FileReader fileR = null;

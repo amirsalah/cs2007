@@ -1,5 +1,4 @@
 
-
 TRANSITION q0 zero Ta q0
 TRANSITION q0 zero Tb q1
 TRANSITION q0 one Tc q0
