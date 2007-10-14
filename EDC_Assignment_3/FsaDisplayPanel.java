@@ -56,8 +56,12 @@ public class FsaDisplayPanel extends JPanel{
 		
 		// Draw transitions
 		Iterator<Transition> itr_transition = ((FsaImpl)fsa).GetTransitions().iterator();
+		int numMulti = 0;
+		Transition t = null;
 		while (itr_transition.hasNext()){
-			fsaRenderer.drawTransition(gra2d, itr_transition.next(), 2, false);
+			t = itr_transition.next();
+			numMulti = mapMultiplicity.get(t.toString());
+			fsaRenderer.drawTransition(gra2d, t, numMulti, false);
 		}
 	}
 	
@@ -111,9 +115,31 @@ public class FsaDisplayPanel extends JPanel{
 		}
 		
 		// Save transitions' name
+		Transition t = null;
+		ArrayList<Transition> transitions = new ArrayList<Transition>();
 		Iterator<Transition> itr_transition = ((FsaImpl)fsa).GetTransitions().iterator();
 		while (itr_transition.hasNext()){
-			allTransitions.add(itr_transition.next().toString());
+			t = itr_transition.next();
+			allTransitions.add(t.toString());
+			transitions.add(t);
+		}
+		
+		// Set the multiplicity of each transition
+		int numMulti = 1;
+		while(!transitions.isEmpty()){
+			t = transitions.get(0);
+			numMulti = 1;
+			mapMultiplicity.put(t.toString(), numMulti);
+			for(int i=1; i<transitions.size(); i++){
+				if(transitions.get(i).fromState().getName().equals(t.fromState().getName()) &&
+						transitions.get(i).toState().getName().equals(t.toState().getName())){
+					numMulti++;
+					mapMultiplicity.put(transitions.get(i).toString(), numMulti);
+					transitions.remove(i);
+					i--;
+				}
+			}
+			transitions.remove(0);
 		}
 		return true;
 	}

@@ -101,10 +101,11 @@ public class MyRenderer implements FsaRenderer {
 		State to = t.toState();
 		
 		// Select different points depends on its multiplicity
-		int xFrom = from.getXCoord() + multiplicity *2;
-		int yFrom = from.getYCoord() + multiplicity *2;
-		int xTo = to.getXCoord() + multiplicity *2;
-		int yTo = to.getYCoord() + multiplicity *2;
+		int dst = 3;
+		int xFrom = from.getXCoord() + multiplicity * dst;
+		int yFrom = from.getYCoord() + multiplicity * dst;
+		int xTo = to.getXCoord() + multiplicity * dst;
+		int yTo = to.getYCoord() + multiplicity * dst;
 		
 		// Mid point of the line center
 		int midX = (xFrom + xTo)/2;
