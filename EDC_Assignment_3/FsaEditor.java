@@ -87,8 +87,31 @@ class FsaFrame extends JFrame {
 		// TODO add your code here
 	}
 
-	private void Loadevents_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+	private void Loadevents_MouseClicked(ActionEvent e) {
+		String filePath = null;
+		try{
+			// Choose the file containing fsa info.
+			int loadFileResult = fileChooser.showOpenDialog(this); 
+			if(loadFileResult == JFileChooser.APPROVE_OPTION){
+				messagesArea.setText("");
+				filePath = fileChooser.getSelectedFile().getPath();
+				fileR = new FileReader(filePath);
+			}
+		}catch(FileNotFoundException fnfe){
+			System.out.println("File not found");
+		}
+		
+		events = new EventManager(messagesArea);
+		try{
+			events.read(fileR);
+		}
+		catch(EventFileException efe){
+			System.out.println("event file exception");
+		}catch(IOException ioe){
+			System.out.println("event reader io exception");
+		}
+		
+		
 	}
 
 	private void Quit_MouseClicked(MouseEvent e) {
@@ -123,8 +146,9 @@ class FsaFrame extends JFrame {
 		// TODO add your code here
 	}
 
-	private void resetButton_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+	private void resetButton_MouseClicked(ActionEvent e) {
+		((FsaImpl)fsa).reset();
+		events.reset();
 	}
 
 	private void stepButton_MouseClicked(MouseEvent e) {
@@ -136,8 +160,6 @@ class FsaFrame extends JFrame {
 	}
 
 	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		// Generated using JFormDesigner non-commercial license
 		dialogPane = new JPanel();
 		menuBar1 = new JMenuBar();
 		fileMenu = new JMenu();
@@ -215,9 +237,8 @@ class FsaFrame extends JFrame {
 
 					//---- loadEventsMenuItem ----
 					loadEventsMenuItem.setText("Loadevents...");
-					loadEventsMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					loadEventsMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							Loadevents_MouseClicked(e);
 						}
 					});
@@ -363,9 +384,8 @@ class FsaFrame extends JFrame {
 
 		//---- resetButton ----
 		resetButton.setText("Reset");
-		resetButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+		resetButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				resetButton_MouseClicked(e);
 			}
 		});
@@ -458,4 +478,5 @@ class FsaFrame extends JFrame {
 	private FileWriter fileW = null;
 	private FsaReaderWriter fsaRW = new FsaReaderWriter();;
 	private Fsa fsa = new FsaImpl();;
+	private EventSeq events = null;
 }

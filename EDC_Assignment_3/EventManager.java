@@ -4,10 +4,17 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import javax.swing.JTextArea;
+
 
 public class EventManager implements EventSeq {
 	private ArrayList<String> events = new ArrayList<String>();
 	private int eventNum = 0;
+	private JTextArea messagesArea = null; //Used to display messages in the UI
+	
+	public EventManager(JTextArea messagesArea){
+		this.messagesArea = messagesArea;
+	}
 	
     //Read an event sequence from the given Reader.
     public void read(Reader r)
@@ -27,6 +34,9 @@ public class EventManager implements EventSeq {
     			eventName = tokens.nextToken();
     			if(IsValidEventName(eventName)){
     				events.add(eventName);
+    				messagesArea.append("Reading event: " + eventName + "\n");
+    			}else{
+    				messagesArea.append("invalid event: " + eventName + "\n");
     			}
     		}
     	}

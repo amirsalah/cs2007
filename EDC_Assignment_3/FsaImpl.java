@@ -347,7 +347,6 @@ public class FsaImpl implements FsaSim, Fsa{
     	List<String> outputs = new ArrayList<String>();
     	StateImpl validState = null;
     	TransitionImpl tmpTransition = null;
-    	ArrayList<State> workingStates = new ArrayList<State>();
     	Set<Transition> allTransitions = new HashSet<Transition>();
     	ArrayList<Transition> workingTransitions = new ArrayList<Transition>();
     	Iterator itr = allTransitions.iterator();
