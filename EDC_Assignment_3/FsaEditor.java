@@ -51,32 +51,30 @@ class FsaFrame extends JFrame {
 
 	private void LoadFSA_MouseClicked(ActionEvent e) {
 		String filePath = null;
-		try{
-			// Choose the file containing fsa info.
-			int loadFileResult = fileChooser.showOpenDialog(this); 
-			if(loadFileResult == JFileChooser.APPROVE_OPTION){
+		// Choose the file containing fsa info.
+		int loadFileResult = fileChooser.showOpenDialog(this); 
+		if(loadFileResult == JFileChooser.APPROVE_OPTION){
+			try{
 				messagesArea.setText("");
 				filePath = fileChooser.getSelectedFile().getPath();
 				fileR = new FileReader(filePath);
 			}
-		}
-		catch(FileNotFoundException fnfe){
-			System.out.println("File not found");
-		}catch(IOException ioe){
-            System.out.println("IO error!");
-        }
+			catch(FileNotFoundException fnfe){
+				System.out.println("File not found");
+			}
 		
-		try{
-			fsaRW.read(fileR, fsa);
+			try{
+				fsaRW.read(fileR, fsa);
+			}
+			catch(FsaFormatException ffe){
+				System.out.println("fsa exception");
+			}
+			catch(IOException ioe){
+				System.out.println("fsa io exception");
+				}
+			
+			displayArea.LoadFsa(fsa);
 		}
-		catch(FsaFormatException ffe){
-			System.out.println("fsa exception");
-		}
-		catch(IOException ioe){
-			System.out.println("fsa io exception");
-		}
-		
-		displayArea.LoadFsa(fsa);
 	}
 	
 	private void FsaInit(){
@@ -89,26 +87,26 @@ class FsaFrame extends JFrame {
 
 	private void Loadevents_MouseClicked(ActionEvent e) {
 		String filePath = null;
-		try{
-			// Choose the file containing fsa info.
-			int loadFileResult = fileChooser.showOpenDialog(this); 
-			if(loadFileResult == JFileChooser.APPROVE_OPTION){
+		// Choose the file containing fsa info.
+		int loadFileResult = fileChooser.showOpenDialog(this); 
+		if(loadFileResult == JFileChooser.APPROVE_OPTION){
+			try{
 				messagesArea.setText("");
 				filePath = fileChooser.getSelectedFile().getPath();
 				fileR = new FileReader(filePath);
+			}catch(FileNotFoundException fnfe){
+				System.out.println("File not found");
 			}
-		}catch(FileNotFoundException fnfe){
-			System.out.println("File not found");
-		}
 		
-		events = new EventManager(messagesArea);
-		try{
-			events.read(fileR);
-		}
-		catch(EventFileException efe){
-			System.out.println("event file exception");
-		}catch(IOException ioe){
-			System.out.println("event reader io exception");
+			events = new EventManager(messagesArea);
+			try{
+				events.read(fileR);
+			}
+			catch(EventFileException efe){
+				System.out.println("event file exception");
+			}catch(IOException ioe){
+				System.out.println("event reader io exception");
+			}
 		}
 		
 	}
