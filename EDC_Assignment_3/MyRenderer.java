@@ -1,8 +1,11 @@
-import java.awt.*;
-import java.awt.font.*;
-import java.awt.geom.*;
-
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.RoundRectangle2D;
 
 public class MyRenderer implements FsaRenderer {
 	// parameters of the squre (states)
@@ -103,6 +106,11 @@ public class MyRenderer implements FsaRenderer {
 		int xTo = to.getXCoord() + multiplicity *2;
 		int yTo = to.getYCoord() + multiplicity *2;
 		
+		// Mid point of the line center
+		int midX = (xFrom + xTo)/2;
+		int midY = (yFrom + yTo)/2;
+		
+		// Generate a arrow line
 		double theta = Math.atan2(yTo - yFrom, xTo - xFrom);
         Point2D.Double p1 = new Point2D.Double(xFrom, yFrom);
         Point2D.Double p2 = new Point2D.Double(xTo, yTo);
@@ -127,6 +135,10 @@ public class MyRenderer implements FsaRenderer {
 		}
 		
 		gra2d.draw(path);
+		
+		// Draw transition name
+		gra2d.setColor(Color.BLACK);
+		gra2d.drawString(t.eventName()+": " + t.output(), midX, midY);
 		
 		return path;
 	}
