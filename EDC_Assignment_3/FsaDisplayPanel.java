@@ -91,8 +91,15 @@ public class FsaDisplayPanel extends JPanel{
 	 * Set a new Renderer
 	 * @param renderer
 	 */
-	private void SetRenderer(FsaRenderer renderer){
-		fsaRenderer = renderer;
+	public void SetDefaultRenderer(){
+		fsaRenderer = new SimpleRenderer();
+		repaint();
+	}
+	
+	public void SetMyRenderer(){
+		fsaRenderer = new MyRenderer();
+		repaint();
+		
 	}
 	
 	public boolean LoadFsa(Fsa fsa){

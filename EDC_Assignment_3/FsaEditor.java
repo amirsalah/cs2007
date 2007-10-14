@@ -111,7 +111,6 @@ class FsaFrame extends JFrame {
 			System.out.println("event reader io exception");
 		}
 		
-		
 	}
 
 	private void Quit_MouseClicked(MouseEvent e) {
@@ -138,12 +137,12 @@ class FsaFrame extends JFrame {
 		// TODO add your code here
 	}
 
-	private void useBasicRenderer_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+	private void useBasicRenderer_MouseClicked(ActionEvent e) {
+		((FsaDisplayPanel)displayArea).SetDefaultRenderer();
 	}
 
-	private void useMyRenderer_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+	private void useMyRenderer_MouseClicked(ActionEvent e) {
+		((FsaDisplayPanel)displayArea).SetMyRenderer();
 	}
 
 	private void resetButton_MouseClicked(ActionEvent e) {
@@ -325,9 +324,8 @@ class FsaFrame extends JFrame {
 
 					//---- useBasicRenderMenuItem ----
 					useBasicRenderMenuItem.setText("useBasicRenderer");
-					useBasicRenderMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					useBasicRenderMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							useBasicRenderer_MouseClicked(e);
 						}
 					});
@@ -335,9 +333,8 @@ class FsaFrame extends JFrame {
 
 					//---- myRenderMenuItem ----
 					myRenderMenuItem.setText("useMyRenderer");
-					myRenderMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					myRenderMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							useMyRenderer_MouseClicked(e);
 						}
 					});
