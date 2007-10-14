@@ -1,7 +1,7 @@
 /*=======================================================
   @Author: Bo CHEN
   Student ID: 1139520
-  Date: 3rd, Sept 2007
+  Date: 5th, Oct. 2007
 =========================================================*/
 import java.util.ArrayList;
 import java.util.Collections;
@@ -370,6 +370,23 @@ public class FsaImpl implements FsaSim, Fsa{
     	
     	Collections.sort(outputs);
     	return outputs;
+    }
+    
+    /**
+     * Return the closure of all the states
+     * @param currentStates
+     * @return the set containing all states could be reached by epsilon from current states
+     */
+    public Set<State> StatesClosure(Set<State> currentStates){
+    	Iterator<State> itr = currentStates.iterator();
+    	State s = null;
+    	Set<Transition> transitions = null;
+    	
+    	while(itr.hasNext()){
+    		s = itr.next();
+    		
+    		transitions = s.transitionsFrom();
+    	}
     }
     
     public Set<Transition> GetTransitions(){

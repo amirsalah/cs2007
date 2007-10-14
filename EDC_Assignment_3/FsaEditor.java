@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -52,6 +51,7 @@ class FsaFrame extends JFrame {
 		String filePath = null;
 		// Choose the file containing fsa info.
 		int loadFileResult = fileChooser.showOpenDialog(this); 
+		messagesArea.setText("");
 		if(loadFileResult == JFileChooser.APPROVE_OPTION){
 			try{
 				messagesArea.setText("");
@@ -71,7 +71,7 @@ class FsaFrame extends JFrame {
 			catch(IOException ioe){
 				System.out.println("fsa io exception");
 			}
-			
+			messagesArea.append("Loaded FSA from file : " + filePath + "\n") ;
 			displayArea.LoadFsa(fsa);
 		}
 	}
@@ -84,7 +84,7 @@ class FsaFrame extends JFrame {
 			try{
 				filePath = fileChooser.getSelectedFile().getPath();
 				fileW = new FileWriter(filePath);
-		        messagesArea.append("Saving FSA to file : " + filePath + "\n") ;	 
+//		        messagesArea.append("Saving FSA to file : " + filePath + "\n") ;	 
 			}
 		    catch (FileNotFoundException fnfe) {
 		        System.err.println("Caught IOException: " + fnfe.getMessage());
@@ -110,13 +110,13 @@ class FsaFrame extends JFrame {
 		int loadFileResult = fileChooser.showOpenDialog(this); 
 		if(loadFileResult == JFileChooser.APPROVE_OPTION){
 			try{
-				messagesArea.setText("");
 				filePath = fileChooser.getSelectedFile().getPath();
 				fileR = new FileReader(filePath);
 			}catch(FileNotFoundException fnfe){
 				System.out.println("File not found");
 			}
-		
+			
+			messagesArea.append("\n");
 			events = new EventManager(messagesArea);
 			try{
 				events.read(fileR);
@@ -135,23 +135,23 @@ class FsaFrame extends JFrame {
 	}
 
 	private void newState_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO
 	}
 
 	private void newTransition_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO
 	}
 
 	private void renameState_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO
 	}
 
 	private void setInitialState_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO
 	}
 
 	private void unsetInitialState_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO
 	}
 
 	private void useBasicRenderer_MouseClicked(ActionEvent e) {
@@ -164,15 +164,20 @@ class FsaFrame extends JFrame {
 
 	private void resetButton_MouseClicked(ActionEvent e) {
 		((FsaImpl)fsa).reset();
-		events.reset();
+		try{
+			events.reset();
+		}
+		catch(NullPointerException npe){
+			messagesArea.append("No event is loaded" + "\n");
+		}
 	}
 
 	private void stepButton_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO 
 	}
 
 	private void playButton_MouseClicked(MouseEvent e) {
-		// TODO add your code here
+		// TODO 
 	}
 
 	private void initComponents() {

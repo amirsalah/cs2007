@@ -81,6 +81,9 @@ public class FsaReaderWriter implements FsaIo{
     			}
     		}
     	}
+    	
+    	// Reset FSA after reading all the initial data
+    	((FsaImpl)f).reset();
     }
     
     

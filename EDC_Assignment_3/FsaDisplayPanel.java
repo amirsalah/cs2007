@@ -20,7 +20,7 @@ public class FsaDisplayPanel extends JPanel{
 	private ArrayList<String> initStates = new ArrayList<String>();
 	private ArrayList<String> allStates = new ArrayList<String>();
 	private ArrayList<String> allTransitions = new ArrayList<String>();
-	private Set<String> currentStates = new HashSet<String>();
+	private Set<State> currentStates = null;
 	// Map: Transition -> multiplicity
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
 	private boolean fsaLoaded = false;
@@ -120,8 +120,6 @@ public class FsaDisplayPanel extends JPanel{
 		while(itr.hasNext()){
 			s = itr.next();
 			initStates.add(s.getName());
-			// Set initial states to be current states
-			currentStates.add(s.getName());
 		}
 		
 		// Save all states' name
@@ -158,8 +156,8 @@ public class FsaDisplayPanel extends JPanel{
 			transitions.remove(0);
 		}
 		
-		
-
+		// Load current states
+		currentStates = fsa.getCurrentStates();
 		return true;
 	}
 }
