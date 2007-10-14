@@ -168,6 +168,9 @@ class FsaFrame extends JFrame {
 		playButton = new JButton();
 		displayLabel = new JLabel();
 		displayArea = new FsaDisplayPanel();
+		scrollDisplayArea = new JScrollPane(displayArea, 
+							JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+		                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		
 		fileChooser = new JFileChooser(System.getProperty( "user.dir" ));
 		
@@ -396,8 +399,11 @@ class FsaFrame extends JFrame {
 		contentPane.add(displayLabel);
 		displayLabel.setBounds(15, 45, 105, displayLabel.getPreferredSize().height);
 		contentPane.add(displayArea);
-		displayArea.setBounds(30, 70, 590, 285);
-
+//		contentPane.add(scrollDisplayArea, BorderLayout.CENTER);
+		displayArea.setBounds(30, 70, 590, 385);
+//		displayArea.setPreferredSize(new Dimension(590 , 285));
+//		scrollDisplayArea.setViewportView(displayArea);
+		
 		{ // compute preferred size
 			Dimension preferredSize = new Dimension();
 			for(int i = 0; i < contentPane.getComponentCount(); i++) {
@@ -446,6 +452,7 @@ class FsaFrame extends JFrame {
 	private JLabel displayLabel;
 	private FsaDisplayPanel displayArea;
 	
+	private JScrollPane scrollDisplayArea;
 	private JFileChooser fileChooser;
 	private FileReader fileR = null;
 	private FileWriter fileW = null;

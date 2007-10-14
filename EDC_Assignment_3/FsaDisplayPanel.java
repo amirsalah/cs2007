@@ -2,8 +2,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -13,9 +15,12 @@ public class FsaDisplayPanel extends JPanel{
 	private FsaRenderer fsaRenderer;
 	// Map from state name to the status of state selection
 	private Map<String, Boolean> stateSelectionMap = new HashMap<String, Boolean>();
+	// Map: State name -> Current State
+//	private Map<String, Boolean> mapCurrentStates = new HashMap<String, Boolean>();
 	private ArrayList<String> initStates = new ArrayList<String>();
 	private ArrayList<String> allStates = new ArrayList<String>();
 	private ArrayList<String> allTransitions = new ArrayList<String>();
+	private Set<String> currentStates = new HashSet<String>();
 	// Map: Transition -> multiplicity
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
 	private boolean fsaLoaded = false;
@@ -44,7 +49,7 @@ public class FsaDisplayPanel extends JPanel{
 			if(initStates.contains(s.getName())){
 				continue;
 			}
-			fsaRenderer.drawState(gra2d, s, false, false);
+			fsaRenderer.drawState(gra2d, s, false, currentStates.contains(s.getName()));
 		}
 
 		// Draw Initial states
@@ -104,8 +109,12 @@ public class FsaDisplayPanel extends JPanel{
 		
 		// Save initial states' name
 		Iterator<State> itr = fsa.getInitialStates().iterator();
+		State s = null;
 		while(itr.hasNext()){
-			initStates.add(itr.next().getName());
+			s = itr.next();
+			initStates.add(s.getName());
+			// Set initial states to be current states
+			currentStates.add(s.getName());
 		}
 		
 		// Save all states' name
@@ -141,6 +150,9 @@ public class FsaDisplayPanel extends JPanel{
 			}
 			transitions.remove(0);
 		}
+		
+		
+
 		return true;
 	}
 }

@@ -132,7 +132,7 @@ public class MyRenderer implements FsaRenderer {
 		if(isSelected){
 			gra2d.setColor(Color.ORANGE);
 		}else{
-			gra2d.setColor(Color.BLUE);
+			gra2d.setColor(Color.BLACK);
 		}
 		
 		gra2d.draw(path);
