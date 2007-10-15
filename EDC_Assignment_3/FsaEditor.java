@@ -171,6 +171,8 @@ class FsaFrame extends JFrame {
 		catch(NullPointerException npe){
 			messagesArea.append("No event is loaded" + "\n");
 		}
+		messagesArea.append("Reset the FSA" + "\n");
+		displayArea.repaint();
 	}
 
 	private void stepButton_MouseClicked(ActionEvent e) {
@@ -188,6 +190,7 @@ class FsaFrame extends JFrame {
 		outputMessage = outputList.toString();
 		messagesArea.append(outputMessage + "\n");
 		messagesArea.repaint();
+		displayArea.repaint(); 
 	}
 
 	private void playButton_MouseClicked(MouseEvent e) {
@@ -450,7 +453,7 @@ class FsaFrame extends JFrame {
 		displayLabel.setBounds(15, 45, 105, displayLabel.getPreferredSize().height);
 		contentPane.add(displayArea);
 //		contentPane.add(scrollDisplayArea, BorderLayout.CENTER);
-		displayArea.setBounds(30, 70, 590, 385);
+		displayArea.setBounds(30, 70, 590, 285);
 //		displayArea.setPreferredSize(new Dimension(590 , 285));
 //		scrollDisplayArea.setViewportView(displayArea);
 		

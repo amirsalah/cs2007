@@ -49,7 +49,7 @@ public class FsaDisplayPanel extends JPanel{
 			if(initStates.contains(s.getName())){
 				continue;
 			}
-			fsaRenderer.drawState(gra2d, s, false, currentStates.contains(s.getName()));
+			fsaRenderer.drawState(gra2d, s, false, fsa.getCurrentStates().contains(s));
 		}
 
 		// Draw Initial states
