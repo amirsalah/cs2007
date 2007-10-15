@@ -29,6 +29,11 @@ public class EventManager implements EventSeq {
     	while((line = reader.readLine()) != null){
     		tokens = new StringTokenizer(line);
     		
+    		// Comment line, ignored
+    		if(line.length() > 0 && line.indexOf("#") == 0){
+    			continue;
+    		}
+    		
     		// Get the 1st element from current line
     		if(tokens.hasMoreTokens()){
     			eventName = tokens.nextToken();
