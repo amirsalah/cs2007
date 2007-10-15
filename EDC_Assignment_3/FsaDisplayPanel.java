@@ -1,5 +1,12 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 5th, Oct 2007
+=========================================================*/
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,13 +15,18 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
 
 
 public class FsaDisplayPanel extends JPanel{
 	private Fsa fsa;
 	private FsaRenderer fsaRenderer;
-	// Map from state name to the status of state selection
-	private Map<String, Boolean> stateSelectionMap = new HashMap<String, Boolean>();
+	// Map: shape -> state
+	private Map<Shape, State> mapShapeState = new HashMap<Shape, State>();
+	
+	private Set<State> selectedStates = new HashSet<State>();
+	// Map: state -> status of state selection
+//	private Map<State, Boolean> mapStateSlection = new HashMap<State, Boolean>();
 	// Map: State name -> Current State
 //	private Map<String, Boolean> mapCurrentStates = new HashMap<String, Boolean>();
 	private ArrayList<String> initStates = new ArrayList<String>();
@@ -24,9 +36,14 @@ public class FsaDisplayPanel extends JPanel{
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
 	private boolean fsaLoaded = false;
 	
+	private Set<State> currentState = null;
+	
 	// Initialize the display panel
 	public FsaDisplayPanel(){
 //		setBackground(Color.WHITE);
+		MyListener myMouseListener = new MyListener();
+        addMouseListener(myMouseListener);
+        addMouseMotionListener(myMouseListener);
 	}
 	
 	public void paintComponent(Graphics g){
@@ -41,20 +58,24 @@ public class FsaDisplayPanel extends JPanel{
 		// Draw all other states except the initial states
 		Iterator<State> itr = fsa.getStates().iterator();
 		State s = null;
+		Shape shape = null;
 		
 		while(itr.hasNext()){
 			s = itr.next();
 			if(initStates.contains(s.getName())){
 				continue;
 			}
-			fsaRenderer.drawState(gra2d, s, false, fsa.getCurrentStates().contains(s));
+			shape = fsaRenderer.drawState(gra2d, s, selectedStates.contains(s), fsa.getCurrentStates().contains(s));
+			mapShapeState.put(shape, s);
 		}
 
 		// Draw Initial states
 		itr = fsa.getInitialStates().iterator();
 		
 		while(itr.hasNext()){
-			fsaRenderer.drawInitialTransition(gra2d, itr.next(), true);
+			s = itr.next();
+			shape = fsaRenderer.drawInitialTransition(gra2d, s, selectedStates.contains(s));
+			mapShapeState.put(shape, s);
 		}
 		
 		// Draw transitions
@@ -68,22 +89,6 @@ public class FsaDisplayPanel extends JPanel{
 		}
 	}
 	
-	/**
-	 * Set the state to indicate if it is selected.
-	 * @param stateName
-	 * @param picked true if the state is selected, false otherwise.
-	 */
-	private void SetStatePick(String stateName, Boolean picked){
-		
-		if(!stateSelectionMap.containsKey(stateName)){
-			System.out.println("invalid state");
-			return;
-		}
-		
-		// Set new map for the state
-		stateSelectionMap.remove(stateName);
-		stateSelectionMap.put(stateName, picked);
-	}
 	
 	/**
 	 * Set a new Renderer
@@ -111,7 +116,7 @@ public class FsaDisplayPanel extends JPanel{
 		fsaLoaded = true;
 		fsaRenderer = new MyRenderer(fsa);
 		
-		stateSelectionMap.clear();
+		selectedStates.clear();
 		
 		// Save initial states' name
 		Iterator<State> itr = fsa.getInitialStates().iterator();
@@ -156,5 +161,57 @@ public class FsaDisplayPanel extends JPanel{
 		}
 		
 		return true;
+	}
+	
+	private class MyListener extends MouseInputAdapter {
+		Set<Shape> allShapes = null;
+		private int xPressed = 0;
+		private int yPressed = 0;
+		
+		public void mousePressed(MouseEvent e){
+			xPressed = e.getX();
+			yPressed = e.getY();
+			
+			selectedStates.clear();
+			
+			allShapes = mapShapeState.keySet();
+			Iterator<Shape> itr_shape = allShapes.iterator();
+			Shape selectedShape = null;
+			State selectedState = null;
+			
+			while(itr_shape.hasNext()){
+				selectedShape = itr_shape.next();
+				if(selectedShape.contains(xPressed, yPressed)){
+					selectedState = mapShapeState.get(selectedShape);
+					selectedStates.add(selectedState);
+				}
+			}
+			
+			repaint();
+		}
+		
+		public void mouseDragged(MouseEvent e){
+			int xPos = e.getX();
+			int yPos = e.getY();
+			
+			int xOffset = xPos - xPressed;
+			int yOffset = yPos - yPressed;
+			
+			xPressed = xPos;
+			yPressed = yPos;
+			
+			Iterator<State> itr_state = selectedStates.iterator();
+			while(itr_state.hasNext()){
+				itr_state.next().moveBy(xOffset, yOffset);
+			}
+			
+			repaint();
+		}
+		
+		public void mouseReleased(MouseEvent e){
+			selectedStates.clear();
+			
+			repaint();
+		}
 	}
 }

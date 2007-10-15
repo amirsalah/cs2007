@@ -1,3 +1,8 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 5th, Oct 2007
+=========================================================*/
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -38,7 +43,7 @@ public class MyRenderer implements FsaRenderer {
 		
 		// Set different color depends on whether the state is selected
 		if(isSelected){
-			gra2d.setColor(Color.ORANGE);
+			gra2d.setColor(Color.PINK);
 		}else{
 			gra2d.setColor(Color.BLUE);
 		}

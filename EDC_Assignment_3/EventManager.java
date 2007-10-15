@@ -1,3 +1,8 @@
+/*=======================================================
+  @Author: Bo CHEN
+  Student ID: 1139520
+  Date: 5th, Oct 2007
+=========================================================*/
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
