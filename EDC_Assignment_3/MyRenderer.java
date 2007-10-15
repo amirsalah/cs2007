@@ -48,7 +48,7 @@ public class MyRenderer implements FsaRenderer {
 			gra2d.setColor(Color.BLUE);
 		}
 		
-		// Check the initial state is in Current States
+		// Check to see if the initial state is in Current States
 		if(fsa.getCurrentStates().contains(s)){
 			initStateShape.setFrame(xPos, yPos, squareWidth * 2, squareHeight * 2);
 		}
@@ -112,11 +112,19 @@ public class MyRenderer implements FsaRenderer {
 		State to = t.toState();
 		
 		// Select different points depends on its multiplicity
-		int dst = 3;
-		int xFrom = from.getXCoord() + multiplicity * dst;
-		int yFrom = from.getYCoord() + multiplicity * dst;
+		int dst = 8;
+		int xFrom = from.getXCoord() +  multiplicity * dst;
+		int yFrom = from.getYCoord() +  multiplicity * dst;
 		int xTo = to.getXCoord() + multiplicity * dst;
 		int yTo = to.getYCoord() + multiplicity * dst;
+		
+		// A transition point to itself
+		if(t.fromState().getName().equals(t.toState().getName())){
+			xFrom = from.getXCoord() + multiplicity * dst + squareWidth/2;
+			yFrom = from.getYCoord() - squareHeight;
+			xTo = xFrom;
+			yTo = from.getYCoord();
+		}
 		
 		// Mid point of the line center
 		int midX = (xFrom + xTo)/2;
@@ -150,7 +158,7 @@ public class MyRenderer implements FsaRenderer {
 		
 		// Draw transition name
 		gra2d.setColor(Color.BLACK);
-		gra2d.drawString(t.eventName()+": " + t.output(), midX, midY);
+		gra2d.drawString(t.eventName(), midX, midY);
 		
 		return path;
 	}
