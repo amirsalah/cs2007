@@ -1,6 +1,6 @@
 z
-ze
-onetotwo
+one
+qqq
 zero
 zero
 zero

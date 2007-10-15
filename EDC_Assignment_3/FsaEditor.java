@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -51,7 +52,7 @@ class FsaFrame extends JFrame {
 		String filePath = null;
 		// Choose the file containing fsa info.
 		int loadFileResult = fileChooser.showOpenDialog(this); 
-		messagesArea.setText("");
+
 		if(loadFileResult == JFileChooser.APPROVE_OPTION){
 			try{
 				messagesArea.setText("");
@@ -172,8 +173,21 @@ class FsaFrame extends JFrame {
 		}
 	}
 
-	private void stepButton_MouseClicked(MouseEvent e) {
-		// TODO 
+	private void stepButton_MouseClicked(ActionEvent e) {
+		String outputMessage = null;
+		List outputList = ((FsaImpl)fsa).step(events.nextEvent());
+		
+		// Dies, no next transition. Reset to initial state
+		if(outputList == null || outputList.size() == 0){
+			((FsaImpl)fsa).reset();
+			events.reset();
+			messagesArea.append("Terminated & Reset the FSA." + "\n");
+			return;
+		}
+		
+		outputMessage = outputList.toString();
+		messagesArea.append(outputMessage + "\n");
+		messagesArea.repaint();
 	}
 
 	private void playButton_MouseClicked(MouseEvent e) {
@@ -411,9 +425,8 @@ class FsaFrame extends JFrame {
 
 		//---- stepButton ----
 		stepButton.setText("Step");
-		stepButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+		stepButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				stepButton_MouseClicked(e);
 			}
 		});

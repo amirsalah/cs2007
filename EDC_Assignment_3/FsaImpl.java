@@ -355,12 +355,12 @@ public class FsaImpl implements FsaSim, Fsa{
     	Transition t = null;
     	
     	// Visit each element in the extended current state set
-    	if(itr_state.hasNext()){
+    	while(itr_state.hasNext()){
     		s = itr_state.next();
     		transitions = s.transitionsFrom();
     		itr_transition = transitions.iterator();
     		// Visit all the transition from this state
-    		if(itr_transition.hasNext()){
+    		while(itr_transition.hasNext()){
     			t = itr_transition.next();
     			// Add a NEXT current state
     			if(t.eventName().equals(event)){
@@ -389,15 +389,11 @@ public class FsaImpl implements FsaSim, Fsa{
     	Iterator<State> itr = currentStates.iterator();
     	Iterator<Transition> itr_transition = null;
     	
-    	Set<State> newStates = new HashSet<State>(); // New generated states from epsilon transition
-    	Iterator<State> itr_newStates = null;
-    	
     	Set<State> processedStates = new HashSet<State>(); // The states that have been processed
     	
     	// Check each state in the current states
     	// Note: the current states set will grow with new current states added
     	while(itr.hasNext()){
-    		newStates.clear();
     		s = itr.next();
     		
     		if(processedStates.contains(s)){
@@ -414,14 +410,10 @@ public class FsaImpl implements FsaSim, Fsa{
     			t = itr_transition.next();
     			// epsilon transition?
     			if(t.eventName().equals("?")){
-    				newStates.add(t.toState());
+    				states.add(t.toState()); // Set will ensure no duplicated elements
     			}
     		}
-    		
-    		itr_newStates = newStates.iterator();
-    		while(itr_newStates.hasNext()){
-    			states.add(itr_newStates.next());
-    		}
+    		itr = states.iterator();
     	}
     	
     	return states;
