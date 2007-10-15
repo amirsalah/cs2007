@@ -20,9 +20,10 @@ public class MyRenderer implements FsaRenderer {
     private int barb = 20;
     private double phi = Math.toRadians(20);
     
-	public MyRenderer() {
-		// Initialize the square
-
+    private Fsa fsa = null;
+    
+	public MyRenderer(Fsa fsa) {
+		this.fsa = fsa;
 	}
 
 	// Draw an initial transistion on state s
@@ -40,6 +41,11 @@ public class MyRenderer implements FsaRenderer {
 			gra2d.setColor(Color.ORANGE);
 		}else{
 			gra2d.setColor(Color.BLUE);
+		}
+		
+		// Check the initial state is in Current States
+		if(fsa.getCurrentStates().contains(s)){
+			initStateShape.setFrame(xPos, yPos, squareWidth * 2, squareHeight * 2);
 		}
 		
 		gra2d.fill(initStateShape);

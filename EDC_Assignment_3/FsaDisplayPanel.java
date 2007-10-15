@@ -20,7 +20,6 @@ public class FsaDisplayPanel extends JPanel{
 	private ArrayList<String> initStates = new ArrayList<String>();
 	private ArrayList<String> allStates = new ArrayList<String>();
 	private ArrayList<String> allTransitions = new ArrayList<String>();
-	private Set<State> currentStates = null;
 	// Map: Transition -> multiplicity
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
 	private boolean fsaLoaded = false;
@@ -28,7 +27,6 @@ public class FsaDisplayPanel extends JPanel{
 	// Initialize the display panel
 	public FsaDisplayPanel(){
 //		setBackground(Color.WHITE);
-		fsaRenderer = new MyRenderer();
 	}
 	
 	public void paintComponent(Graphics g){
@@ -97,7 +95,7 @@ public class FsaDisplayPanel extends JPanel{
 	}
 	
 	public void SetMyRenderer(){
-		fsaRenderer = new MyRenderer();
+		fsaRenderer = new MyRenderer(fsa);
 		repaint();
 		
 	}
@@ -111,6 +109,7 @@ public class FsaDisplayPanel extends JPanel{
 		
 		this.fsa = fsa;
 		fsaLoaded = true;
+		fsaRenderer = new MyRenderer(fsa);
 		
 		stateSelectionMap.clear();
 		
@@ -156,8 +155,6 @@ public class FsaDisplayPanel extends JPanel{
 			transitions.remove(0);
 		}
 		
-		// Load current states
-		currentStates = fsa.getCurrentStates();
 		return true;
 	}
 }

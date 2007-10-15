@@ -85,7 +85,6 @@ class FsaFrame extends JFrame {
 			try{
 				filePath = fileChooser.getSelectedFile().getPath();
 				fileW = new FileWriter(filePath);
-//		        messagesArea.append("Saving FSA to file : " + filePath + "\n") ;	 
 			}
 		    catch (FileNotFoundException fnfe) {
 		        System.err.println("Caught IOException: " + fnfe.getMessage());
@@ -184,12 +183,12 @@ class FsaFrame extends JFrame {
 			((FsaImpl)fsa).reset();
 			events.reset();
 			messagesArea.append("Terminated & Reset the FSA." + "\n");
+			displayArea.repaint(); 
 			return;
 		}
 		
 		outputMessage = outputList.toString();
 		messagesArea.append(outputMessage + "\n");
-		messagesArea.repaint();
 		displayArea.repaint(); 
 	}
 
