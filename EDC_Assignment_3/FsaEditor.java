@@ -72,6 +72,7 @@ class FsaFrame extends JFrame {
 			catch(IOException ioe){
 				System.out.println("fsa io exception");
 			}
+			isFsaLoaded = true;
 			messagesArea.append("Loaded FSA from file : " + filePath + "\n") ;
 			displayArea.LoadFsa(fsa);
 		}
@@ -79,6 +80,11 @@ class FsaFrame extends JFrame {
 
 	private void StoreFSA_MouseClicked(ActionEvent e) {
 		String filePath = null;
+		
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded, save file failed" + "\n");
+			return;
+		}
 		// Choose the file to store fsa info.
 		int saveFileResult = fileChooser.showOpenDialog(this); 
 		if(saveFileResult == JFileChooser.APPROVE_OPTION){
@@ -170,13 +176,29 @@ class FsaFrame extends JFrame {
 		catch(NullPointerException npe){
 			messagesArea.append("No event is loaded" + "\n");
 		}
+		
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		
 		messagesArea.append("Reset the FSA" + "\n");
 		displayArea.repaint();
 	}
 
 	private void stepButton_MouseClicked(ActionEvent e) {
 		String outputMessage = null;
-		List outputList = ((FsaImpl)fsa).step(events.nextEvent());
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		if(events == null){
+			messagesArea.append("No events are loaded" + "\n");
+			return;
+		}
+		
+		String eventName = events.nextEvent();
+		List outputList = ((FsaImpl)fsa).step(eventName);
 		
 		// Dies, no next transition. Reset to initial state
 		if(outputList == null || outputList.size() == 0){
@@ -188,6 +210,7 @@ class FsaFrame extends JFrame {
 		}
 		
 		outputMessage = outputList.toString();
+		messagesArea.append("Event: " + eventName + "  Output: ");
 		messagesArea.append(outputMessage + "\n");
 		displayArea.repaint(); 
 	}
@@ -511,4 +534,5 @@ class FsaFrame extends JFrame {
 	private FsaReaderWriter fsaRW = new FsaReaderWriter();;
 	private Fsa fsa = new FsaImpl();;
 	private EventSeq events = null;
+	private Boolean isFsaLoaded = false;
 }

@@ -4,6 +4,7 @@
   Date: 5th, Oct 2007
 =========================================================*/
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -43,7 +44,7 @@ public class MyRenderer implements FsaRenderer {
 		
 		// Set different color depends on whether the state is selected
 		if(isSelected){
-			gra2d.setColor(Color.PINK);
+			gra2d.setColor(Color.ORANGE);
 		}else{
 			gra2d.setColor(Color.BLUE);
 		}
@@ -59,6 +60,7 @@ public class MyRenderer implements FsaRenderer {
 		// Draw state name
 		gra2d.setColor(Color.BLACK);
 		stateName = s.getName();
+		gra2d.setFont(new Font("myFont", Font.BOLD, 12));
 		gra2d.drawString(stateName, xPos+2, yPos+2);
 		
 		return initStateShape;
@@ -95,6 +97,7 @@ public class MyRenderer implements FsaRenderer {
 		// Draw state name
 		gra2d.setColor(Color.BLACK);
 		stateName = s.getName();
+		gra2d.setFont(new Font("myFont", Font.BOLD, 12));
 		gra2d.drawString(stateName, xPos+2, yPos+2);
 		
 		return stateShape;
