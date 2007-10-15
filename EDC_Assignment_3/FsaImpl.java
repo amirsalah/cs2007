@@ -17,9 +17,6 @@ public class FsaImpl implements FsaSim, Fsa{
 	private ArrayList<String> initialStatesNames = new ArrayList<String>();
 	private ArrayList<String> currentStatesNames = new ArrayList<String>();
 	
-	public FsaImpl(){
-		
-	}
 	
     //Create a new State and add it to this FSA
     //Return the new state
@@ -345,25 +342,31 @@ public class FsaImpl implements FsaSim, Fsa{
     	}
     	
     	List<String> outputs = new ArrayList<String>();
-    	StateImpl validState = null;
-    	TransitionImpl tmpTransition = null;
-    	Set<Transition> allTransitions = new HashSet<Transition>();
-    	ArrayList<Transition> workingTransitions = new ArrayList<Transition>();
-    	Iterator itr = allTransitions.iterator();
+    	// Actual current states, extending the original by epsilon transition
+    	Set<State> exCurrentStates = StatesClosure(getCurrentStates());
+    	Set<Transition> transitions = null;
     	
-    	//Iterate the current states
-    	for(int i=0; i<currentStatesNames.size(); i++){
-    		validState = (StateImpl)statesSet.get(currentStatesNames.get(i));
-    		allTransitions = validState.transitionsFrom();
-    		while(itr.hasNext()){
-    			tmpTransition = (TransitionImpl)itr.next();
-    			//A transition affected by the given event
-    			if(tmpTransition.eventName().equals(event) || tmpTransition.eventName().equals("?")){
-    				workingTransitions.add(tmpTransition);
-    				//Remove empty output
-    				if(!tmpTransition.output().equals("-")){
-    					outputs.add(tmpTransition.output());
-    				}
+    	Set<State> nextStates = new HashSet<State>(); // The valid states to be next "current state"
+    	currentStatesNames.clear();
+    	
+    	Iterator<State> itr_state = exCurrentStates.iterator();
+    	State s = null;
+    	Iterator<Transition> itr_transition = null;
+    	Transition t = null;
+    	
+    	// Visit each element in the extended current state set
+    	if(itr_state.hasNext()){
+    		s = itr_state.next();
+    		transitions = s.transitionsFrom();
+    		itr_transition = transitions.iterator();
+    		// Visit all the transition from this state
+    		if(itr_transition.hasNext()){
+    			t = itr_transition.next();
+    			// Add a NEXT current state
+    			if(t.eventName().equals(event)){
+    				nextStates.add(t.toState());
+    				currentStatesNames.add(t.toState().getName());
+    				outputs.add(t.output());
     			}
     		}
     	}
@@ -378,15 +381,50 @@ public class FsaImpl implements FsaSim, Fsa{
      * @return the set containing all states could be reached by epsilon from current states
      */
     public Set<State> StatesClosure(Set<State> currentStates){
-    	Iterator<State> itr = currentStates.iterator();
     	State s = null;
-    	Set<Transition> transitions = null;
+    	Transition t = null;
     	
+    	Set<State> states = currentStates;
+    	Set<Transition> transitions = null;
+    	Iterator<State> itr = currentStates.iterator();
+    	Iterator<Transition> itr_transition = null;
+    	
+    	Set<State> newStates = new HashSet<State>(); // New generated states from epsilon transition
+    	Iterator<State> itr_newStates = null;
+    	
+    	Set<State> processedStates = new HashSet<State>(); // The states that have been processed
+    	
+    	// Check each state in the current states
+    	// Note: the current states set will grow with new current states added
     	while(itr.hasNext()){
+    		newStates.clear();
     		s = itr.next();
     		
+    		if(processedStates.contains(s)){
+    			continue;
+    		}else{
+    			processedStates.add(s);
+    		}
+    		
     		transitions = s.transitionsFrom();
+    		itr_transition = transitions.iterator();
+    		
+    		// Check each transition
+    		while(itr_transition.hasNext()){
+    			t = itr_transition.next();
+    			// epsilon transition?
+    			if(t.eventName().equals("?")){
+    				newStates.add(t.toState());
+    			}
+    		}
+    		
+    		itr_newStates = newStates.iterator();
+    		while(itr_newStates.hasNext()){
+    			states.add(itr_newStates.next());
+    		}
     	}
+    	
+    	return states;
     }
     
     public Set<Transition> GetTransitions(){
