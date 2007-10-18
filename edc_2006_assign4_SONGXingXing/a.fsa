@@ -1,0 +1,15 @@
+state q5 100 100
+state q3 600 400
+state q4 200 100
+state q1 100 400
+state q2 200 400
+initial q3
+	
+   				
+
+transition q3 q4 dw hello
+transition  q4 q3 es world
+transition q4 q3 fe if
+transition q5 q3 fs you
+transition q2 q5 eg r
+
