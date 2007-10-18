@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
@@ -31,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 	
@@ -282,6 +284,7 @@ class FsaFrame extends JFrame {
 							LoadFSA_MouseClicked(e);
 						}
 					});
+					loadFsaMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK));
 					fileMenu.add(loadFsaMenuItem);
 
 					//---- storeFsaMenuItem ----
@@ -291,6 +294,7 @@ class FsaFrame extends JFrame {
 							StoreFSA_MouseClicked(e);
 						}
 					});
+					storeFsaMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
 					fileMenu.add(storeFsaMenuItem);
 					fileMenu.add(separator1);
 
@@ -301,6 +305,7 @@ class FsaFrame extends JFrame {
 							Loadevents_MouseClicked(e);
 						}
 					});
+					loadEventsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_MASK));
 					fileMenu.add(loadEventsMenuItem);
 					fileMenu.add(separator2);
 
@@ -311,6 +316,7 @@ class FsaFrame extends JFrame {
 							Quit_MouseClicked(e);
 						}
 					});
+					quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_MASK));
 					fileMenu.add(quitMenuItem);
 				}
 				menuBar1.add(fileMenu);
