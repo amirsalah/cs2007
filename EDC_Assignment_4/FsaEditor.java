@@ -52,7 +52,7 @@ class FsaFrame extends JFrame {
 
 	private void LoadFSA_MouseClicked(ActionEvent e) {
 		String filePath = null;
-		// Choose the file containing fsa info.
+		// Choose a file containing fsa info.
 		int loadFileResult = fileChooser.showOpenDialog(this); 
 
 		if(loadFileResult == JFileChooser.APPROVE_OPTION){
