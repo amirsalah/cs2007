@@ -225,7 +225,7 @@ public class FsaDisplayPanel extends JPanel{
 			yDragedPos = yPressedPos;
 			
 			// 
-//			if(myDisplay == DISPLAY_SELECTION){
+			if(myDisplay == DISPLAY_SELECTION){
 				selectedStates.clear();
 			
 				allShapes = mapShapeState.keySet(); // all the state shapes
@@ -253,7 +253,7 @@ public class FsaDisplayPanel extends JPanel{
 				}
 				
 				repaint();
-//			}
+			}
 		}
 		
 		public void mouseDragged(MouseEvent e){
@@ -263,7 +263,7 @@ public class FsaDisplayPanel extends JPanel{
 			int rectWidth = 0;
 			int rectHeight = 0;
 			
-//			if(myDisplay == DISPLAY_SELECTED){
+			if(myDisplay == DISPLAY_SELECTED){
 				int xOffset = xPos - xDragedPos;
 				int yOffset = yPos - yDragedPos;
 			
@@ -277,7 +277,7 @@ public class FsaDisplayPanel extends JPanel{
 				
 				repaint();
 				return;
-//			}
+			}
 /*			
 			if(myDisplay == DISPLAY_DRAW_REGION){
 				gra2d.setColor(Color.LIGHT_GRAY);
@@ -286,14 +286,18 @@ public class FsaDisplayPanel extends JPanel{
 				rectRegion.height = rectHeight;
 				rectRegion.width = rectWidth;
 				gra2d.draw(rectRegion);
-			}			
+			}
 
 			repaint();
 			*/
 		}
 		
 		public void mouseReleased(MouseEvent e){
-			selectedStates.clear();
+//			selectedStates.clear();
+			if(myDisplay == DISPLAY_SELECTED){
+				selectedStates.clear();
+				myDisplay = DISPLAY_SELECTION;
+			}
 			repaint();
 		}
 	}
