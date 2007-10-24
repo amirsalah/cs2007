@@ -300,7 +300,22 @@ public class FsaDisplayPanel extends JPanel{
 			}
 			
 			if(myDisplay == DISPLAY_DRAW_REGION){
+				Set<Shape> allShapes = null;
+				
 				myDisplay = DISPLAY_SELECTION;
+				// Check selected shapes
+				allShapes = mapShapeState.keySet();
+				Iterator<Shape> itr_shape = allShapes.iterator();
+				Shape shape = null;
+				State selectedState = null;
+				
+				while(itr_shape.hasNext()){
+					shape = itr_shape.next();
+					if(shape.intersects(rectRegion)){
+						selectedState = mapShapeState.get(shape);
+						selectedStates.add(selectedState);
+					}
+				}
 				// recover the initial rectangular regions
 				rectRegion.height = 0;
 				rectRegion.width = 0;
