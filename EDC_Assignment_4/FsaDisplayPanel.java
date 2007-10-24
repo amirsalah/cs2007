@@ -110,6 +110,12 @@ public class FsaDisplayPanel extends JPanel{
 			RemoveMapValue(mapShapeTransition, t);
 			mapShapeTransition.put(shape, t);
 		}
+		
+		// Draw selection rectangular region
+		if(myDisplay == DISPLAY_DRAW_REGION){
+			gra2d.setColor(Color.MAGENTA);
+			gra2d.draw(rectRegion);
+		}
 	}
 	
 	
@@ -274,29 +280,30 @@ public class FsaDisplayPanel extends JPanel{
 				while(itr_state.hasNext()){
 					itr_state.next().moveBy(xOffset, yOffset);
 				}
-				
-				repaint();
-				return;
 			}
-/*			
+
 			if(myDisplay == DISPLAY_DRAW_REGION){
-				gra2d.setColor(Color.LIGHT_GRAY);
 				rectWidth = xPos - xPressedPos;
 				rectHeight = yPos - yPressedPos;
 				rectRegion.height = rectHeight;
 				rectRegion.width = rectWidth;
-				gra2d.draw(rectRegion);
 			}
 
 			repaint();
-			*/
+			return;
 		}
 		
 		public void mouseReleased(MouseEvent e){
 //			selectedStates.clear();
 			if(myDisplay == DISPLAY_SELECTED){
-				selectedStates.clear();
 				myDisplay = DISPLAY_SELECTION;
+			}
+			
+			if(myDisplay == DISPLAY_DRAW_REGION){
+				myDisplay = DISPLAY_SELECTION;
+				// recover the initial rectangular regions
+				rectRegion.height = 0;
+				rectRegion.width = 0;
 			}
 			repaint();
 		}
