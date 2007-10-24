@@ -50,6 +50,7 @@ public class FsaDisplayPanel extends JPanel{
 	private final int DISPLAY_SELECTION = 0;  
 	private final int DISPLAY_SELECTED = 1;
 	private final int DISPLAY_DRAW_REGION = 2;
+	private final int DISPLAY_MOVING_SHAPES = 3;
 	
 	private int myDisplay = DISPLAY_SELECTION; // Indicate the current display state
 	
@@ -230,36 +231,50 @@ public class FsaDisplayPanel extends JPanel{
 			xDragedPos = xPressedPos;
 			yDragedPos = yPressedPos;
 			
-			// 
-			if(myDisplay == DISPLAY_SELECTION){
-				selectedStates.clear();
-			
-				allShapes = mapShapeState.keySet(); // all the state shapes
-				Iterator<Shape> itr_shape = allShapes.iterator();
-				Shape selectedShape = null;
-				State selectedState = null;
-			
-				while(itr_shape.hasNext()){
-					selectedShape = itr_shape.next();
-					if(selectedShape.contains(xPressedPos, yPressedPos)){
-						selectedState = mapShapeState.get(selectedShape);
-						selectedStates.add(selectedState);
-					}
-				}
+			allShapes = mapShapeState.keySet(); // all the state shapes
+			Iterator<Shape> itr_shape = allShapes.iterator();
+			Shape selectedShape = null;
+			State selectedState = null;
 				
-//				allShapes = mapShapeTransition.keySet(); // all the transition shapes
-//				itr_shape = allShapes.iterator(); 
+			while(itr_shape.hasNext()){
+				selectedShape = itr_shape.next();
+				if(selectedShape.contains(xPressedPos, yPressedPos)){
+					selectedState = mapShapeState.get(selectedShape);
+					
+					if(myDisplay == DISPLAY_MOVING_SHAPES){
+						if(!selectedStates.contains(selectedState)){
+							myDisplay = DISPLAY_SELECTION;
+							selectedStates.clear();
+						}else{
+							myDisplay = DISPLAY_SELECTED;
+							return;
+						}
+					}
+					
+					
+					selectedStates.add(selectedState);
+				}
+			}
+
+//			allShapes = mapShapeTransition.keySet(); // all the transition shapes
+//			itr_shape = allShapes.iterator(); 
 			
+			if(myDisplay == DISPLAY_SELECTION){
 				if(!selectedStates.isEmpty()){
 					myDisplay = DISPLAY_SELECTED;
-				}else{
-					myDisplay = DISPLAY_DRAW_REGION;
-					rectRegion.x = xPressedPos;
-					rectRegion.y = yPressedPos;
 				}
-				
-				repaint();
 			}
+			
+			// No state are clicked
+			if((myDisplay == DISPLAY_SELECTION && selectedStates.isEmpty()) ||
+					myDisplay == DISPLAY_MOVING_SHAPES){
+				selectedStates.clear();
+				myDisplay = DISPLAY_DRAW_REGION;
+				rectRegion.x = xPressedPos;
+				rectRegion.y = yPressedPos;
+			}
+			
+			repaint();
 		}
 		
 		public void mouseDragged(MouseEvent e){
@@ -296,13 +311,12 @@ public class FsaDisplayPanel extends JPanel{
 		public void mouseReleased(MouseEvent e){
 //			selectedStates.clear();
 			if(myDisplay == DISPLAY_SELECTED){
-				myDisplay = DISPLAY_SELECTION;
+				myDisplay = DISPLAY_MOVING_SHAPES;
 			}
 			
 			if(myDisplay == DISPLAY_DRAW_REGION){
 				Set<Shape> allShapes = null;
 				
-				myDisplay = DISPLAY_SELECTION;
 				// Check selected shapes
 				allShapes = mapShapeState.keySet();
 				Iterator<Shape> itr_shape = allShapes.iterator();
@@ -319,6 +333,12 @@ public class FsaDisplayPanel extends JPanel{
 				// recover the initial rectangular regions
 				rectRegion.height = 0;
 				rectRegion.width = 0;
+				
+				if(selectedStates.isEmpty()){
+					myDisplay = DISPLAY_SELECTION;
+				}else{
+					myDisplay = DISPLAY_MOVING_SHAPES;
+				}
 			}
 			repaint();
 		}
