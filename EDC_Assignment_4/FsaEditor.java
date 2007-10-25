@@ -35,7 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-	
+
 public class FsaEditor {
 
 	public static void main(String[] args) {
@@ -50,7 +50,7 @@ class FsaFrame extends JFrame {
 		initComponents();
 	}
 
-	private void LoadFSA_MouseClicked(ActionEvent e) {
+	private void LoadFSA_MouseClicked(ActionEvent e){
 		String filePath = null;
 		// Choose a file containing fsa info.
 		int loadFileResult = fileChooser.showOpenDialog(this); 
@@ -142,24 +142,29 @@ class FsaFrame extends JFrame {
 		System.exit(0);
 	}
 
-	private void newState_MouseClicked(MouseEvent e) {
+	private void newState_MouseClicked(ActionEvent e) {
 		// TODO
 	}
 
-	private void newTransition_MouseClicked(MouseEvent e) {
+	private void newTransition_MouseClicked(ActionEvent e) {
 		// TODO
 	}
 
-	private void renameState_MouseClicked(MouseEvent e) {
+	private void renameState_MouseClicked(ActionEvent e) {
 		// TODO
 	}
 
-	private void setInitialState_MouseClicked(MouseEvent e) {
+	private void setInitialState_MouseClicked(ActionEvent e) {
 		// TODO
 	}
 
-	private void unsetInitialState_MouseClicked(MouseEvent e) {
-		// TODO
+	private void deleteStates_MouseClicked(ActionEvent e) {
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		
+		displayArea.DeleteSelectedStates();
 	}
 
 	private void useBasicRenderer_MouseClicked(ActionEvent e) {
@@ -236,7 +241,7 @@ class FsaFrame extends JFrame {
 		newTransitionMenuItem = new JMenuItem();
 		renameStateMenuItem = new JMenuItem();
 		setInitialStateMenuItem = new JMenuItem();
-		unsetInitialStateMenuItem = new JMenuItem();
+		deleteStatesMenuItem = new JMenuItem();
 		OptionsMenu = new JMenu();
 		useBasicRenderMenuItem = new JMenuItem();
 		myRenderMenuItem = new JMenuItem();
@@ -329,9 +334,8 @@ class FsaFrame extends JFrame {
 					//---- newStateMenuItem ----
 					newStateMenuItem.setText("newState");
 					newStateMenuItem.setForeground(SystemColor.textInactiveText);
-					newStateMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					newStateMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							newState_MouseClicked(e);
 						}
 					});
@@ -340,9 +344,8 @@ class FsaFrame extends JFrame {
 					//---- newTransitionMenuItem ----
 					newTransitionMenuItem.setText("newTransition");
 					newTransitionMenuItem.setForeground(SystemColor.textInactiveText);
-					newTransitionMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					newTransitionMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e){
 							newTransition_MouseClicked(e);
 						}
 					});
@@ -351,9 +354,8 @@ class FsaFrame extends JFrame {
 					//---- renameStateMenuItem ----
 					renameStateMenuItem.setText("renameState");
 					renameStateMenuItem.setForeground(SystemColor.textInactiveText);
-					renameStateMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					renameStateMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							renameState_MouseClicked(e);
 						}
 					});
@@ -362,24 +364,23 @@ class FsaFrame extends JFrame {
 					//---- setInitialStateMenuItem ----
 					setInitialStateMenuItem.setText("setInitialState");
 					setInitialStateMenuItem.setForeground(SystemColor.textInactiveText);
-					setInitialStateMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
+					setInitialStateMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							setInitialState_MouseClicked(e);
 						}
 					});
 					editMenu.add(setInitialStateMenuItem);
 
-					//---- unsetInitialStateMenuItem ----
-					unsetInitialStateMenuItem.setText("unsetInitialState");
-					unsetInitialStateMenuItem.setForeground(SystemColor.textInactiveText);
-					unsetInitialStateMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							unsetInitialState_MouseClicked(e);
+					//---- deleteStatesMenuItem ----
+					deleteStatesMenuItem.setText("Delete selection");
+//					deleteStatesMenuItem.setForeground(SystemColor.textInactiveText);
+					deleteStatesMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							deleteStates_MouseClicked(e);
 						}
 					});
-					editMenu.add(unsetInitialStateMenuItem);
+					deleteStatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK));
+					editMenu.add(deleteStatesMenuItem);
 				}
 				menuBar1.add(editMenu);
 
@@ -516,7 +517,7 @@ class FsaFrame extends JFrame {
 	private JMenuItem newTransitionMenuItem;
 	private JMenuItem renameStateMenuItem;
 	private JMenuItem setInitialStateMenuItem;
-	private JMenuItem unsetInitialStateMenuItem;
+	private JMenuItem deleteStatesMenuItem;
 	private JMenu OptionsMenu;
 	private JMenuItem useBasicRenderMenuItem;
 	private JMenuItem myRenderMenuItem;

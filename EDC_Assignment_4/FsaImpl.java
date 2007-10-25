@@ -81,12 +81,12 @@ public class FsaImpl implements FsaSim, Fsa{
     	currentStatesNames.remove(stateName);
     	
     	//Remove the corresponding transition(s)
-    	Iterator itr = transitionsSet.iterator();
+    	Iterator<Transition> itr = transitionsSet.iterator();
     	Transition aTransition = null;
     	while(itr.hasNext()){
-    		aTransition = (Transition)itr.next();
+    		aTransition = itr.next();
     		if(aTransition.fromState().equals(s) || aTransition.toState().equals(s)){
-    			transitionsSet.remove(aTransition);
+//    			transitionsSet.remove(aTransition);
     		}
     	}
     }

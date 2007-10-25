@@ -31,10 +31,6 @@ public class FsaDisplayPanel extends JPanel{
 	private Map<Shape, Transition> mapShapeTransition = new HashMap<Shape, Transition>();
 	private Set<Transition> selectedTransitions = new HashSet<Transition>();
 	
-	// Map: state -> status of state selection
-//	private Map<State, Boolean> mapStateSlection = new HashMap<State, Boolean>();
-	// Map: State name -> Current State
-//	private Map<String, Boolean> mapCurrentStates = new HashMap<String, Boolean>();
 	private ArrayList<String> initStates = new ArrayList<String>();
 	private ArrayList<String> allStates = new ArrayList<String>();
 	private ArrayList<String> allTransitions = new ArrayList<String>();
@@ -42,7 +38,7 @@ public class FsaDisplayPanel extends JPanel{
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
 	private boolean fsaLoaded = false;
 	
-	private Set<State> currentState = null;
+//	private Set<State> currentState = null;
 	
 	/*
 	 * The different display states
@@ -107,7 +103,7 @@ public class FsaDisplayPanel extends JPanel{
 		while (itr_transition.hasNext()){
 			t = itr_transition.next();
 			numMulti = mapMultiplicity.get(t.toString());
-			shape = fsaRenderer.drawTransition(gra2d, t, numMulti, false);
+			shape = fsaRenderer.drawTransition(gra2d, t, numMulti, selectedTransitions.contains(t));
 			RemoveMapValue(mapShapeTransition, t);
 			mapShapeTransition.put(shape, t);
 		}
@@ -119,11 +115,13 @@ public class FsaDisplayPanel extends JPanel{
 		}
 	}
 	
-	
-	/*
+
+	/**
 	 * Remove an existing map, to prevent from duplicated mapping
 	 * because once the shape moved, the state or transition stay the same
 	 * Therefore, the state/transition (value) should be checked, rather than the key.
+	 * 
+	 * @param value the value in the map
 	 */
 	private void RemoveMapValue(Map map, Object value){
 		Iterator itr = map.keySet().iterator();
@@ -259,6 +257,7 @@ public class FsaDisplayPanel extends JPanel{
 //			allShapes = mapShapeTransition.keySet(); // all the transition shapes
 //			itr_shape = allShapes.iterator(); 
 			
+			// One or more states are clicked
 			if(myDisplay == DISPLAY_SELECTION){
 				if(!selectedStates.isEmpty()){
 					myDisplay = DISPLAY_SELECTED;
@@ -269,6 +268,7 @@ public class FsaDisplayPanel extends JPanel{
 			if((myDisplay == DISPLAY_SELECTION && selectedStates.isEmpty()) ||
 					myDisplay == DISPLAY_MOVING_SHAPES){
 				selectedStates.clear();
+				selectedTransitions.clear();
 				myDisplay = DISPLAY_DRAW_REGION;
 				rectRegion.x = xPressedPos;
 				rectRegion.y = yPressedPos;
@@ -330,6 +330,21 @@ public class FsaDisplayPanel extends JPanel{
 						selectedStates.add(selectedState);
 					}
 				}
+				
+				// Check selected transitions
+				allShapes = mapShapeTransition.keySet();
+				
+				Iterator<Shape> itr_transition = allShapes.iterator();
+				Transition selectedTransition = null;
+				
+				while(itr_transition.hasNext()){
+					shape = itr_transition.next();
+					if(shape.intersects(rectRegion)){
+						selectedTransition = mapShapeTransition.get(shape);
+						selectedTransitions.add(selectedTransition);
+					}
+				}
+				
 				// recover the initial rectangular regions
 				rectRegion.height = 0;
 				rectRegion.width = 0;
@@ -342,5 +357,33 @@ public class FsaDisplayPanel extends JPanel{
 			}
 			repaint();
 		}
+	}
+	
+	/*
+	 * Remove current selected states & selected transitions,
+	 * and all transitions linked to these states
+	 */
+	public void DeleteSelectedStates(){
+		Iterator<State> itr_state = selectedStates.iterator();
+		Iterator<Transition> itr_transition = selectedTransitions.iterator();
+		State aState = null;
+		Transition aTransition = null;
+		
+		// Remove current states, as well as the corresponding shapes
+		while(itr_state.hasNext()){
+			aState = itr_state.next();
+			fsa.removeState(aState);
+			
+			RemoveMapValue(mapShapeState, aState);
+		}
+		
+		// Remove current transitions, as well as their shapes
+		while(itr_transition.hasNext()){
+			aTransition = itr_transition.next();
+			fsa.removeTransition(aTransition);
+			
+		}
+		
+		repaint();
 	}
 }
