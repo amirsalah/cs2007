@@ -89,8 +89,6 @@ public class FsaImpl implements FsaSim, Fsa{
     			itr.remove();
     		}
     	}
-    	
-    	
     }
 
 
