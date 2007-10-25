@@ -244,6 +244,11 @@ public class FsaImpl implements FsaSim, Fsa{
     		}
     	}
     }
+    
+    // Remove all the initial states from this FSA
+    public void removeAllInitialStates(){
+    	initialStatesNames.clear();
+    }
 
 
     //Return the set of initial states of this Fsa
@@ -421,6 +426,13 @@ public class FsaImpl implements FsaSim, Fsa{
     
     public Set<Transition> GetTransitions(){
     	return transitionsSet;
+    }
+    
+    public void Clear(){
+    	statesSet.clear();
+    	transitionsSet.clear();
+    	initialStatesNames.clear();
+    	currentStatesNames.clear();
     }
 }
 

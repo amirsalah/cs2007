@@ -402,4 +402,27 @@ public class FsaDisplayPanel extends JPanel{
 		
 		repaint();
 	}
+	
+	/**
+	 * Return false if there is no state selected
+	 *
+	 */
+	public boolean SetInitialStates(){
+		// Do nothing if no currently selected states
+		if(selectedStates.isEmpty()){
+			return false;
+		}
+		
+		((FsaImpl)fsa).removeAllInitialStates(); //Remove initial states in the FSA
+		initStates.clear(); //Remove initial states in this display panel
+		
+		Iterator<State> itr_state = selectedStates.iterator();
+		State aState = null;
+		while(itr_state.hasNext()){
+			aState = itr_state.next();
+			fsa.addInitialState(aState);
+			initStates.add(aState.getName());
+		}
+		return true;
+	}
 }

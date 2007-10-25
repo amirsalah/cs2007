@@ -66,6 +66,7 @@ class FsaFrame extends JFrame {
 			}
 		
 			try{
+				((FsaImpl)fsa).Clear();
 				fsaRW.read(fileR, fsa);
 			}
 			catch(FsaFormatException ffe){
@@ -155,7 +156,18 @@ class FsaFrame extends JFrame {
 	}
 
 	private void setInitialState_MouseClicked(ActionEvent e) {
-		// TODO
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		if(!displayArea.SetInitialStates()){
+			messagesArea.append("No state is selected, please specify the states" + "\n");
+			return;
+		}
+		if(simulationStarted == false){
+			((FsaImpl)fsa).reset();
+		}
+		displayArea.repaint();
 	}
 
 	private void deleteStates_MouseClicked(ActionEvent e) {
@@ -189,6 +201,7 @@ class FsaFrame extends JFrame {
 			return;
 		}
 		
+		simulationStarted = false;
 		messagesArea.append("Reset the FSA" + "\n");
 		displayArea.repaint();
 	}
@@ -204,6 +217,7 @@ class FsaFrame extends JFrame {
 			return;
 		}
 		
+		simulationStarted = true;
 		String eventName = events.nextEvent();
 		List outputList = ((FsaImpl)fsa).step(eventName);
 		
@@ -212,6 +226,7 @@ class FsaFrame extends JFrame {
 			((FsaImpl)fsa).reset();
 			events.reset();
 			messagesArea.append("Terminated & Reset the FSA." + "\n");
+			simulationStarted = false;
 			displayArea.repaint(); 
 			return;
 		}
@@ -362,8 +377,7 @@ class FsaFrame extends JFrame {
 					editMenu.add(renameStateMenuItem);
 
 					//---- setInitialStateMenuItem ----
-					setInitialStateMenuItem.setText("setInitialState");
-					setInitialStateMenuItem.setForeground(SystemColor.textInactiveText);
+					setInitialStateMenuItem.setText("Add initial state");
 					setInitialStateMenuItem.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							setInitialState_MouseClicked(e);
@@ -542,4 +556,5 @@ class FsaFrame extends JFrame {
 	private Fsa fsa = new FsaImpl();;
 	private EventSeq events = null;
 	private Boolean isFsaLoaded = false;
+	private Boolean simulationStarted = false;
 }
