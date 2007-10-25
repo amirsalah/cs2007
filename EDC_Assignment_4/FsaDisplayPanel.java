@@ -369,12 +369,23 @@ public class FsaDisplayPanel extends JPanel{
 		State aState = null;
 		Transition aTransition = null;
 		
+		Iterator<Transition> itr_tmp = mapShapeTransition.values().iterator();
+		
 		// Remove current states, as well as the corresponding shapes
 		while(itr_state.hasNext()){
 			aState = itr_state.next();
 			fsa.removeState(aState);
 			
 			RemoveMapValue(mapShapeState, aState);
+			
+			// Remove all transitions linked to the selected states
+	    	while(itr_tmp.hasNext()){
+	    		aTransition = itr_tmp.next();
+	    		if(aTransition.fromState().equals(aState) || aTransition.toState().equals(aState)){
+	    			RemoveMapValue(mapShapeTransition, aTransition);
+	    		}
+	    	}
+	    	
 		}
 		
 		// Remove current transitions, as well as their shapes
@@ -382,7 +393,9 @@ public class FsaDisplayPanel extends JPanel{
 			aTransition = itr_transition.next();
 			fsa.removeTransition(aTransition);
 			
+			RemoveMapValue(mapShapeTransition, aTransition);
 		}
+		
 		
 		repaint();
 	}

@@ -86,9 +86,11 @@ public class FsaImpl implements FsaSim, Fsa{
     	while(itr.hasNext()){
     		aTransition = itr.next();
     		if(aTransition.fromState().equals(s) || aTransition.toState().equals(s)){
-//    			transitionsSet.remove(aTransition);
+    			itr.remove();
     		}
     	}
+    	
+    	
     }
 
 
