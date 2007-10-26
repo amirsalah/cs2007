@@ -168,11 +168,6 @@ class FsaFrame extends JFrame {
 		
 		displayArea.RemoveInitialState();
 	}
-	
-	
-	private void renameState_MouseClicked(ActionEvent e) {
-		// TODO
-	}
 
 	private void setInitialState_MouseClicked(ActionEvent e) {
 		if(!isFsaLoaded){
@@ -256,8 +251,12 @@ class FsaFrame extends JFrame {
 		displayArea.repaint(); 
 	}
 
-	private void playButton_MouseClicked(MouseEvent e) {
+	private void playButton_MouseClicked(ActionEvent e) {
 		// TODO 
+	}
+	
+	private void about_MouseClicked(ActionEvent e){
+		displayArea.AboutMSG();
 	}
 
 	private void initComponents() {
@@ -273,7 +272,6 @@ class FsaFrame extends JFrame {
 		editMenu = new JMenu();
 		newStateMenuItem = new JMenuItem();
 		newTransitionMenuItem = new JMenuItem();
-		renameStateMenuItem = new JMenuItem();
 		setInitialStateMenuItem = new JMenuItem();
 		deleteStatesMenuItem = new JMenuItem();
 		removeInitialStateMenuItem = new JMenuItem();
@@ -281,7 +279,6 @@ class FsaFrame extends JFrame {
 		useBasicRenderMenuItem = new JMenuItem();
 		myRenderMenuItem = new JMenuItem();
 		helpMenu = new JMenu();
-		helpContentsMenuItem = new JMenuItem();
 		aboutMenuItem = new JMenuItem();
 		messageLabel = new JLabel();
 		scrollPane1 = new JScrollPane();
@@ -395,16 +392,6 @@ class FsaFrame extends JFrame {
 					});
 					removeInitialStateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK));
 					editMenu.add(removeInitialStateMenuItem);
-					
-					//---- renameStateMenuItem ----
-					renameStateMenuItem.setText("renameState");
-					renameStateMenuItem.setForeground(SystemColor.textInactiveText);
-					renameStateMenuItem.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							renameState_MouseClicked(e);
-						}
-					});
-					editMenu.add(renameStateMenuItem);
 
 					//---- setInitialStateMenuItem ----
 					setInitialStateMenuItem.setText("Add initial state");
@@ -458,12 +445,13 @@ class FsaFrame extends JFrame {
 					helpMenu.setText("Help");
 					helpMenu.setBackground(UIManager.getColor("Button.background"));
 
-					//---- helpContentsMenuItem ----
-					helpContentsMenuItem.setText("Help contents");
-					helpMenu.add(helpContentsMenuItem);
-
 					//---- aboutMenuItem ----
 					aboutMenuItem.setText("About...");
+					aboutMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							about_MouseClicked(e);
+						}
+					});
 					helpMenu.add(aboutMenuItem);
 				}
 				menuBar1.add(helpMenu);
@@ -512,9 +500,8 @@ class FsaFrame extends JFrame {
 
 		//---- playButton ----
 		playButton.setText("Play");
-		playButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+		playButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				playButton_MouseClicked(e);
 			}
 		});
@@ -560,7 +547,6 @@ class FsaFrame extends JFrame {
 	private JMenu editMenu;
 	private JMenuItem newStateMenuItem;
 	private JMenuItem newTransitionMenuItem;
-	private JMenuItem renameStateMenuItem;
 	private JMenuItem setInitialStateMenuItem;
 	private JMenuItem deleteStatesMenuItem;
 	private JMenuItem removeInitialStateMenuItem;
@@ -568,7 +554,6 @@ class FsaFrame extends JFrame {
 	private JMenuItem useBasicRenderMenuItem;
 	private JMenuItem myRenderMenuItem;
 	private JMenu helpMenu;
-	private JMenuItem helpContentsMenuItem;
 	private JMenuItem aboutMenuItem;
 	private JLabel messageLabel;
 	private JScrollPane scrollPane1;

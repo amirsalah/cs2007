@@ -585,6 +585,10 @@ public class FsaDisplayPanel extends JPanel{
 		setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 	}
 	
+	/**
+	 * Remove the current selected states from initial states set
+	 *
+	 */
 	public void RemoveInitialState(){
 		if(selectedStates.isEmpty()){
 			return;
@@ -599,5 +603,9 @@ public class FsaDisplayPanel extends JPanel{
 		SaveInitialStates();
 		
 		repaint();
+	}
+	
+	public void AboutMSG(){
+		JOptionPane.showMessageDialog(null, "Author: Bo CHEN", "FSA simulator", JOptionPane.INFORMATION_MESSAGE);
 	}
 }
