@@ -264,27 +264,29 @@ public class FsaDisplayPanel extends JPanel{
 				
 			/* ready to move one or more selected shapes */
 			case DISPLAY_MOVING_SHAPES:
+				boolean stateClicked = false;
 				while(itr_shape.hasNext()){
 					selectedShape = itr_shape.next();
 					if(selectedShape.contains(xPressedPos, yPressedPos)){
+						stateClicked = true;
 						selectedState = mapShapeState.get(selectedShape);
 						
 						if(!selectedStates.contains(selectedState)){
-							myDisplay = DISPLAY_SELECTION;
 							selectedStates.clear();
 						}else{
-							myDisplay = DISPLAY_MOVING_SHAPES;
 							return;
 						}
 						selectedStates.add(selectedState);
 					}
 				}
-//				if(selectedStates)
-				selectedStates.clear();
-				selectedTransitions.clear();
-				myDisplay = DISPLAY_DRAW_REGION;
-				rectRegion.x = xPressedPos;
-				rectRegion.y = yPressedPos;
+				
+				if(!stateClicked){
+					selectedStates.clear();
+					selectedTransitions.clear();
+					myDisplay = DISPLAY_DRAW_REGION;
+					rectRegion.x = xPressedPos;
+					rectRegion.y = yPressedPos;
+				}
 				break;
 			}
 			repaint();
@@ -369,7 +371,6 @@ public class FsaDisplayPanel extends JPanel{
 				}
 				break;
 				
-			default: break;
 			}
 			
 			repaint();
