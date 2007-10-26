@@ -392,6 +392,7 @@ public class FsaDisplayPanel extends JPanel{
 		
 		// Remove all transitions linked to the selected states
 		while(itr_state.hasNext()){
+			aState = itr_state.next();
 	    	while(itr_tmp.hasNext()){
 	    		aTransition = itr_tmp.next();
 	    		if(aTransition.fromState().equals(aState) || aTransition.toState().equals(aState)){
