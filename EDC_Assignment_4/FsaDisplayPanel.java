@@ -39,7 +39,7 @@ public class FsaDisplayPanel extends JPanel{
 	private Set<Transition> selectedTransitions = new HashSet<Transition>();
 	
 	private ArrayList<String> initStates = new ArrayList<String>();
-	private ArrayList<String> allStates = new ArrayList<String>();
+//	private ArrayList<String> allStates = new ArrayList<String>();
 //	private ArrayList<String> allTransitions = new ArrayList<String>();
 	// Map: Transition -> multiplicity
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
@@ -188,18 +188,14 @@ public class FsaDisplayPanel extends JPanel{
 		selectedStates.clear();
 		
 		// Save initial states' name
-		Iterator<State> itr = fsa.getInitialStates().iterator();
-		State s = null;
-		while(itr.hasNext()){
-			s = itr.next();
-			initStates.add(s.getName());
-		}
+		SaveInitialStates();
 		
 		// Save all states' name
-		itr = fsa.getStates().iterator();
+/*		itr = fsa.getStates().iterator();
 		while(itr.hasNext()){
 			allStates.add(itr.next().getName());
 		}
+*/
 		
 		// Set the multiplicity of each transition
 		SetMultiplicity();
@@ -208,10 +204,25 @@ public class FsaDisplayPanel extends JPanel{
 	}
 	
 	/**
+	 * Save all the initial states in the FSA
+	 */
+	private void SaveInitialStates(){
+		initStates.clear();
+		
+		Iterator<State> itr = fsa.getInitialStates().iterator();
+		State s = null;
+		while(itr.hasNext()){
+			s = itr.next();
+			initStates.add(s.getName());
+		}
+	}
+	/**
 	 * Initialize the multiplicity of each transition
 	 *
 	 */
 	private void SetMultiplicity(){
+		mapMultiplicity.clear();
+		
 		Transition t = null;
 		ArrayList<Transition> transitions = new ArrayList<Transition>();
 		Iterator<Transition> itr_transition = ((FsaImpl)fsa).GetTransitions().iterator();
@@ -473,7 +484,8 @@ public class FsaDisplayPanel extends JPanel{
 						}
 					}
 					catch(IllegalArgumentException iae){
-						messagesArea.append("State name is invalid" + "\n");
+						messagesArea.append("Illegal transition" + "\n");
+						break;
 					}
 					catch(NoSuchElementException nsee){
 						messagesArea.append("Please enter: event name,output" + "\n");
@@ -571,5 +583,21 @@ public class FsaDisplayPanel extends JPanel{
 	public void NewTransition(){
 		myDisplay = DISPLAY_ADD_TRANSITION;
 		setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+	}
+	
+	public void RemoveInitialState(){
+		if(selectedStates.isEmpty()){
+			return;
+		}
+		
+		Iterator<State> itr_state = selectedStates.iterator();
+		while(itr_state.hasNext()){
+			fsa.removeInitialState(itr_state.next());
+		}
+		
+		// Re-set the corresponding initial states in the DisplayPanel
+		SaveInitialStates();
+		
+		repaint();
 	}
 }

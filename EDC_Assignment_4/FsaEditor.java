@@ -160,6 +160,16 @@ class FsaFrame extends JFrame {
 		displayArea.NewTransition();
 	}
 
+	private void removeInitialState_MouseClicked(ActionEvent e){
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		
+		displayArea.RemoveInitialState();
+	}
+	
+	
 	private void renameState_MouseClicked(ActionEvent e) {
 		// TODO
 	}
@@ -266,6 +276,7 @@ class FsaFrame extends JFrame {
 		renameStateMenuItem = new JMenuItem();
 		setInitialStateMenuItem = new JMenuItem();
 		deleteStatesMenuItem = new JMenuItem();
+		removeInitialStateMenuItem = new JMenuItem();
 		OptionsMenu = new JMenu();
 		useBasicRenderMenuItem = new JMenuItem();
 		myRenderMenuItem = new JMenuItem();
@@ -372,8 +383,19 @@ class FsaFrame extends JFrame {
 							newTransition_MouseClicked(e);
 						}
 					});
+					newTransitionMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_MASK));
 					editMenu.add(newTransitionMenuItem);
 
+					//---- removeInitialStateMenu item----
+					removeInitialStateMenuItem.setText("Remove initial state");
+					removeInitialStateMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							removeInitialState_MouseClicked(e);
+						}
+					});
+					removeInitialStateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK));
+					editMenu.add(removeInitialStateMenuItem);
+					
 					//---- renameStateMenuItem ----
 					renameStateMenuItem.setText("renameState");
 					renameStateMenuItem.setForeground(SystemColor.textInactiveText);
@@ -541,6 +563,7 @@ class FsaFrame extends JFrame {
 	private JMenuItem renameStateMenuItem;
 	private JMenuItem setInitialStateMenuItem;
 	private JMenuItem deleteStatesMenuItem;
+	private JMenuItem removeInitialStateMenuItem;
 	private JMenu OptionsMenu;
 	private JMenuItem useBasicRenderMenuItem;
 	private JMenuItem myRenderMenuItem;
