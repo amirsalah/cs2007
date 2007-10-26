@@ -17,13 +17,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.event.MouseInputAdapter;
 
 
 public class FsaDisplayPanel extends JPanel{
 	private Fsa fsa;
 	private FsaRenderer fsaRenderer;
+	private JTextArea messagesArea;
 	// Map: shape -> state
 	private Map<Shape, State> mapShapeState = new HashMap<Shape, State>();
 	private Set<State> selectedStates = new HashSet<State>();
@@ -56,11 +59,12 @@ public class FsaDisplayPanel extends JPanel{
 	Graphics2D gra2d = null;
 	
 	// Initialize the display panel
-	public FsaDisplayPanel(){
+	public FsaDisplayPanel(JTextArea messagesArea){
 //		setBackground(Color.WHITE);
 		MyListener myMouseListener = new MyListener();
         addMouseListener(myMouseListener);
         addMouseMotionListener(myMouseListener);
+        this.messagesArea = messagesArea;
 	}
 	
 	public void paintComponent(Graphics g){
@@ -234,10 +238,6 @@ public class FsaDisplayPanel extends JPanel{
 			Iterator<Shape> itr_shape = allShapes.iterator();
 			Shape selectedShape = null;
 			State selectedState = null;
-
-			// No state are clicked
-			if((myDisplay == DISPLAY_SELECTION && selectedStates.isEmpty()) ||
-					myDisplay == DISPLAY_MOVING_SHAPES){}
 			
 			switch(myDisplay){
 			/* in the stage of selecting states */
@@ -280,6 +280,7 @@ public class FsaDisplayPanel extends JPanel{
 					}
 				}
 				
+				// Clicking position contains no state
 				if(!stateClicked){
 					selectedStates.clear();
 					selectedTransitions.clear();
@@ -287,6 +288,22 @@ public class FsaDisplayPanel extends JPanel{
 					rectRegion.x = xPressedPos;
 					rectRegion.y = yPressedPos;
 				}
+				break;
+				
+			/* Add a new state to current FSA */
+			case DISPLAY_ADD_STATE:
+				String inputStateName = JOptionPane.showInputDialog("State name: ", "");
+				try{
+					if(inputStateName != null){
+						fsa.newState(inputStateName, xPressedPos, yPressedPos);
+					}
+				}
+				catch(IllegalArgumentException iae){
+					messagesArea.append("State name is invalid" + "\n");
+				}
+					
+				myDisplay = DISPLAY_SELECTION;
+				setCursor(Cursor.getDefaultCursor());
 				break;
 			}
 			repaint();
@@ -370,7 +387,6 @@ public class FsaDisplayPanel extends JPanel{
 					myDisplay = DISPLAY_MOVING_SHAPES;
 				}
 				break;
-				
 			}
 			
 			repaint();

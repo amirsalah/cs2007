@@ -276,7 +276,7 @@ class FsaFrame extends JFrame {
 		stepButton = new JButton();
 		playButton = new JButton();
 		displayLabel = new JLabel();
-		displayArea = new FsaDisplayPanel();
+		displayArea = new FsaDisplayPanel(messagesArea);
 		scrollDisplayArea = new JScrollPane(displayArea, 
 							JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 		                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
