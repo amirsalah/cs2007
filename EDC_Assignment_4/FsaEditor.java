@@ -153,7 +153,11 @@ class FsaFrame extends JFrame {
 	}
 
 	private void newTransition_MouseClicked(ActionEvent e) {
-		// TODO
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		displayArea.NewTransition();
 	}
 
 	private void renameState_MouseClicked(ActionEvent e) {
@@ -362,8 +366,7 @@ class FsaFrame extends JFrame {
 					editMenu.add(newStateMenuItem);
 
 					//---- newTransitionMenuItem ----
-					newTransitionMenuItem.setText("newTransition");
-					newTransitionMenuItem.setForeground(SystemColor.textInactiveText);
+					newTransitionMenuItem.setText("New transition");
 					newTransitionMenuItem.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e){
 							newTransition_MouseClicked(e);

@@ -1,7 +1,7 @@
 /*=======================================================
   @Author: Bo CHEN
   Student ID: 1139520
-  Date: 5th, Oct 2007
+  Date: 25th, Oct 2007
 =========================================================*/
 import java.awt.Color;
 import java.awt.Cursor;
@@ -9,13 +9,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -37,12 +40,10 @@ public class FsaDisplayPanel extends JPanel{
 	
 	private ArrayList<String> initStates = new ArrayList<String>();
 	private ArrayList<String> allStates = new ArrayList<String>();
-	private ArrayList<String> allTransitions = new ArrayList<String>();
+//	private ArrayList<String> allTransitions = new ArrayList<String>();
 	// Map: Transition -> multiplicity
 	private Map<String, Integer> mapMultiplicity = new HashMap<String, Integer>();
 	private boolean fsaLoaded = false;
-	
-//	private Set<State> currentState = null;
 	
 	/*
 	 * The different display states
@@ -51,6 +52,7 @@ public class FsaDisplayPanel extends JPanel{
 	private final int DISPLAY_DRAW_REGION = 1;
 	private final int DISPLAY_MOVING_SHAPES = 2;
 	private final int DISPLAY_ADD_STATE = 3;
+	private final int DISPLAY_ADD_TRANSITION = 4;
 	
 	private int myDisplay = DISPLAY_SELECTION; // Indicate the current display state
 	
@@ -58,9 +60,12 @@ public class FsaDisplayPanel extends JPanel{
 	private Rectangle2D.Double rectRegion= new Rectangle2D.Double();
 	Graphics2D gra2d = null;
 	
+	// The line link between 2 states, using to create a new transition
+	private Line2D.Double transitionLine = new Line2D.Double();
+	
+	
 	// Initialize the display panel
 	public FsaDisplayPanel(JTextArea messagesArea){
-//		setBackground(Color.WHITE);
 		MyListener myMouseListener = new MyListener();
         addMouseListener(myMouseListener);
         addMouseMotionListener(myMouseListener);
@@ -117,6 +122,12 @@ public class FsaDisplayPanel extends JPanel{
 		if(myDisplay == DISPLAY_DRAW_REGION){
 			gra2d.setColor(Color.MAGENTA);
 			gra2d.draw(rectRegion);
+		}
+		
+		// Draw a new transition line during its creation process
+		if(myDisplay == DISPLAY_ADD_TRANSITION){
+			gra2d.setColor(Color.MAGENTA);
+			gra2d.draw(transitionLine);
 		}
 	}
 	
@@ -190,17 +201,25 @@ public class FsaDisplayPanel extends JPanel{
 			allStates.add(itr.next().getName());
 		}
 		
-		// Save transitions' name
+		// Set the multiplicity of each transition
+		SetMultiplicity();
+		
+		return true;
+	}
+	
+	/**
+	 * Initialize the multiplicity of each transition
+	 *
+	 */
+	private void SetMultiplicity(){
 		Transition t = null;
 		ArrayList<Transition> transitions = new ArrayList<Transition>();
 		Iterator<Transition> itr_transition = ((FsaImpl)fsa).GetTransitions().iterator();
 		while (itr_transition.hasNext()){
 			t = itr_transition.next();
-			allTransitions.add(t.toString());
 			transitions.add(t);
 		}
 		
-		// Set the multiplicity of each transition
 		int numMulti = 1;
 		while(!transitions.isEmpty()){
 			t = transitions.get(0);
@@ -217,8 +236,6 @@ public class FsaDisplayPanel extends JPanel{
 			}
 			transitions.remove(0);
 		}
-		
-		return true;
 	}
 	
 	private class MyListener extends MouseInputAdapter {
@@ -227,6 +244,9 @@ public class FsaDisplayPanel extends JPanel{
 		private int yPressedPos = 0;
 		private int xDragedPos = 0;
 		private int yDragedPos = 0;
+		
+		State startingState = null;
+		State destinationState = null;
 		
 		public void mousePressed(MouseEvent e){
 			xPressedPos = e.getX();
@@ -305,6 +325,33 @@ public class FsaDisplayPanel extends JPanel{
 				myDisplay = DISPLAY_SELECTION;
 				setCursor(Cursor.getDefaultCursor());
 				break;
+				
+			case DISPLAY_ADD_TRANSITION:
+				stateClicked = false;
+				selectedStates.clear();
+				
+				while(itr_shape.hasNext()){
+					selectedShape = itr_shape.next();
+					if(selectedShape.contains(xPressedPos, yPressedPos)){
+						stateClicked = true;
+						selectedState = mapShapeState.get(selectedShape);
+						selectedStates.add(selectedState);
+						//Set the start point of transition line
+						transitionLine.x1 = xPressedPos;
+						transitionLine.y1 = yPressedPos;
+						transitionLine.x2 = xPressedPos;
+						transitionLine.y2 = yPressedPos;
+						
+						startingState = selectedState;
+						break;
+					}
+				}
+				
+				if(!stateClicked){
+					myDisplay = DISPLAY_SELECTION;
+					setCursor(Cursor.getDefaultCursor());
+				}
+				break;
 			}
 			repaint();
 		}
@@ -337,6 +384,11 @@ public class FsaDisplayPanel extends JPanel{
 				rectRegion.width = rectWidth;
 				break;
 				
+				/* Draw a transition line */
+			case DISPLAY_ADD_TRANSITION:
+				transitionLine.x2 = xPos;
+				transitionLine.y2 = yPos;
+				break;
 			}
 
 			repaint();
@@ -344,17 +396,15 @@ public class FsaDisplayPanel extends JPanel{
 		}
 		
 		public void mouseReleased(MouseEvent e){
+			Set<Shape> allShapes = null;
+			
+			allShapes = mapShapeState.keySet();
+			Iterator<Shape> itr_shape = allShapes.iterator();
+			Shape shape = null;
+			State selectedState = null;
+			
 			switch(myDisplay){
-
 			case DISPLAY_DRAW_REGION:
-				Set<Shape> allShapes = null;
-				
-				// Check selected shapes
-				allShapes = mapShapeState.keySet();
-				Iterator<Shape> itr_shape = allShapes.iterator();
-				Shape shape = null;
-				State selectedState = null;
-				
 				while(itr_shape.hasNext()){
 					shape = itr_shape.next();
 					if(shape.intersects(rectRegion)){
@@ -386,6 +436,51 @@ public class FsaDisplayPanel extends JPanel{
 				}else{
 					myDisplay = DISPLAY_MOVING_SHAPES;
 				}
+				break;
+				
+			case DISPLAY_ADD_TRANSITION:
+				int xDepressedPos = e.getX();
+				int yDepressedPos = e.getY();
+				boolean validDestination = false;
+				
+				while(itr_shape.hasNext()){
+					shape = itr_shape.next();
+					if(shape.contains(xDepressedPos, yDepressedPos)){
+						validDestination = true;
+						selectedState = mapShapeState.get(shape);
+						selectedStates.add(selectedState);
+						destinationState = selectedState;
+						//Set the final destination of the transition line
+						transitionLine.x2 = xDepressedPos;
+						transitionLine.y2 = yDepressedPos;
+						break;
+					}
+				}
+				
+				// Draw the new transition if the destination is a valid state
+				if(validDestination == true){
+					String inputTransition = JOptionPane.showInputDialog("Transition Name,Output: ", "Name,Output");
+					
+					try{
+						if(inputTransition != null){
+							StringTokenizer st = new StringTokenizer(inputTransition, ",");
+							String eventName = st.nextToken();
+							String output = st.nextToken();
+							fsa.newTransition(startingState, destinationState, eventName, output);
+							SetMultiplicity();
+							selectedStates.clear();
+							selectedTransitions.clear();
+						}
+					}
+					catch(IllegalArgumentException iae){
+						messagesArea.append("State name is invalid" + "\n");
+					}
+					catch(NoSuchElementException nsee){
+						messagesArea.append("Please enter: event name,output" + "\n");
+					}
+				}
+				myDisplay = DISPLAY_SELECTION;
+				setCursor(Cursor.getDefaultCursor());
 				break;
 			}
 			
@@ -461,8 +556,20 @@ public class FsaDisplayPanel extends JPanel{
 		return true;
 	}
 	
+	/** Add a new state to current fsa
+	 *  the mouse also change to a hand 
+	 */
 	public void NewState(){
 		myDisplay = DISPLAY_ADD_STATE;
     	setCursor(new Cursor(Cursor.HAND_CURSOR));
+	}
+	
+	/**
+	 * Add a new transition to current fsa
+	 *
+	 */
+	public void NewTransition(){
+		myDisplay = DISPLAY_ADD_TRANSITION;
+		setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 	}
 }
