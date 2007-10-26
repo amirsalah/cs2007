@@ -144,7 +144,12 @@ class FsaFrame extends JFrame {
 	}
 
 	private void newState_MouseClicked(ActionEvent e) {
-		// TODO
+		if(!isFsaLoaded){
+			messagesArea.append("FSA has not been loaded" + "\n");
+			return;
+		}
+		
+		displayArea.NewState();
 	}
 
 	private void newTransition_MouseClicked(ActionEvent e) {
@@ -347,13 +352,13 @@ class FsaFrame extends JFrame {
 					editMenu.setBackground(UIManager.getColor("Button.background"));
 
 					//---- newStateMenuItem ----
-					newStateMenuItem.setText("newState");
-					newStateMenuItem.setForeground(SystemColor.textInactiveText);
+					newStateMenuItem.setText("New state");
 					newStateMenuItem.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							newState_MouseClicked(e);
 						}
 					});
+					newStateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
 					editMenu.add(newStateMenuItem);
 
 					//---- newTransitionMenuItem ----
@@ -383,6 +388,7 @@ class FsaFrame extends JFrame {
 							setInitialState_MouseClicked(e);
 						}
 					});
+					setInitialStateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_MASK));
 					editMenu.add(setInitialStateMenuItem);
 
 					//---- deleteStatesMenuItem ----
