@@ -1,0 +1,37 @@
+=================================== PROGRAM ====================================
+gridxslt runtests.tmp/in.xml runtests.tmp/test.xsl
+===================================== FILE =====================================
+in.xml
+<?xml version="1.0" encoding="utf-8"?>
+<empty/>
+===================================== FILE =====================================
+test.xsl
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:a="http://test1"
+    xmlns:b="http://test2"
+    xmlns:c="http://test3"
+    exclude-result-prefixes=" a b "
+		version="2.0">
+
+  <xsl:output method="xml" indent="yes"/>
+  <xsl:strip-space elements="*"/>
+
+  <xsl:function name="a:getelem">
+    <outer>
+      <inner>Hello</inner>
+    </outer>
+  </xsl:function>
+
+  <xsl:template match="/">
+    <xsl:sequence select="a:getelem()"/>
+  </xsl:template>
+
+</xsl:stylesheet>
+==================================== OUTPUT ====================================
+<?xml version="1.0" encoding="UTF-8"?>
+<outer xmlns:c="http://test3">
+   <inner>Hello</inner>
+</outer>
+================================== RETURN CODE =================================
+0
