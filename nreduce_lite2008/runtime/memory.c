@@ -147,6 +147,7 @@ cell *alloc_cell(task *tsk)
   return v;
 }
 
+////??
 void clear_marks(task *tsk, short bit)
 {
   block *bl;
@@ -187,6 +188,7 @@ void sweep(task *tsk, int all)
   }
 }
 
+////
 void local_collect(task *tsk)
 {
   tsk->alloc_bytes = 0;
@@ -201,32 +203,37 @@ void local_collect(task *tsk)
   sweep(tsk,0);
 }
 
+////Creat a new pointer stack
 pntrstack *pntrstack_new(void)
 {
   pntrstack *s = (pntrstack*)calloc(1,sizeof(pntrstack));
-  s->alloc = 1;
-  s->count = 0;
+  s->alloc = 1;   ////Initially, 1 pointer is allowed
+  s->count = 0;   
   s->data = (pntr*)malloc(sizeof(pntr));
   s->limit = STACK_LIMIT;
   return s;
 }
 
+////Push pointer p into the top of pointer stack s
 void pntrstack_push(pntrstack *s, pntr p)
 {
+	////Test to see if the stack s is fullly allocated
   if (s->count == s->alloc) {
     if ((0 <= s->limit) && (s->count >= s->limit)) {
       fprintf(stderr,"Out of stack space\n");
       exit(1);
     }
+    ////Double the pointer stack s
     pntrstack_grow(&s->alloc,&s->data,s->alloc*2);
   }
   s->data[s->count++] = p;
 }
 
+////Return the pointer at pos 
 pntr pntrstack_at(pntrstack *s, int pos)
 {
-  assert(0 <= pos);
-  assert(pos < s->count);
+  assert( pos >= 0);
+  assert( s->count > pos);
   return resolve_pntr(s->data[pos]);
 }
 
@@ -248,6 +255,7 @@ void pntrstack_free(pntrstack *s)
   free(s);
 }
 
+////Grow the pointer stack space to the specified size
 void pntrstack_grow(int *alloc, pntr **data, int size)
 {
   if (*alloc < size) {

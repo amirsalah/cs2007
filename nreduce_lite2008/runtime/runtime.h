@@ -77,11 +77,14 @@ struct task;
 
 #define NUM_BUILTINS     33
 
+//// Check if the cell _c is empty or not
 #define checkcell(_c) ({ if (CELL_EMPTY == (_c)->type) \
                           fatal("access to free'd cell %p",(_c)); \
                         (_c); })
 
+//// Check the vadility of the cell and then return the cell type
 #define celltype(_c) (checkcell(_c)->type)
+
 #define pntrtype(p) (is_pntr(p) ? celltype(get_pntr(p)) : CELL_NUMBER)
 
 typedef struct {
@@ -121,11 +124,14 @@ typedef struct cell {
 #define is_pntr(__p) (((__p).data[1] & PNTR_MASK) == PNTR_VALUE)
 #define make_pntr(__p,__c) { (__p).data[0] = (unsigned int)(__c); \
                              (__p).data[1] = PNTR_VALUE; }
+
+//// Get the cell pointer of the specified pointer __p
 #define get_pntr(__p) (assert(is_pntr(__p)), ((cell*)(*((unsigned int*)&(__p)))))
 #define pntrequal(__a,__b) (((__a).data[0] == (__b).data[0]) && ((__a).data[1] == (__b).data[1]))
 
 #define is_nullpntr(__p) (is_pntr(__p) && ((cell*)1 == get_pntr(__p)))
 
+////
 #define resolve_pntr(x) ({ pntr __x = (x);        \
                            while (CELL_IND == pntrtype(__x)) \
                              __x = get_pntr(__x)->field1; \
@@ -141,10 +147,10 @@ typedef struct builtin {
 } builtin;
 
 typedef struct pntrstack {
-  int alloc;
-  int count;
-  pntr *data;
-  int limit;
+  int alloc;  //// Number of all allocated stack space, including used and unused space
+  int count;  //// Number of used stack space, "count" point to the top of the stack
+  pntr *data; //// Stored pointers
+  int limit;  //// The maximum space 
 } pntrstack;
 
 typedef struct block {
@@ -153,6 +159,7 @@ typedef struct block {
   cell values[BLOCK_SIZE];
 } block;
 
+//// there may be lot of tasks running simutaneously
 typedef struct task {
   int done;
   char *error;
@@ -160,11 +167,11 @@ typedef struct task {
   cell *freeptr;
   pntr globnilpntr;
   pntr globtruepntr;
-  pntrstack *streamstack;
+  pntrstack *streamstack;    ////Stack used to store application nodes to be processed
   pntrstack *markstack;
   int newcellflags;
   int inmark;
-  int alloc_bytes;
+  int alloc_bytes;	////Memory used by this task
   int framesize;
   int framesperblock;
 } task;

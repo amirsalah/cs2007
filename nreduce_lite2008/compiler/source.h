@@ -81,7 +81,7 @@ typedef struct letrec {
 
 typedef struct scomb {
   char *name;
-  int nargs;
+  int nargs;           //// number of arguments for this supercombinator
   char **argnames;
   snode *body;
   int index;

@@ -151,16 +151,18 @@ static void reduce_single(task *tsk, pntrstack *s, pntr p)
   pntrstack_pop(s);
 }
 
+
 void reduce(task *tsk, pntrstack *s)
 {
   int reductions = 0;
-  pntr redex = s->data[s->count-1];
+  pntr redex = s->data[s->count-1]; ////The data at the top of stack is the first redex to be sloved
 
   /* REPEAT */
   while (1) {
-    int oldtop = s->count;
+    int oldtop = s->count;    ////Save old top of the stack
     pntr target;
 
+	//// Gabage collection performed once the task is allocated too much memory (bytes)
     if (tsk->alloc_bytes > COLLECT_THRESHOLD)
       local_collect(tsk);
 
@@ -195,7 +197,7 @@ void reduce(task *tsk, pntrstack *s)
         return;
       }
 
-      destno = s->count-1-sc->nargs;
+      destno = s->count-1-sc->nargs;    ////Destination  Number
       dest = pntrstack_at(s,destno);
 
       /* We have enough arguments present to instantiate the supercombinator */
@@ -307,9 +309,9 @@ void reduce(task *tsk, pntrstack *s)
 
 static void stream(task *tsk, pntr lst)
 {
-  tsk->streamstack = pntrstack_new();
-  pntrstack_push(tsk->streamstack,lst);
-  while (0 < tsk->streamstack->count) {
+  tsk->streamstack = pntrstack_new();   ////Create new stack to store pointers to application nodes
+  pntrstack_push(tsk->streamstack,lst);	
+  while (tsk->streamstack->count > 0) {
     pntr p;
     reduce(tsk,tsk->streamstack);
 
@@ -346,7 +348,7 @@ void run_reduction(source *src)
 {
   scomb *mainsc;
   cell *app;
-  pntr rootp;
+  pntr rootp;  			//// root pointer
   task *tsk;
 
   tsk = task_new(0,0,NULL,0);
