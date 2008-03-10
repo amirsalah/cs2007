@@ -26,8 +26,7 @@ filteItems pivot numbers =
         
 printstrings str =
                   (if str
-                     (append (numtostring (head str))
-                      (cons " " (printstrings (tail str))))
+                     (map (!x.(cons (numtostring x) " ")) str)
                      nil)
 
 selectLItems pivot numbers =
