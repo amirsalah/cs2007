@@ -97,6 +97,7 @@ typedef struct {
 #define CELL_CONS        0x03  /* left: head (cell*)       right: tail (cell*)     */
 #define CELL_IND         0x04  /* left: tgt (cell*)                                */
 #define CELL_SCREF       0x05  /* left: scomb (scomb*)                             */
+							   ////SuperCombinator REFerence
 #define CELL_HOLE        0x06  /*                                                  */
 #define CELL_NIL         0x07  /*                                                  */
 #define CELL_NUMBER      0x08  /*                                                  */
