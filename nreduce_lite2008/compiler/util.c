@@ -79,19 +79,22 @@ void array_mkroom(array *arr, const int size)
   }
 }
 
-//// 
+//// append (data) to the (arr), and renew the array parameters
 void array_append(array *arr, const void *data, int size)
 {
   array_mkroom(arr,size);	//// increase the array IF size is larger than the available space
+           //// (address of arr->data) + (the used space) = the available address
   memmove((char*)(arr->data)+arr->nbytes, data, size);
   arr->nbytes += size;
 }
 
+//// count the number of elements in (arr)
 int array_count(array *arr)
 {
   return arr->nbytes/arr->elemsize;
 }
 
+//// free (arr)
 void array_free(array *arr)
 {
   free(arr->data);
@@ -149,7 +152,7 @@ int list_count(list *l)
   return count;
 }
 
-
+////
 void list_free(list *l, list_d_t d) /* Can be called from native code */
 {
   while (l) {

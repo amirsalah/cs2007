@@ -204,7 +204,7 @@ int source_parse_file(source *src, const char *filename, const char *modname)
   }
 
   yyfilename = filename;
-  yyfileno = add_parsedfile(src,filename);
+  yyfileno = add_parsedfile(src,filename);    ////yyfileno is the index in the src->parsedfiles
   yylloc.first_line = 1;
 
   bufstate = yy_create_buffer(yyin,YY_BUF_SIZE);
@@ -371,7 +371,7 @@ const char *lookup_parsedfile(source *src, int fileno)
   return array_item(src->parsedfiles,fileno,char*);
 }
 
-////
+//// add the pointer of parsed file to src
 int add_parsedfile(source *src, const char *filename)
 {
   char *copy = strdup(filename);
