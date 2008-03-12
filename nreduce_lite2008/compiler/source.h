@@ -83,7 +83,7 @@ typedef struct scomb {
   char *name;
   int nargs;           //// number of arguments for this supercombinator
   char **argnames;
-  snode *body;
+  snode *body;         //// the body of this supercombinator
   int index;
   int *strictin;
   sourceloc sl;
@@ -97,8 +97,8 @@ typedef struct scomb {
 } scomb;
 
 typedef struct source {
-  scomb *schash[GLOBAL_HASH_SIZE];
-  int varno;
+  scomb *schash[GLOBAL_HASH_SIZE];    ////sc (supercombinator) hash
+  int varno;	//// variable NO
   array *scombs;
   array *oldnames;
   array *parsedfiles;
@@ -132,6 +132,7 @@ void print_sourceloc(source *src, FILE *f, sourceloc sl);
 char *make_varname(const char *want);
 int create_scomb(source *src, const char *modname, char *name, list *argnames,
                  snode *body, int fileno, int lineno);
+////Make a symbol, used in Yacc
 snode *makesym(int fileno, int lineno, const char *name);
 
 /* resolve */

@@ -97,7 +97,7 @@ extern const char *parse_modname;
 %type <l> Arguments
 
  /* New syntax */
-
+/////* specify: SYMBOL are all left-associative */
 %left SYMBOL
 
 %%

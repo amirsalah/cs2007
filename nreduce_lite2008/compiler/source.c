@@ -371,10 +371,11 @@ const char *lookup_parsedfile(source *src, int fileno)
   return array_item(src->parsedfiles,fileno,char*);
 }
 
+////
 int add_parsedfile(source *src, const char *filename)
 {
   char *copy = strdup(filename);
-  if (NULL == src->parsedfiles)
+  if (src->parsedfiles == NULL)
     src->parsedfiles = array_new(sizeof(char*),0);
   array_append(src->parsedfiles,&copy,sizeof(char*));
   return array_count(src->parsedfiles)-1;

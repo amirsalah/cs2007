@@ -54,6 +54,8 @@ void fatal(const char *format, ...)
   abort();
 }
 
+//// create a new array
+//// Return: the pointer to the newly created array
 array *array_new(int elemsize, int initroom)
 {
   array *arr = (array*)malloc(sizeof(array));
@@ -61,25 +63,27 @@ array *array_new(int elemsize, int initroom)
   if (0 < initroom)
     arr->alloc = elemsize*initroom;
   else
-    arr->alloc = 1024;
-  arr->nbytes = 0;
+    arr->alloc = 1024;   //// default allocate 1024 bytes
+  arr->nbytes = 0;       //// no data by default
   arr->data = malloc(arr->alloc);
   return arr;
 }
 
+//// increase the array if the total size of elements to be added exceeds the allocated space of arr.
 void array_mkroom(array *arr, const int size)
 {
   if (arr->nbytes+size > arr->alloc) {
     while (arr->nbytes+size > arr->alloc)
-      arr->alloc *= 2;
+      arr->alloc *= 2;    //// double the allocated space each time
     arr->data = realloc(arr->data,arr->alloc);
   }
 }
 
+//// 
 void array_append(array *arr, const void *data, int size)
 {
-  array_mkroom(arr,size);
-  memmove((char*)(arr->data)+arr->nbytes,data,size);
+  array_mkroom(arr,size);	//// increase the array IF size is larger than the available space
+  memmove((char*)(arr->data)+arr->nbytes, data, size);
   arr->nbytes += size;
 }
 
@@ -94,6 +98,8 @@ void array_free(array *arr)
   free(arr);
 }
 
+//// creat a new list: arguments: pointer to the data, pointer to next list
+//// Return: the pointer to the newly created list
 list *list_new(void *data, list *next)
 {
   list *l = (list*)malloc(sizeof(list));
@@ -102,6 +108,8 @@ list *list_new(void *data, list *next)
   return l;
 }
 
+//// append data to the end of the list l.
+//// (data1 ->next) (data2 ->next) will be (data1 ->next) (data2 ->next) (data ->next)
 void list_append(list **l, void *data)
 {
   list **lptr = l;
@@ -110,16 +118,20 @@ void list_append(list **l, void *data)
   *lptr = list_new(data,NULL);
 }
 
+//// push data to the top of the given list **l
+//// (data1 ->next (data2 ->next), will be (data ->next (data1 ->next) (data2 ->next))
 void list_push(list **l, void *data)
 {
   *l = list_new(data,*l);
 }
 
+//// pop the 1st data in the list:
+//// (data1 ->next (data2 ->next) (data3 ->next)), will pop data1.
 void *list_pop(list **l)
 {
   void *data;
   list *next;
-  if (NULL == *l)
+  if (*l == NULL)
     return NULL;
   data = (*l)->data;
   next = (*l)->next;
@@ -128,6 +140,7 @@ void *list_pop(list **l)
   return data;
 }
 
+//// Return the number of elements in the list l
 int list_count(list *l)
 {
   int count = 0;
@@ -135,6 +148,7 @@ int list_count(list *l)
     count++;
   return count;
 }
+
 
 void list_free(list *l, list_d_t d) /* Can be called from native code */
 {
@@ -147,6 +161,8 @@ void list_free(list *l, list_d_t d) /* Can be called from native code */
   }
 }
 
+//// test if the given string str is contained in the list data.
+//// Return 1 indicates the str is in list l, 0 otherwise
 int list_contains_string(list *l, const char *str)
 {
   for (; l; l = l->next)
@@ -156,6 +172,8 @@ int list_contains_string(list *l, const char *str)
   return 0;
 }
 
+//// test if the given data pointer (data) in in the list l.
+//// Return 1 if l contians data pointer, 0 otherwise.
 int list_contains_ptr(list *l, const void *data)
 {
   for (; l; l = l->next)
@@ -164,10 +182,11 @@ int list_contains_ptr(list *l, const void *data)
   return 0;
 }
 
+//// remove the specified data pointer from the list l
 void list_remove_ptr(list **l, void *ptr)
 {
   list *old;
-  assert(list_contains_ptr(*l,ptr));
+  assert(list_contains_ptr(*l,ptr));  ////make sure the data pointer is contained in the list
   while ((*l)->data != ptr)
     l = &((*l)->next);
   old = *l;
