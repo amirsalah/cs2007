@@ -35,9 +35,11 @@
 #include <stdarg.h>
 #include <math.h>
 
+//// make a pointer (pntr), pointing to the scomb (sc) reference (sc ref).
+//// the superconinator reference (scref) is stored in a cell, which is allocated from the task.
 static pntr makescref(task *tsk, scomb *sc)
 {
-  cell *c = alloc_cell(tsk);
+  cell *c = alloc_cell(tsk);	//// allocate a free cell to store (scref)
   pntr p;
   c->type = CELL_SCREF;
   make_pntr(c->field1,sc);
@@ -45,6 +47,9 @@ static pntr makescref(task *tsk, scomb *sc)
   return p;
 }
 
+//// snode: supercombinator (sc) body == sc->body
+//// names: the argument names of the supercombinator (sc)
+//// values: the values of corresponding arguments of the scomb (sc)
 static pntr instantiate_scomb_r(task *tsk, scomb *sc, snode *source,
                                 stack *names, pntrstack *values)
 {
@@ -123,18 +128,19 @@ static pntr instantiate_scomb_r(task *tsk, scomb *sc, snode *source,
   }
 }
 
+//// instatiate supercombinator (sc), with the arguments stored in stack (s)
 pntr instantiate_scomb(task *tsk, pntrstack *s, scomb *sc)
 {
-  stack *names = stack_new();
+  stack *names = stack_new();	//// stack (names) used to store the arguments names of the scomb (sc)
   pntrstack *values = pntrstack_new();
   pntr res;
 
   int i;
-  for (i = 0; i < sc->nargs; i++) {
+  for (i = 0; i < sc->nargs; i++) {	//// add all arguments to stack (names)
     int pos = s->count-1-i;
-    assert(0 <= pos);
-    stack_push(names,(char*)sc->argnames[i]);
-    pntrstack_push(values,pntrstack_at(s,pos));
+    assert(pos >= 0);
+    stack_push(names,(char*)sc->argnames[i]);	//// push argument names into stack (names)
+    pntrstack_push(values,pntrstack_at(s,pos));	//// push the values of arguments into stack (values)
   }
 
   res = instantiate_scomb_r(tsk,sc,sc->body,names,values);
@@ -151,10 +157,10 @@ static void reduce_single(task *tsk, pntrstack *s, pntr p)
   pntrstack_pop(s);
 }
 
-
+//// pntr stack (s) used to store CELL pointers, 
 void reduce(task *tsk, pntrstack *s)
 {
-  int reductions = 0;
+  int reductions = 0;	//// reduction counter, increase 1 when a redex is reduced
   pntr redex = s->data[s->count-1]; ////The data at the top of stack is the first redex to be sloved
 
   /* REPEAT */
@@ -187,10 +193,12 @@ void reduce(task *tsk, pntrstack *s)
       int destno;
       pntr dest;
       pntr res;
-      scomb *sc = (scomb*)get_pntr(get_pntr(target)->field1);
+      scomb *sc = (scomb*)get_pntr(get_pntr(target)->field1);	//// get the super combinator pntr which is stored in the CELL
 
       /* If there are not enough arguments to the supercombinator, we cannot instantiate it.
          The expression is in WHNF, so we can return. */
+      //// check the number of arguments by examing the pntr stack (s), application cells pntrs have been added prior to this step
+      //// the arguments cells are added in the (while(CELL_APPLICATION == ...))
       if (s->count-1-oldtop < sc->nargs) {
         /* TODO: maybe reduce the args that we do have? */
         s->count = oldtop;
@@ -201,12 +209,15 @@ void reduce(task *tsk, pntrstack *s)
       dest = pntrstack_at(s,destno);
 
       /* We have enough arguments present to instantiate the supercombinator */
+      //// fetch argument from top to bottom (i--), note: s->count starts from 1, stack->data starts from 0
+      //// the top of stack (s), which is s->count-1 is the pntr to the supercombinator itself, so the arguments start from (i-1)
       for (i = s->count-1; i >= s->count-sc->nargs; i--) {
         pntr arg;
         assert(i > oldtop);
-        arg = pntrstack_at(s,i-1);
+        arg = pntrstack_at(s,i-1);	
         assert(CELL_APPLICATION == pntrtype(arg));
-        s->data[i] = get_pntr(arg)->field2;
+        //// replace stack (s) originally storing the supercombinator pntr and application pntr, with pntr to its arguments
+        s->data[i] = get_pntr(arg)->field2; 
       }
 
       assert((CELL_APPLICATION == pntrtype(dest)) ||
@@ -344,20 +355,21 @@ static void stream(task *tsk, pntr lst)
   tsk->streamstack = NULL;
 }
 
+//// initialize the root pointer, pointing to a root cell, which stores the reference to "main" supercombinator 
 void run_reduction(source *src)
 {
-  scomb *mainsc;
-  cell *app;
+  scomb *mainsc;        //// main supercombinator
+  cell *app;			//// root cell
   pntr rootp;  			//// root pointer
   task *tsk;
 
-  tsk = task_new(0,0,NULL,0);
+  tsk = task_new(0, 0, NULL, 0);
 
   mainsc = get_scomb(src,"main");
 
-  app = alloc_cell(tsk);
+  app = alloc_cell(tsk);	//// allocate first free cell to app
   app->type = CELL_APPLICATION;
-  app->field1 = makescref(tsk,mainsc);
+  app->field1 = makescref(tsk,mainsc);	//// the field1 of app points to a cell storing refenrence to (mainsc)
   app->field2 = tsk->globnilpntr;
   make_pntr(rootp,app);
 
@@ -365,3 +377,4 @@ void run_reduction(source *src)
 
   task_free(tsk);
 }
+

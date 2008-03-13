@@ -35,6 +35,7 @@
 
 struct task;
 
+//// B indicates Build-in functions
 #define B_ADD            0
 #define B_SUBTRACT       1
 #define B_MULTIPLY       2
@@ -85,13 +86,16 @@ struct task;
 //// Check the vadility of the cell and then return the cell type
 #define celltype(_c) (checkcell(_c)->type)
 
+//// return the cell type of p, or return CELL_NUMBER, if the cell is not a pointer(pntr)
 #define pntrtype(p) (is_pntr(p) ? celltype(get_pntr(p)) : CELL_NUMBER)
 
+//// unsigned int = 4 bytes => a pointer hold 4 byte
+//// data[1] is used to indicate if it's a pntr or number(CELL_NUMBER)
 typedef struct {
   unsigned int data[2];
 } pntr;
 
-#define CELL_EMPTY       0x00
+#define CELL_EMPTY       0x00  //// empty cell
 #define CELL_APPLICATION 0x01  /* left: function (cell*)   right: argument (cell*) */
 #define CELL_BUILTIN     0x02  /* left: bif (int)                                  */
 #define CELL_CONS        0x03  /* left: head (cell*)       right: tail (cell*)     */
@@ -99,8 +103,8 @@ typedef struct {
 #define CELL_SCREF       0x05  /* left: scomb (scomb*)                             */
 							   ////SuperCombinator REFerence
 #define CELL_HOLE        0x06  /*                                                  */
-#define CELL_NIL         0x07  /*                                                  */
-#define CELL_NUMBER      0x08  /*                                                  */
+#define CELL_NIL         0x07  /*  NULL CELL                                       */
+#define CELL_NUMBER      0x08  //// cell containing a number, rather than pntr
 #define CELL_COUNT       0x09
 
 typedef struct cell {
@@ -110,9 +114,11 @@ typedef struct cell {
   pntr field2;
 } cell;
 
-#define PNTR_MASK  0xFFF80000
-#define INDEX_MASK 0x0003FFFF
-#define PNTR_VALUE 0xFFF00000
+#define PNTR_MASK  0xFFF80000   //// == (binary) 11111111111110000000000000000000
+#define INDEX_MASK 0x0003FFFF   //// == (binary)               111111111111111111
+#define PNTR_VALUE 0xFFF00000	//// == (binary) 11111111111100000000000000000000
+								//// used to indicate the specific pntr is a valid pntr structure (see is_pntr() macro)
+
 #define NULL_PNTR (*(pntr*)NULL_PNTR_BITS)
 #define MAX_ARRAY_SIZE (1 << 18)
 
@@ -123,16 +129,17 @@ typedef struct cell {
 #define pntrdouble(__p) (*(double*)&(__p))
 #define set_pntrdouble(__p,__val) ({ (*(double*)&(__p)) = (__val); })
 #define is_pntr(__p) (((__p).data[1] & PNTR_MASK) == PNTR_VALUE)
+//// make pointer __P, the first element of __p is the same as __c
 #define make_pntr(__p,__c) { (__p).data[0] = (unsigned int)(__c); \
                              (__p).data[1] = PNTR_VALUE; }
 
-//// Get the cell pointer of the specified pointer __p
+//// get the CELL pointer of the specified pointer __p
 #define get_pntr(__p) (assert(is_pntr(__p)), ((cell*)(*((unsigned int*)&(__p)))))
 #define pntrequal(__a,__b) (((__a).data[0] == (__b).data[0]) && ((__a).data[1] == (__b).data[1]))
 
 #define is_nullpntr(__p) (is_pntr(__p) && ((cell*)1 == get_pntr(__p)))
 
-////
+//// retrieve the correct pointer (pntr) from x
 #define resolve_pntr(x) ({ pntr __x = (x);        \
                            while (CELL_IND == pntrtype(__x)) \
                              __x = get_pntr(__x)->field1; \
@@ -154,25 +161,26 @@ typedef struct pntrstack {
   int limit;  //// The maximum space 
 } pntrstack;
 
+//// a block of cells, like a pool used to store lot of cells
 typedef struct block {
-  struct block *next;
+  struct block *next;	//// next block
   int pad;
-  cell values[BLOCK_SIZE];
+  cell values[BLOCK_SIZE];	//// cells in this block
 } block;
 
 //// there may be lot of tasks running simutaneously
 typedef struct task {
   int done;
   char *error;
-  block *blocks;
-  cell *freeptr;
-  pntr globnilpntr;
-  pntr globtruepntr;
-  pntrstack *streamstack;    ////Stack used to store application nodes to be processed
+  block *blocks;			 //// blocks of cells, a block can store BLOCK_SIZE cells
+  cell *freeptr;			 //// the pointer points to the first available cell, which is in the block (see task_new())
+  pntr globnilpntr;          //// global nil pointer (false)
+  pntr globtruepntr;         //// global true pointer (true)
+  pntrstack *streamstack;    //// stack used to store application nodes to be processed
   pntrstack *markstack;
-  int newcellflags;
+  int newcellflags;			 //// 
   int inmark;
-  int alloc_bytes;	////Memory used by this task
+  int alloc_bytes;	         //// Memory has been used by this task
   int framesize;
   int framesperblock;
 } task;

@@ -34,6 +34,7 @@
 #define COLLECT_THRESHOLD 8192000
 #define GLOBAL_HASH_SIZE 256
 
+//// the flags are used for garbage collection
 #define FLAG_MARKED         0x1
 #define FLAG_NEW            0x2
 #define FLAG_PINNED         0x8

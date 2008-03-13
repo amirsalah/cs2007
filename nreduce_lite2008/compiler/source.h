@@ -80,10 +80,10 @@ typedef struct letrec {
 } letrec;
 
 typedef struct scomb {
-  char *name;
+  char *name;		   //// name of this supercombinator, like "main"
   int nargs;           //// number of arguments for this supercombinator
-  char **argnames;
-  snode *body;         //// the body of this supercombinator
+  char **argnames;	   //// arg+names: names of all arguments
+  snode *body;         //// the body of this supercombinator (stored in snode)
   int index;
   int *strictin;
   sourceloc sl;

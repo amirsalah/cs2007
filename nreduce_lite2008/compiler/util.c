@@ -197,6 +197,7 @@ void list_remove_ptr(list **l, void *ptr)
   free(old);
 }
 
+//// create new stack to store pointers (no type is specified, void *)
 stack *stack_new(void)
 {
   stack *s = (stack*)calloc(1,sizeof(stack));
@@ -212,6 +213,7 @@ void stack_free(stack *s)
   free(s);
 }
 
+//// push c into the stack (s)
 void stack_push(stack *s, void *c)
 {
   if (s->count == s->alloc) {
@@ -280,6 +282,9 @@ void format_double(char *str, int size, double d)
   }
 }
 
+
+//// hash function
+//// (mem) could be a string, like "main", size could be strlen(main)
 int hash(const void *mem, int size)
 {
   int h = 0;
