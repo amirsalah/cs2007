@@ -49,8 +49,9 @@ typedef struct sourceloc {
   int lineno;
 } sourceloc;
 
+//// snode: (s)upercombinator (node)
 typedef struct snode {
-  int type;
+  int type;	//// see the above type definition, like SNODE_APPLICATION
 
   struct snode *left;
   struct snode *right;
@@ -60,8 +61,8 @@ typedef struct snode {
   struct letrec *bindings;
   struct snode *body;
   struct scomb *sc;
-  int bif;
-  double num;
+  int bif;	//// (b)uild(i)n (f)unction
+  double num;	//// the number value (type: double), used when the snode is a number node
   int strict;
   sourceloc sl;
   struct snode *target;

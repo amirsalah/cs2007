@@ -207,6 +207,7 @@ stack *stack_new(void)
   return s;
 }
 
+//// free the stack (s), by free its data first, and then the stack itself
 void stack_free(stack *s)
 {
   free(s->data);

@@ -438,6 +438,7 @@ int get_builtin(const char *name)
   return -1;
 }
 
+//// Initialization of builtin functions' information
 const builtin builtin_info[NUM_BUILTINS] = {
 /* Arithmetic operations */
 { "+",              2, 2, b_add            },

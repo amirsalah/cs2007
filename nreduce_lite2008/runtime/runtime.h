@@ -35,7 +35,7 @@
 
 struct task;
 
-//// B indicates Build-in functions
+//// B indicates Build-in functions, these numbers are used as snode->bif
 #define B_ADD            0
 #define B_SUBTRACT       1
 #define B_MULTIPLY       2
@@ -76,6 +76,7 @@ struct task;
 #define B_ABS            31
 #define B_ISCONS         32
 
+//// number of total buildin functions
 #define NUM_BUILTINS     33
 
 //// Check if the cell _c is empty or not
@@ -89,7 +90,7 @@ struct task;
 //// return the cell type of p, or return CELL_NUMBER, if the cell is not a pointer(pntr)
 #define pntrtype(p) (is_pntr(p) ? celltype(get_pntr(p)) : CELL_NUMBER)
 
-//// unsigned int = 4 bytes => a pointer hold 4 byte
+//// unsigned int = 4 bytes => a pointer hold 4 bytes
 //// data[1] is used to indicate if it's a pntr or number(CELL_NUMBER)
 typedef struct {
   unsigned int data[2];
@@ -99,7 +100,8 @@ typedef struct {
 #define CELL_APPLICATION 0x01  /* left: function (cell*)   right: argument (cell*) */
 #define CELL_BUILTIN     0x02  /* left: bif (int)                                  */
 #define CELL_CONS        0x03  /* left: head (cell*)       right: tail (cell*)     */
-#define CELL_IND         0x04  /* left: tgt (cell*)                                */
+#define CELL_IND         0x04  /* left: tgt (cell*) //// IND means INstantiateD, 
+							cells are set to this type after they are instantiated */
 #define CELL_SCREF       0x05  /* left: scomb (scomb*)                             */
 							   ////SuperCombinator REFerence
 #define CELL_HOLE        0x06  /*                                                  */
@@ -108,9 +110,9 @@ typedef struct {
 #define CELL_COUNT       0x09
 
 typedef struct cell {
-  int type;
-  int flags;
-  pntr field1;
+  int type;		//// the type of cell, see the above cell types, like CELL_APPLICATION
+  int flags;	//// used in garbage collection
+  pntr field1;	
   pntr field2;
 } cell;
 
@@ -127,6 +129,12 @@ typedef struct cell {
 #define ppfield1(__p) (get_pntr(pfield1(__p)))
 #define ppfield2(__p) (get_pntr(pfield2(__p)))
 #define pntrdouble(__p) (*(double*)&(__p))
+
+//// store a double value in the pntr (8 bytes). 
+//// firstly: get the pntr address: &(__p)
+//// secondly: turn the data type to double (double *), a double requires 8 bytes as well
+//// at last: set the value(__val) to *p
+//// Once a pntr is used to store a double number, the is_pntr() test will return false to indicate that it's not a pntr
 #define set_pntrdouble(__p,__val) ({ (*(double*)&(__p)) = (__val); })
 #define is_pntr(__p) (((__p).data[1] & PNTR_MASK) == PNTR_VALUE)
 //// make pointer __P, the first element of __p is the same as __c
@@ -139,19 +147,20 @@ typedef struct cell {
 
 #define is_nullpntr(__p) (is_pntr(__p) && ((cell*)1 == get_pntr(__p)))
 
-//// retrieve the correct pointer (pntr) from x
+//// retrieve the correct pointer (pntr) from x, once the cell has been instantiated, return its body
 #define resolve_pntr(x) ({ pntr __x = (x);        \
                            while (CELL_IND == pntrtype(__x)) \
                              __x = get_pntr(__x)->field1; \
                            __x; })
 
+//// buildin functions pointer
 typedef void (*builtin_f)(struct task *tsk, pntr *argstack);
 
 typedef struct builtin {
-  char *name;
-  int nargs;
-  int nstrict;
-  builtin_f f;
+  char *name;	//// the name of the buildin function
+  int nargs;	//// number of arguments needed for this buildin f
+  int nstrict;	//// 
+  builtin_f f;	//// function pointer
 } builtin;
 
 typedef struct pntrstack {
@@ -171,7 +180,7 @@ typedef struct block {
 //// there may be lot of tasks running simutaneously
 typedef struct task {
   int done;
-  char *error;
+  char *error;				 //// NULL default, otherwise some error occured, and the err messages is stored here
   block *blocks;			 //// blocks of cells, a block can store BLOCK_SIZE cells
   cell *freeptr;			 //// the pointer points to the first available cell, which is in the block (see task_new())
   pntr globnilpntr;          //// global nil pointer (false)

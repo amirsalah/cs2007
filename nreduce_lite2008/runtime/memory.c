@@ -255,6 +255,7 @@ pntr pntrstack_top(pntrstack *s)
   return resolve_pntr(s->data[s->count]);
 }
 
+//// free the pntr stack (s)
 void pntrstack_free(pntrstack *s)
 {
   free(s->data);

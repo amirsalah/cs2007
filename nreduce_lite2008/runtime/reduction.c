@@ -57,11 +57,12 @@ static pntr instantiate_scomb_r(task *tsk, scomb *sc, snode *source,
   pntr p;
   switch (source->type) {
   case SNODE_APPLICATION: {
-    dest = alloc_cell(tsk);
+  	//// create a cell based on snode
+    dest = alloc_cell(tsk);	//// get a free cell from the task(tsk)
     dest->type = CELL_APPLICATION;
     dest->field1 = instantiate_scomb_r(tsk,sc,source->left,names,values);
     dest->field2 = instantiate_scomb_r(tsk,sc,source->right,names,values);
-    make_pntr(p,dest);
+    make_pntr(p,dest);	//// make a pntr to the new cell
     return p;
   }
   case SNODE_SYMBOL: {
@@ -105,6 +106,7 @@ static pntr instantiate_scomb_r(task *tsk, scomb *sc, snode *source,
     return res;
   }
   case SNODE_BUILTIN:
+	//// create a cell indicating the build-in function, based on given snode
     dest = alloc_cell(tsk);
     dest->type = CELL_BUILTIN;
     make_pntr(dest->field1,source->bif);
@@ -150,6 +152,7 @@ pntr instantiate_scomb(task *tsk, pntrstack *s, scomb *sc)
   return res;
 }
 
+//// reduce a single cell, whose pointer is (p)
 static void reduce_single(task *tsk, pntrstack *s, pntr p)
 {
   pntrstack_push(s,p);
@@ -222,7 +225,9 @@ void reduce(task *tsk, pntrstack *s)
 
       assert((CELL_APPLICATION == pntrtype(dest)) ||
              (CELL_SCREF == pntrtype(dest)));
-
+	  
+	  //// instantiate the supercombinator: make cells for snode, which are the supercombinator body
+	  //// after instantiation, the graph is ready to reduced
       res = instantiate_scomb(tsk,s,sc);
       get_pntr(dest)->type = CELL_IND;
       get_pntr(dest)->field1 = res;
@@ -248,17 +253,18 @@ void reduce(task *tsk, pntrstack *s)
          execute the built-in function and overwrite the root of the redex with the result. */
     case CELL_BUILTIN: {
 
-      int bif = (int)get_pntr(get_pntr(target)->field1);
-      int reqargs;
-      int strictargs;
+      int bif = (int)get_pntr(get_pntr(target)->field1);	//// get the build in function(bif) index
+      int reqargs;		//// number of arguments required
+      int strictargs;	//// number of must-have arguments
       int i;
       int strictok = 0;
-      assert(0 <= bif);
+      assert(bif);
       assert(NUM_BUILTINS > bif);
 
       reqargs = builtin_info[bif].nargs;
       strictargs = builtin_info[bif].nstrict;
 
+	  //// make sure the number of arguments is sufficient
       if (s->count-1 < reqargs + oldtop) {
         fprintf(stderr,"Built-in function %s requires %d args; have only %d\n",
                 builtin_info[bif].name,reqargs,s->count-1-oldtop);
@@ -266,6 +272,7 @@ void reduce(task *tsk, pntrstack *s)
       }
 
       /* Replace application cells on stack with the corresponding arguments */
+      //// note the corresponding arguments may also be application cells 
       for (i = s->count-1; i >= s->count-reqargs; i--) {
         pntr arg = pntrstack_at(s,i-1);
         assert(i > oldtop);
@@ -274,6 +281,7 @@ void reduce(task *tsk, pntrstack *s)
       }
 
       /* Reduce arguments */
+      //// reduce arguments from the outermost application cell, which closest to the tip of the graph
       for (i = 0; i < strictargs; i++)
         reduce_single(tsk,s,s->data[s->count-1-i]);
 
