@@ -1,1 +1,1 @@
-main = (numtostring 2.57)
+main = (numtostring (len (cons 2 (cons 3 nil))))

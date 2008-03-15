@@ -24,6 +24,8 @@
 #include "config.h"
 #endif
 
+//#define SHOW_STACK
+
 #include "src/nreduce.h"
 #include "compiler/source.h"
 #include "runtime/runtime.h"
@@ -57,6 +59,15 @@ char* cell_type(pntr cell_pntr){
 	return cell_type_str;
 }
 
+//// print data types on stack
+void show_stack(pntrstack *s){
+  printf("Stack s:\t");
+  int i=0;
+  for(i=0; i< s->count; i++){
+  	printf("Lv:%i type: %s\t", i, cell_type(s->data[i]));
+  }
+  printf("\n");
+}
 
 //// make a pointer (pntr), pointing to the scomb (sc) reference (sc ref).
 //// the superconinator reference (scref) is stored in a cell, which is allocated from the task.
@@ -171,6 +182,10 @@ pntr instantiate_scomb(task *tsk, pntrstack *s, scomb *sc)
   
   //// res: result is the pntr to the root of the tree (tree nodes are CELLs)
   res = instantiate_scomb_r(tsk,sc,sc->body,names,values);
+  
+#ifdef SHOW_STACK
+  show_stack(tsk->streamstack);
+#endif
 
   stack_free(names);
   pntrstack_free(values);
@@ -181,8 +196,21 @@ pntr instantiate_scomb(task *tsk, pntrstack *s, scomb *sc)
 static void reduce_single(task *tsk, pntrstack *s, pntr p)
 {
   pntrstack_push(s,p);
+#ifdef SHOW_STACK
+  show_stack(tsk->streamstack);
+#endif
+
   reduce(tsk,s);
+  
+#ifdef SHOW_STACK
+  show_stack(tsk->streamstack);
+#endif
+
   pntrstack_pop(s);
+  
+#ifdef SHOW_STACK
+  show_stack(tsk->streamstack);
+#endif
 }
 
 //// pntr stack (s) used to store CELL pointers, 
@@ -211,11 +239,19 @@ void reduce(task *tsk, pntrstack *s)
 	
     /* 1. Unwind the spine until something other than an application node is encountered. */
     pntrstack_push(s,target);
+    
+#ifdef SHOW_STACK
+	show_stack(tsk->streamstack);
+#endif
 
     while (CELL_APPLICATION == pntrtype(target)) {
       target = resolve_pntr(get_pntr(target)->field1);
       pntrstack_push(s,target);
     }
+
+#ifdef SHOW_STACK
+	show_stack(tsk->streamstack);
+#endif
 
     /* 2. Examine the cell at the tip of the spine */
     switch (pntrtype(target)) {
@@ -267,6 +303,11 @@ void reduce(task *tsk, pntrstack *s)
       								//// because s->data[dest] == s->data[dest-1], all point to the root
 		
       s->count = oldtop;
+
+#ifdef SHOW_STACK
+      show_stack(tsk->streamstack);
+#endif
+
       continue;
     }
     case CELL_CONS:
@@ -286,13 +327,13 @@ void reduce(task *tsk, pntrstack *s)
          arguments the expression is in WHNF so STOP. Otherwise evaluate any arguments required,
          execute the built-in function and overwrite the root of the redex with the result. */
     case CELL_BUILTIN: {
-
+    	
       int bif = (int)get_pntr(get_pntr(target)->field1);	//// get the build in function(bif) index
       int reqargs;		//// number of arguments required
       int strictargs;	//// number of must-have arguments
       int i;
       int strictok = 0;
-      assert(bif);
+      assert(bif >= 0);
       assert(NUM_BUILTINS > bif);
 
       reqargs = builtin_info[bif].nargs;
@@ -349,6 +390,10 @@ void reduce(task *tsk, pntrstack *s)
       get_pntr(s->data[s->count-2])->type = CELL_IND;
       get_pntr(s->data[s->count-2])->field1 = s->data[s->count-1];
 
+#ifdef SHOW_STACK
+	  show_stack(tsk->streamstack);
+#endif
+
       s->count--;
       break;
     }
@@ -367,14 +412,11 @@ static void stream(task *tsk, pntr lst)
 {
   tsk->streamstack = pntrstack_new();   ////Create new pntr stack to store pointers
   pntrstack_push(tsk->streamstack,lst);	
-  
-  printf("Stack s:\t");
-  int i=0;
-  for(i=0; i< tsk->streamstack->count; i++){
-  	printf("Lv:%i type: %s\t", i, cell_type(tsk->streamstack->data[i]));
-  }
-  printf("\n");
-  
+
+#ifdef SHOW_STACK
+  show_stack(tsk->streamstack);
+#endif
+
   while (tsk->streamstack->count > 0) {
     pntr p;
     reduce(tsk,tsk->streamstack);
@@ -400,7 +442,7 @@ static void stream(task *tsk, pntr lst)
       fprintf(stderr,"Too many arguments applied to function\n");
       exit(1);
     }
-    else {
+    else {http://www.google.com/
       fprintf(stderr,"Bad cell type returned to printing mechanism: %s\n",cell_types[pntrtype(p)]);
       exit(1);
     }
