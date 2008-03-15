@@ -37,6 +37,6 @@
 //// the flags are used for garbage collection
 #define FLAG_MARKED         0x1
 #define FLAG_NEW            0x2
-#define FLAG_PINNED         0x8
+#define FLAG_PINNED         0x8		//// cells with this flag would not be collected, like global nil pntr
 
 #endif /* _NREDUCE_H */

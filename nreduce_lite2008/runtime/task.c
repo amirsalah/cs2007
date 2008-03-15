@@ -77,7 +77,7 @@ task *task_new(int tid, int groupsize, const char *bcdata, int bcsize)
   globnilvalue->type = CELL_NIL;
   globnilvalue->flags |= FLAG_PINNED;
 
-  make_pntr(tsk->globnilpntr,globnilvalue);
+  make_pntr(tsk->globnilpntr,globnilvalue);	//// initialize the global NIL pntr
   set_pntrdouble(tsk->globtruepntr,1.0);
 
   if (is_pntr(tsk->globtruepntr))

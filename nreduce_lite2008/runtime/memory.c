@@ -130,7 +130,7 @@ cell *alloc_cell(task *tsk)
 {
   cell *v;
   assert(tsk);
-  //// if (tsk->freeprt == 0x0000001) is true, then the task hasn't assigned null cells, so creat now
+  //// if (tsk->freeprt == 0x0000001) is true, then the task dosen't have free cells, so creat a new block
   if (tsk->freeptr == (cell*)1) { /* 64 bit pntrs use 1 in second byte for null */
     block *bl = (block*)calloc(1,sizeof(block));	//// create a new block of cells
     int i;
@@ -146,8 +146,8 @@ cell *alloc_cell(task *tsk)
   }
   v = tsk->freeptr;
   v->flags = tsk->newcellflags;
-  tsk->freeptr = (cell*)get_pntr(tsk->freeptr->field1);
-  tsk->alloc_bytes += sizeof(cell);
+  tsk->freeptr = (cell*)get_pntr(tsk->freeptr->field1);	//// redirect free pntr to next cell, since current free cell will be used
+  tsk->alloc_bytes += sizeof(cell);	//// adjust the used space for this task
   return v;
 }
 
@@ -270,4 +270,5 @@ void pntrstack_grow(int *alloc, pntr **data, int size)
     *alloc = size;
     *data = (pntr*)realloc(*data,(*alloc)*sizeof(pntr));	//// remove the original (data) to the new stack space
   }
+  
 }

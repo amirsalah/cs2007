@@ -84,7 +84,7 @@ typedef struct scomb {
   char *name;		   //// name of this supercombinator, like "main"
   int nargs;           //// number of arguments for this supercombinator
   char **argnames;	   //// arg+names: names of all arguments
-  snode *body;         //// the body of this supercombinator (stored in snode)
+  snode *body;         //// the body of this supercombinator (type snode)
   int index;
   int *strictin;
   sourceloc sl;
@@ -102,7 +102,7 @@ typedef struct source {
   int varno;	//// variable NO
   array *scombs;
   array *oldnames;
-  array *parsedfiles;
+  array *parsedfiles;	//// source files that have been parsed
   list *imports;
   list *newimports;
   char *curmodname;

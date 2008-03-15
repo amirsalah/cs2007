@@ -35,6 +35,29 @@
 #include <stdarg.h>
 #include <math.h>
 
+  //// get the cell type
+char* cell_type(pntr cell_pntr){
+	char* cell_type_str = NULL;
+	int cell_no = -1;
+
+	cell_no = pntrtype(cell_pntr);
+	switch(cell_no)
+	{
+		case 0: cell_type_str = "CELL_EMPTY"; break;
+		case 1: cell_type_str = "CELL_APPLICATION"; break;
+		case 2: cell_type_str = "CELL_BUILTIN"; break;
+		case 3: cell_type_str = "CELL_CONS"; break;
+		case 4: cell_type_str = "CELL_IND"; break;
+		case 5: cell_type_str = "CELL_SCREF"; break;
+		case 6: cell_type_str = "CELL_HOLE"; break;
+		case 7: cell_type_str = "CELL_NIL"; break;
+		case 8: cell_type_str = "CELL_NUMBER"; break;
+		case 9: cell_type_str = "CELL_COUNT"; break;
+	}
+	return cell_type_str;
+}
+
+
 //// make a pointer (pntr), pointing to the scomb (sc) reference (sc ref).
 //// the superconinator reference (scref) is stored in a cell, which is allocated from the task.
 static pntr makescref(task *tsk, scomb *sc)
@@ -42,8 +65,8 @@ static pntr makescref(task *tsk, scomb *sc)
   cell *c = alloc_cell(tsk);	//// allocate a free cell to store (scref)
   pntr p;
   c->type = CELL_SCREF;
-  make_pntr(c->field1,sc);
-  make_pntr(p,c);
+  make_pntr(c->field1,sc);	//// this cell stores pntr to a supercombinator (sc)
+  make_pntr(p,c);			//// make a pntr to this cell
   return p;
 }
 
@@ -138,13 +161,15 @@ pntr instantiate_scomb(task *tsk, pntrstack *s, scomb *sc)
   pntr res;
 
   int i;
-  for (i = 0; i < sc->nargs; i++) {	//// add all arguments to stack (names)
+  for (i = 0; i < sc->nargs; i++) {	//// add all arguments to stack (names and values)
     int pos = s->count-1-i;
     assert(pos >= 0);
     stack_push(names,(char*)sc->argnames[i]);	//// push argument names into stack (names)
+
     pntrstack_push(values,pntrstack_at(s,pos));	//// push the values of arguments into stack (values)
   }
-
+  
+  //// res: result is the pntr to the root of the tree (tree nodes are CELLs)
   res = instantiate_scomb_r(tsk,sc,sc->body,names,values);
 
   stack_free(names);
@@ -152,7 +177,7 @@ pntr instantiate_scomb(task *tsk, pntrstack *s, scomb *sc)
   return res;
 }
 
-//// reduce a single cell, whose pointer is (p)
+//// reduce a single cell(arguments), whose pointer is (p)
 static void reduce_single(task *tsk, pntrstack *s, pntr p)
 {
   pntrstack_push(s,p);
@@ -177,9 +202,13 @@ void reduce(task *tsk, pntrstack *s)
 
     redex = s->data[s->count-1];
     reductions++;
-
+	
+//	printf("type: %i  ", pntrtype(redex));
+	
+	//// get the actual pntr to the target redex, neglect the CELL_IND type cells 
     target = resolve_pntr(redex);
-
+//	printf("type: %i  ", pntrtype(target));
+	
     /* 1. Unwind the spine until something other than an application node is encountered. */
     pntrstack_push(s,target);
 
@@ -202,13 +231,15 @@ void reduce(task *tsk, pntrstack *s)
          The expression is in WHNF, so we can return. */
       //// check the number of arguments by examing the pntr stack (s), application cells pntrs have been added prior to this step
       //// the arguments cells are added in the (while(CELL_APPLICATION == ...))
+      
+      //// here 1 is the tip of spine, thus should be deduced, since no arguments could be stored at this position
       if (s->count-1-oldtop < sc->nargs) {
         /* TODO: maybe reduce the args that we do have? */
         s->count = oldtop;
         return;
       }
 
-      destno = s->count-1-sc->nargs;    ////Destination  Number
+      destno = s->count-1-sc->nargs;    ////Destination  Number, which is the first application cell storing the first argument
       dest = pntrstack_at(s,destno);
 
       /* We have enough arguments present to instantiate the supercombinator */
@@ -223,15 +254,18 @@ void reduce(task *tsk, pntrstack *s)
         s->data[i] = get_pntr(arg)->field2; 
       }
 
+	  //// make sure (dest) cell isn't replaced by arguments
       assert((CELL_APPLICATION == pntrtype(dest)) ||
              (CELL_SCREF == pntrtype(dest)));
 	  
 	  //// instantiate the supercombinator: make cells for snode, which are the supercombinator body
 	  //// after instantiation, the graph is ready to reduced
-      res = instantiate_scomb(tsk,s,sc);
-      get_pntr(dest)->type = CELL_IND;
-      get_pntr(dest)->field1 = res;
-
+      res = instantiate_scomb(tsk,s,sc);	//// res: result
+      get_pntr(dest)->type = CELL_IND;	//// after instantiation, the dest type becomes CELL_IND, means it's not a usual CELL,
+      									/// the CELL which is useful is in its field1
+      get_pntr(dest)->field1 = res;	//// get_pntr(dest) actually get the (cell *)root of the tree, 
+      								//// because s->data[dest] == s->data[dest-1], all point to the root
+		
       s->count = oldtop;
       continue;
     }
@@ -241,7 +275,7 @@ void reduce(task *tsk, pntrstack *s)
       /* The item at the tip of the spine is a value; this means the expression is in WHNF.
          If there are one or more arguments "applied" to this value then it's considered an
          error, e.g. caused by an attempt to pass more arguments to a function than it requires. */
-      if (1 < s->count-oldtop) {
+      if (s->count-oldtop > 1) {
         printf("Attempt to apply %d arguments to a value\n",s->count-oldtop-1);
         exit(1);
       }
@@ -265,7 +299,8 @@ void reduce(task *tsk, pntrstack *s)
       strictargs = builtin_info[bif].nstrict;
 
 	  //// make sure the number of arguments is sufficient
-      if (s->count-1 < reqargs + oldtop) {
+	  //// 1 is the builtin cell itself, so should be deducted
+      if (s->count-1-oldtop < reqargs) {
         fprintf(stderr,"Built-in function %s requires %d args; have only %d\n",
                 builtin_info[bif].name,reqargs,s->count-1-oldtop);
         exit(1);
@@ -277,7 +312,9 @@ void reduce(task *tsk, pntrstack *s)
         pntr arg = pntrstack_at(s,i-1);
         assert(i > oldtop);
         assert(CELL_APPLICATION == pntrtype(arg));
+//        printf("type:%i ", pntrtype(s->data[i]));
         s->data[i] = get_pntr(arg)->field2;
+//        printf("type:%i ", pntrtype(s->data[i]));
       }
 
       /* Reduce arguments */
@@ -293,17 +330,17 @@ void reduce(task *tsk, pntrstack *s)
       for (i = 0; i < strictargs; i++) {
         pntr argval = resolve_pntr(s->data[s->count-1-i]);
         if (CELL_APPLICATION != pntrtype(argval)) {
-          strictok++;
+          strictok++;	//// count the number of valid arguments which are stored on stack
         }
         else {
           break;
         }
       }
 
-      builtin_info[bif].f(tsk,&s->data[s->count-reqargs]);
+      builtin_info[bif].f(tsk,&s->data[s->count-reqargs]);	//// the address of first arguments on stack is used
       if (tsk->error)
         fatal("%s",tsk->error);
-      s->count -= (reqargs-1);
+      s->count -= (reqargs-1);	//// only keep arg[0], in which it stores the result of performing builtin func
 
       /* UPDATE */
 
@@ -328,20 +365,29 @@ void reduce(task *tsk, pntrstack *s)
 
 static void stream(task *tsk, pntr lst)
 {
-  tsk->streamstack = pntrstack_new();   ////Create new stack to store pointers to application nodes
+  tsk->streamstack = pntrstack_new();   ////Create new pntr stack to store pointers
   pntrstack_push(tsk->streamstack,lst);	
+  
+  printf("Stack s:\t");
+  int i=0;
+  for(i=0; i< tsk->streamstack->count; i++){
+  	printf("Lv:%i type: %s\t", i, cell_type(tsk->streamstack->data[i]));
+  }
+  printf("\n");
+  
   while (tsk->streamstack->count > 0) {
     pntr p;
     reduce(tsk,tsk->streamstack);
 
     p = pntrstack_pop(tsk->streamstack);
     p = resolve_pntr(p);
+    //// after reduction, check the result
     if (CELL_NIL == pntrtype(p)) {
       /* nothing */
     }
     else if (CELL_NUMBER == pntrtype(p)) {
       double d = pntrdouble(p);
-      if ((d == floor(d)) && (0 < d) && (128 > d))
+      if ((d == floor(d)) && (0 < d) && (d < 128))
         printf("%c",(int)d);
       else
         printf("?");
@@ -370,16 +416,17 @@ void run_reduction(source *src)
   cell *app;			//// root cell
   pntr rootp;  			//// root pointer
   task *tsk;
-
+	
   tsk = task_new(0, 0, NULL, 0);
 
   mainsc = get_scomb(src,"main");
 
-  app = alloc_cell(tsk);	//// allocate first free cell to app
+  app = alloc_cell(tsk);	//// allocate a free cells to store this cell (app)
   app->type = CELL_APPLICATION;
+  //// the fileds of any cell can only store pntr or numbers
   app->field1 = makescref(tsk,mainsc);	//// the field1 of app points to a cell storing refenrence to (mainsc)
   app->field2 = tsk->globnilpntr;
-  make_pntr(rootp,app);
+  make_pntr(rootp,app);	//// rootp stores the app as a pntr value
 
   stream(tsk,rootp);
 

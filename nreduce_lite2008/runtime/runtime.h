@@ -75,9 +75,10 @@ struct task;
 #define B_ERROR1         30
 #define B_ABS            31
 #define B_ISCONS         32
+#define B_ISNULL         33
 
 //// number of total buildin functions
-#define NUM_BUILTINS     33
+#define NUM_BUILTINS     34
 
 //// Check if the cell _c is empty or not
 #define checkcell(_c) ({ if (CELL_EMPTY == (_c)->type) \
@@ -88,6 +89,7 @@ struct task;
 #define celltype(_c) (checkcell(_c)->type)
 
 //// return the cell type of p, or return CELL_NUMBER, if the cell is not a pointer(pntr)
+//// pntr type == cell type, since pntr always points to cells
 #define pntrtype(p) (is_pntr(p) ? celltype(get_pntr(p)) : CELL_NUMBER)
 
 //// unsigned int = 4 bytes => a pointer hold 4 bytes
@@ -100,10 +102,11 @@ typedef struct {
 #define CELL_APPLICATION 0x01  /* left: function (cell*)   right: argument (cell*) */
 #define CELL_BUILTIN     0x02  /* left: bif (int)                                  */
 #define CELL_CONS        0x03  /* left: head (cell*)       right: tail (cell*)     */
-#define CELL_IND         0x04  /* left: tgt (cell*) //// IND means INstantiateD, 
+#define CELL_IND         0x04  /* left: tgt (cell*) //// IND means INDirection, 
 							cells are set to this type after they are instantiated */
 #define CELL_SCREF       0x05  /* left: scomb (scomb*)                             */
-							   ////SuperCombinator REFerence
+							   //// this kind of cells store a pntr, pointing to the SuperCombinator
+							   //// so it is called supercombinator REFerence
 #define CELL_HOLE        0x06  /*                                                  */
 #define CELL_NIL         0x07  /*  NULL CELL                                       */
 #define CELL_NUMBER      0x08  //// cell containing a number, rather than pntr
@@ -115,6 +118,7 @@ typedef struct cell {
   pntr field1;	
   pntr field2;
 } cell;
+
 
 #define PNTR_MASK  0xFFF80000   //// == (binary) 11111111111110000000000000000000
 #define INDEX_MASK 0x0003FFFF   //// == (binary)               111111111111111111
@@ -128,7 +132,7 @@ typedef struct cell {
 #define pfield2(__p) (get_pntr(__p)->field2)
 #define ppfield1(__p) (get_pntr(pfield1(__p)))
 #define ppfield2(__p) (get_pntr(pfield2(__p)))
-#define pntrdouble(__p) (*(double*)&(__p))
+#define pntrdouble(__p) (*(double*)&(__p))	//// turn a pntr (__p) into double type, that eliminate p->data[1]
 
 //// store a double value in the pntr (8 bytes). 
 //// firstly: get the pntr address: &(__p)
@@ -141,7 +145,10 @@ typedef struct cell {
 #define make_pntr(__p,__c) { (__p).data[0] = (unsigned int)(__c); \
                              (__p).data[1] = PNTR_VALUE; }
 
-//// get the CELL pointer of the specified pointer __p
+//// get the CELL pointer which is pointed by the pntr __p (in its field1)
+//// firstly: get the pntr address: &(__p)
+//// secondly: turn the __p type into unsigned int, in this way, the field2 of __p would be abandoned.
+//// finally: fetch the address of __p->field1 by (*(&....p))
 #define get_pntr(__p) (assert(is_pntr(__p)), ((cell*)(*((unsigned int*)&(__p)))))
 #define pntrequal(__a,__b) (((__a).data[0] == (__b).data[0]) && ((__a).data[1] == (__b).data[1]))
 
@@ -183,11 +190,11 @@ typedef struct task {
   char *error;				 //// NULL default, otherwise some error occured, and the err messages is stored here
   block *blocks;			 //// blocks of cells, a block can store BLOCK_SIZE cells
   cell *freeptr;			 //// the pointer points to the first available cell, which is in the block (see task_new())
-  pntr globnilpntr;          //// global nil pointer (false)
+  pntr globnilpntr;          //// global nil pointer, which points to a CELL_NIL cell
   pntr globtruepntr;         //// global true pointer (true)
   pntrstack *streamstack;    //// stack used to store application nodes to be processed
   pntrstack *markstack;
-  int newcellflags;			 //// 
+  int newcellflags;			 //// used to initialize the new cells' flag, which is used for garbage collection
   int inmark;
   int alloc_bytes;	         //// Memory has been used by this task
   int framesize;
@@ -234,6 +241,8 @@ pntr pntrstack_top(pntrstack *s);
 void pntrstack_free(pntrstack *s);
 
 void pntrstack_grow(int *alloc, pntr **data, int size);
+
+char *cell_type(pntr cell_pntr);
 
 #ifndef BUILTINS_C
 extern const builtin builtin_info[NUM_BUILTINS];

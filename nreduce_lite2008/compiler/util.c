@@ -228,6 +228,7 @@ void stack_push(stack *s, void *c)
   s->data[s->count++] = c;
 }
 
+//// get the sign of the number (d), '+' or '-'
 static int getsignbit(double d)
 {
   char tmp[100];
@@ -237,13 +238,13 @@ static int getsignbit(double d)
 
 void format_double(char *str, int size, double d)
 {
-  if (isnan(d)) {
+  if (isnan(d)) {	/// isnan: is Not a Number
     snprintf(str,size,"NaN");
   }
-  else if (isinf(d) && (0.0 < d)) {
+  else if (isinf(d) && (d > 0.0)) {	//// isinf: is infinity?
     snprintf(str,size,"INF");
   }
-  else if (isinf(d) && (0.0 > d)) {
+  else if (isinf(d) && (d < 0.0)) {
     snprintf(str,size,"-INF");
   }
   else if (d == floor(d)) {
@@ -252,7 +253,7 @@ void format_double(char *str, int size, double d)
     else
       snprintf(str,size,"%.0f",d);
   }
-  else if ((0.000001 < fabs(d)) && (1000000.0 > fabs(d))) {
+  else if ((0.000001 < fabs(d)) && (fabs(d) < 1000000.0)) {
     int ipart = (int)d;
     double fraction;
     int start;
