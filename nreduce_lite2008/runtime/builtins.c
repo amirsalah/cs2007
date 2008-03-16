@@ -44,6 +44,9 @@
 #include <errno.h>
 #include <dirent.h>
 
+#include "extensions/rngs.h"
+#include "extensions/rvgs.h"
+
 static const char *numnames[4] = {"first", "second", "third", "fourth"};
 
 static unsigned char NAN_BITS[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0xFF };
@@ -444,9 +447,10 @@ int get_builtin(const char *name)
 }
 
 
-static void b_isnull(task *tsk, pntr *argstack)
+static void b_randomnum(task *tsk, pntr *argstack)
 {
-	setbool(tsk, &argstack[0], pntrtype(argstack[0]));
+	CHECK_ARG(0, CELL_NUMBER);
+	setnumber(&argstack[0], Normal(1, 5));
 }
 
 //// Initialization of builtin functions' information
@@ -502,6 +506,6 @@ const builtin builtin_info[NUM_BUILTINS] = {
 { "iscons",         1, 1, b_iscons         },
 
 //// my builtin function
-{ "isnull",         1, 1, b_isnull         },
+{ "randomnum",      1, 1, b_randomnum      },
 };
 

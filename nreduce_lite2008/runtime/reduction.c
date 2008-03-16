@@ -55,6 +55,7 @@ char* cell_type(pntr cell_pntr){
 		case 7: cell_type_str = "CELL_NIL"; break;
 		case 8: cell_type_str = "CELL_NUMBER"; break;
 		case 9: cell_type_str = "CELL_COUNT"; break;
+		default: break;
 	}
 	return cell_type_str;
 }
@@ -442,7 +443,7 @@ static void stream(task *tsk, pntr lst)
       fprintf(stderr,"Too many arguments applied to function\n");
       exit(1);
     }
-    else {http://www.google.com/
+    else {
       fprintf(stderr,"Bad cell type returned to printing mechanism: %s\n",cell_types[pntrtype(p)]);
       exit(1);
     }

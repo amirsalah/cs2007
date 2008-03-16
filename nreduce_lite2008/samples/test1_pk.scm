@@ -1,0 +1,1 @@
+main = (numtostring (+ 4 (* 3 2)))

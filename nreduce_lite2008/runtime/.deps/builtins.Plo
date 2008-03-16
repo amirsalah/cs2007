@@ -43,7 +43,7 @@ builtins.lo builtins.o: builtins.c ../config.h ../src/nreduce.h \
   /usr/include/linux/errno.h /usr/include/asm/errno.h \
   /usr/include/asm-i386/errno.h /usr/include/asm-generic/errno.h \
   /usr/include/asm-generic/errno-base.h /usr/include/dirent.h \
-  /usr/include/bits/dirent.h
+  /usr/include/bits/dirent.h ../extensions/rngs.h ../extensions/rvgs.h
 
 ../config.h:
 
@@ -240,3 +240,7 @@ runtime.h:
 /usr/include/dirent.h:
 
 /usr/include/bits/dirent.h:
+
+../extensions/rngs.h:
+
+../extensions/rvgs.h:

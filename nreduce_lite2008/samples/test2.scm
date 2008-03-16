@@ -1,1 +1,1 @@
-main = (numtostring (len (cons 2 (cons 3 nil))))
+main = (numtostring (randomnum 2))
