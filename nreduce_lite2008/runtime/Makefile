@@ -47,7 +47,8 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libruntime_la_LIBADD =
-am_libruntime_la_OBJECTS = task.lo builtins.lo memory.lo reduction.lo
+am_libruntime_la_OBJECTS = task.lo builtins.lo memory.lo reduction.lo \
+	rngs.lo rvgs.lo
 libruntime_la_OBJECTS = $(am_libruntime_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
@@ -180,7 +181,9 @@ noinst_HEADERS = runtime.h
 libruntime_la_SOURCES = task.c \
 	builtins.c \
 	memory.c \
-	reduction.c
+	reduction.c \
+	rngs.c rngs.h \
+	rvgs.c rvgs.h
 
 INCLUDES = -I..
 CLEANFILES = *.da *.bb *.bbg *.gcov
@@ -245,6 +248,8 @@ distclean-compile:
 include ./$(DEPDIR)/builtins.Plo
 include ./$(DEPDIR)/memory.Plo
 include ./$(DEPDIR)/reduction.Plo
+include ./$(DEPDIR)/rngs.Plo
+include ./$(DEPDIR)/rvgs.Plo
 include ./$(DEPDIR)/task.Plo
 
 .c.o:

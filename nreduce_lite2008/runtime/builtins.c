@@ -450,7 +450,7 @@ int get_builtin(const char *name)
 static void b_randomnum(task *tsk, pntr *argstack)
 {
 	CHECK_ARG(0, CELL_NUMBER);
-	setnumber(&argstack[0], Normal(1, 5));
+	setnumber(&argstack[0], Uniform(1.0, 10.0));
 }
 
 //// Initialization of builtin functions' information
