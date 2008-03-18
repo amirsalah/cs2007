@@ -44,8 +44,8 @@
 #include <errno.h>
 #include <dirent.h>
 
-#include "extensions/rngs.h"
-#include "extensions/rvgs.h"
+#include "runtime/rngs.h"
+#include "runtime/rvgs.h"
 
 static const char *numnames[4] = {"first", "second", "third", "fourth"};
 
@@ -505,7 +505,6 @@ const builtin builtin_info[NUM_BUILTINS] = {
 { "abs",            1, 1, b_abs            },
 { "iscons",         1, 1, b_iscons         },
 
-//// my builtin function
+//// my builtin functions
 { "randomnum",      1, 1, b_randomnum      },
 };
-
