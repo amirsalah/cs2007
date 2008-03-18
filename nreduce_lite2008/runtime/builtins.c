@@ -46,6 +46,7 @@
 
 #include "runtime/rngs.h"
 #include "runtime/rvgs.h"
+#include <zzip/zzip.h>
 
 static const char *numnames[4] = {"first", "second", "third", "fourth"};
 
@@ -450,7 +451,8 @@ int get_builtin(const char *name)
 static void b_randomnum(task *tsk, pntr *argstack)
 {
 	CHECK_ARG(0, CELL_NUMBER);
-	setnumber(&argstack[0], Uniform(1.0, 10.0));
+	setnumber(&argstack[0], Uniform(1.0, 9.0));
+//    setnumber(&argstack[0], zzip_file_real(3));
 }
 
 //// Initialization of builtin functions' information

@@ -183,7 +183,8 @@ libruntime_la_SOURCES = task.c \
 	memory.c \
 	reduction.c \
 	rngs.c rngs.h \
-	rvgs.c rvgs.h
+	rvgs.c rvgs.h \
+	zzip.h
 
 INCLUDES = -I..
 CLEANFILES = *.da *.bb *.bbg *.gcov
