@@ -295,6 +295,7 @@ pntr string_to_array(task *tsk, const char *str)
   return data_to_list(tsk,str,strlen(str),tsk->globnilpntr);
 }
 
+//// convert a list(cons') to a string
 int array_to_string(pntr refpntr, char **str)
 {
   pntr p = refpntr;
@@ -304,7 +305,7 @@ int array_to_string(pntr refpntr, char **str)
 
   *str = NULL;
 
-  while (0 > badtype) {
+  while (badtype < 0) {
 
     if (CELL_CONS == pntrtype(p)) {
       cell *c = get_pntr(p);
@@ -329,7 +330,7 @@ int array_to_string(pntr refpntr, char **str)
     }
   }
 
-  if (0 <= badtype) {
+  if (badtype >= 0) {
     *str = NULL;
     free(buf->data);
   }
@@ -447,12 +448,48 @@ int get_builtin(const char *name)
   return -1;
 }
 
-
+//// a generate random number
 static void b_randomnum(task *tsk, pntr *argstack)
 {
 	CHECK_ARG(0, CELL_NUMBER);
 	setnumber(&argstack[0], Uniform(1.0, 9.0));
 //    setnumber(&argstack[0], zzip_file_real(3));
+}
+
+//// Check if the given file is a real directory or a Zip-archive
+static void b_zzip_dir_real(task *tsk, pntr *argstack)
+{
+	char *fileName;
+	int badtype;
+	pntr p = argstack[0];
+	int dirtype;
+	
+	CHECK_ARG(0, CELL_CONS);
+	if((badtype = array_to_string(p, &fileName)) >= 0){
+		set_error(tsk, "error1: argument is not a string (contains non-char: %s)", cell_types[badtype]);
+		return;
+	}
+	
+	//// the file to be ckecked exists, then we check it
+	static const char* ext[] = { "", ".exe", ".EXE", 0 };
+	ZZIP_DIR* dir = zzip_opendir_ext_io (fileName, ZZIP_PREFERZIP, ext, 0);
+
+    if(dir){
+    	if(zzip_dir_real(dir)){
+    		dirtype = 1;
+//	   		printf("%s is a directory.\n", fileName);
+    	}else{
+    		dirtype = 0;
+//    		printf("%s is a zip-archive.\n", fileName);
+    	}
+//    	zzip_dir_close(dir);
+    }else{
+    	//// file failed to be open
+    	dirtype = -1;
+    }
+	setnumber(&argstack[0], dirtype);
+	
+	return;
 }
 
 //// Initialization of builtin functions' information
@@ -509,4 +546,7 @@ const builtin builtin_info[NUM_BUILTINS] = {
 
 //// my builtin functions
 { "randomnum",      1, 1, b_randomnum      },
+
+//// zzip functions
+{ "zzip_dir_real",  1, 1, b_zzip_dir_real},
 };

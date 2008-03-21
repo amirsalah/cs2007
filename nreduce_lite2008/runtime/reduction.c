@@ -361,6 +361,7 @@ void reduce(task *tsk, pntrstack *s)
 
       /* Reduce arguments */
       //// reduce arguments from the outermost application cell, which closest to the tip of the graph
+      //// until all the arguments are available
       for (i = 0; i < strictargs; i++)
         reduce_single(tsk,s,s->data[s->count-1-i]);
 

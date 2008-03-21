@@ -75,10 +75,13 @@ struct task;
 #define B_ERROR1         30
 #define B_ABS            31
 #define B_ISCONS         32
+
 #define B_RANDOMNUM      33
 
+#define B_ZZIP_DIR_REAL  34
+
 //// number of total buildin functions
-#define NUM_BUILTINS     34
+#define NUM_BUILTINS     35
 
 //// Check if the cell _c is empty or not
 #define checkcell(_c) ({ if (CELL_EMPTY == (_c)->type) \
