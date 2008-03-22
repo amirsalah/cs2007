@@ -270,7 +270,35 @@ int pntr_is_char(pntr p)
   return 0;
 }
 
-//// make list using embeded cons based on the given data
+//// get the last cell from a list
+cell* get_last_cell(task *tsk, pntr list)
+{
+	pntr tail;
+	cell *lastCell;
+	
+	if( pntrtype(list) != CELL_CONS ){
+		return NULL;
+	}else{
+		lastCell = get_pntr(list);
+		tail = resolve_pntr(get_pntr(list)->field2);
+		while(pntrequal(tail, tsk->globnilpntr)){
+			lastCell = get_pntr(tail);
+			tail = resolve_pntr(lastCell->field2);
+		}
+		return lastCell;
+	}
+}
+
+//// concatenate 2 lists, which are formed with (cons * (cons * ... nil))
+pntr connect_lists(task *tsk, pntr list1, pntr list2)
+{
+	cell *lastCell = get_last_cell(tsk, list1);
+	
+	make_pntr(lastCell->field2, get_pntr(list2));
+	return list1;
+}
+
+//// make list using embeded cons with the given data
 //// e.g. str == (cons str[0] (cons str[1] (cons str[2] nil)))
 //// return a pntr, pointing to the list
 pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
@@ -289,7 +317,7 @@ pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
   return p;
 }
 
-//// convert a string into array list
+//// convert a string into array list (cons cons...)
 pntr string_to_array(task *tsk, const char *str)
 {
   return data_to_list(tsk,str,strlen(str),tsk->globnilpntr);
@@ -492,6 +520,75 @@ static void b_zzip_dir_real(task *tsk, pntr *argstack)
 	return;
 }
 
+static void b_zzip_version(task *tsk, pntr *argstack)
+{
+	char *version;
+}
+
+//// read the directory entries of given dir/archive
+static void b_zzip_read_dirent(task *tsk, pntr *argstack)
+{
+	char *fileName;
+	pntr p = argstack[0];
+	int badtype;
+	
+	CHECK_ARG(0, CELL_CONS);
+	if((badtype = array_to_string(p, &fileName)) >= 0){
+		set_error(tsk, "error1: argument is not a string (contains non-char: %s)", cell_types[badtype]);
+		return;
+	}
+
+    ZZIP_DIR * dir;
+    ZZIP_DIRENT * d;
+  
+    dir = zzip_opendir(fileName);
+    if (! dir){
+    	fprintf (stderr, "did not open %s: ", fileName);
+    	set_error(tsk, "error1: could not handle file: %s", fileName);
+		return;
+    }
+    
+    char *singleFileName;
+    char *compressionType;
+    char *fileSize;
+    char *compressedSize;
+    pntr pSingleFileName, pCompressionType, pFileSize, pCompressedSize;
+    pntr preList, singleList;
+    int counter = 0;
+    
+	/* read each dir entry, a list for each file */
+	while ((d = zzip_readdir (dir))){
+		counter++;
+		/* orignal size / compression-type / compression-ratio / filename */
+		singleFileName = d->d_name;
+		pSingleFileName = string_to_array(tsk, singleFileName);	//// convert the string to cons list
+		
+		sprintf(compressionType, "%s", zzip_compr_str(d->d_compr));
+		pCompressionType = string_to_array(tsk, compressionType);
+		
+		sprintf(fileSize, "%6d", d->st_size);
+		pFileSize = string_to_array(tsk, fileSize);
+		
+		sprintf(compressedSize, "%d", d->d_csize);
+		pCompressedSize = string_to_array(tsk, compressedSize);
+		
+		//// link the cons lists to form a new list
+		singleList = connect_lists(tsk, pSingleFileName, pCompressionType);
+		singleList = connect_lists(tsk, singleList, pFileSize);
+		singleList = connect_lists(tsk, singleList, pCompressedSize);
+		
+		if(counter == 1){
+			preList = singleList;
+		}else{
+			connect_lists(tsk, preList, singleList);
+		}
+	}
+	
+	argstack[0] = preList;
+	
+}
+
+
 //// Initialization of builtin functions' information
 const builtin builtin_info[NUM_BUILTINS] = {
 /* Arithmetic operations */
@@ -548,5 +645,10 @@ const builtin builtin_info[NUM_BUILTINS] = {
 { "randomnum",      1, 1, b_randomnum      },
 
 //// zzip functions
-{ "zzip_dir_real",  1, 1, b_zzip_dir_real},
+{ "zzip_dir_real",  1, 1, b_zzip_dir_real  },
+
+//// zzip version
+{ "zzip_version",   0, 0, b_zzip_version   },
+{ "zzip_read_dirent", 1, 1, b_zzip_read_dirent},
+
 };

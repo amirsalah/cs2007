@@ -134,7 +134,7 @@ source *source_new()
   list_push(&src->newimports,strdup("prelude"));
   return src;
 }
-
+//// check if main supercombinator exist
 static int check_for_main(source *src)
 {
   int gotmain = 0;
@@ -150,12 +150,12 @@ static int check_for_main(source *src)
         fprintf(stderr,"Supercombinator \"main\" must take either 0 or 1 arguments\n");
         return -1;
       }
-      else if (0 == sc->nargs) {
+      else if (0 == sc->nargs) {	//// add an predefined argument to main supercombinator, if no arguments is specified
         sc->nargs = 1;
         free(sc->argnames);
         free(sc->strictin);
         sc->argnames = (char**)malloc(sizeof(char*));
-        sc->argnames[0] = strdup("__args");
+        sc->argnames[0] = strdup("__args");	//// the added argument
         sc->strictin = (int*)malloc(sizeof(int));
         sc->strictin[0] = 0;
       }
@@ -234,7 +234,7 @@ void add_import(source *src, const char *name)
       return;
   list_push(&src->newimports,strdup(name));
 }
-
+//// process the imported modules
 static int process_imports(source *src)
 {
   int r = 0;

@@ -14,7 +14,7 @@ library_names=''
 old_library='libruntime.a'
 
 # Libraries that this one depends upon.
-dependency_libs=' -lm'
+dependency_libs=' -lzzip -lm'
 
 # Version information for libruntime.
 current=

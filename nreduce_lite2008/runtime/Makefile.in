@@ -50,6 +50,9 @@ libruntime_la_LIBADD =
 am_libruntime_la_OBJECTS = task.lo builtins.lo memory.lo reduction.lo \
 	rngs.lo rvgs.lo
 libruntime_la_OBJECTS = $(am_libruntime_la_OBJECTS)
+libruntime_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libruntime_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(noinst_PROGRAMS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -186,6 +189,7 @@ libruntime_la_SOURCES = task.c \
 	rvgs.c rvgs.h \
 	zzip.h
 
+libruntime_la_LDFLAGS = -lzzip
 INCLUDES = -I@top_srcdir@
 CLEANFILES = *.da *.bb *.bbg *.gcov
 all: all-am
@@ -231,7 +235,7 @@ clean-noinstLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libruntime.la: $(libruntime_la_OBJECTS) $(libruntime_la_DEPENDENCIES) 
-	$(LINK)  $(libruntime_la_OBJECTS) $(libruntime_la_LIBADD) $(LIBS)
+	$(libruntime_la_LINK)  $(libruntime_la_OBJECTS) $(libruntime_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \

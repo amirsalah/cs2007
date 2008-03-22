@@ -79,9 +79,11 @@ struct task;
 #define B_RANDOMNUM      33
 
 #define B_ZZIP_DIR_REAL  34
+#define B_ZZIP_VERSION   35
+#define B_ZZIP_READ_DIRENT 36
 
 //// number of total buildin functions
-#define NUM_BUILTINS     35
+#define NUM_BUILTINS     37
 
 //// Check if the cell _c is empty or not
 #define checkcell(_c) ({ if (CELL_EMPTY == (_c)->type) \
@@ -148,10 +150,10 @@ typedef struct cell {
 #define make_pntr(__p,__c) { (__p).data[0] = (unsigned int)(__c); \
                              (__p).data[1] = PNTR_VALUE; }
 
-//// get the CELL pointer which is pointed by the pntr __p (in its field1)
+//// get the CELL pointer which is pointed by the pntr __p (in its data[0])
 //// firstly: get the pntr address: &(__p)
-//// secondly: turn the __p type into unsigned int, in this way, the field2 of __p would be abandoned.
-//// finally: fetch the address of __p->field1 by (*(&....p))
+//// secondly: turn the __p type into unsigned int, in this way, the data[1] of __p would be abandoned.
+//// finally: fetch the content of __p->data[0] by (*(&....p))
 #define get_pntr(__p) (assert(is_pntr(__p)), ((cell*)(*((unsigned int*)&(__p)))))
 #define pntrequal(__a,__b) (((__a).data[0] == (__b).data[0]) && ((__a).data[1] == (__b).data[1]))
 

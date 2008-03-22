@@ -9,5 +9,7 @@ libruntime_la_SOURCES = task.c \
 	rvgs.c rvgs.h \
 	zzip.h
 
+libruntime_la_LDFLAGS = -lzzip
+
 INCLUDES = -I@top_srcdir@
 CLEANFILES = *.da *.bb *.bbg *.gcov

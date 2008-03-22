@@ -103,8 +103,8 @@ typedef struct source {
   array *scombs;
   array *oldnames;
   array *parsedfiles;	//// source files that have been parsed
-  list *imports;
-  list *newimports;
+  list *imports;	//// modules have been imported 
+  list *newimports;	//// the imported modules, like prelude modules
   char *curmodname;
 } source;
 
