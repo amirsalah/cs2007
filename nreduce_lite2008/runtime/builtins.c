@@ -273,10 +273,6 @@ int pntr_is_char(pntr p)
 //// reverse the given list: (cons a (cons b (cons c nil))) will be (cons c (cons b (cons a)))
 pntr reverse_list(pntr list)
 {
-	pntr newList;
-	cell *currentCell;
-
-	
 	
 }
 
@@ -325,7 +321,7 @@ pntr connect_lists(task *tsk, pntr *list1, pntr *list2)
 //// make list using embeded cons with the given data
 //// e.g. str == (cons str[0] (cons str[1] (cons str[2] nil)))
 //// return a pntr, pointing to the list
-/*
+
 pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
 {
   pntr p = tsk->globnilpntr;
@@ -341,15 +337,17 @@ pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
   *prev = tail;
   return p;
 }
-*/
 
+
+//// my version of data_to_list
+/*
 pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
 {
 	int i;
 	pntr preList;
 	
 	if(size <= 0){
-		return tsk->globnilpntr;
+		return tail;
 	}
 	
 	cell *lastCell = alloc_cell(tsk);
@@ -368,6 +366,7 @@ pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
 	
 	return preList;
 }
+*/
 
 //// convert a string into array list (cons cons...)
 pntr string_to_array(task *tsk, const char *str)
@@ -602,8 +601,9 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 
     char *singleFileName;
     char *compressionType;
-    char *fileSize;
-    char *compressedSize;
+    int fSize = 20;
+    char fileSize[fSize];
+    char compressedSize[fSize];
     pntr pSingleFileName, pCompressionType, pFileSize, pCompressedSize;
     pntr preList, singleList;
     int counter = 0;
@@ -612,16 +612,20 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 	while ((d = zzip_readdir (dir))){
 		counter++;
 		/* orignal size / compression-type / compression-ratio / filename */
-		singleFileName = strcat(d->d_name, " ");
+		singleFileName = d->d_name;
 		pSingleFileName = string_to_array(tsk, singleFileName);	//// convert the string to cons list
 		
-		sprintf(compressionType, "%s ", zzip_compr_str(d->d_compr));
+//		sprintf(compressionType, "%s ", zzip_compr_str(d->d_compr)); //// NOTE: executing this func will change the tsk->steamstack, very weird
+																	//// NOTE: overflow caused here
+		compressionType = (char *)zzip_compr_str(d->d_compr);
 		pCompressionType = string_to_array(tsk, compressionType);
 		
-		sprintf(fileSize, "%d ", d->st_size);
+//		snprintf(fileSize, 5, "%d ", d->st_size);	//// NOTE: executing this func will change the tsk->steamstack, very weird
+		format_double(fileSize, fSize, d->st_size);
 		pFileSize = string_to_array(tsk, fileSize);
-		
-		sprintf(compressedSize, "%d ", d->d_csize);
+
+//		sprintf(compressedSize, "%d ", d->d_csize);
+		format_double(compressedSize, fSize, d->d_csize);
 		pCompressedSize = string_to_array(tsk, compressedSize);
 		
 //		printf("cell type: %s \t", cell_type(preList));
