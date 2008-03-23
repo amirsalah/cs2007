@@ -270,18 +270,42 @@ int pntr_is_char(pntr p)
   return 0;
 }
 
+//// reverse the given list: (cons a (cons b (cons c nil))) will be (cons c (cons b (cons a)))
+pntr reverse_list(pntr list)
+{
+	pntr newList;
+	cell *currentCell;
+
+	
+	
+}
+
+//// similar to b_cons(), which returns a pntr pointing to a cell
+pntr make_cons(task *tsk, pntr head, pntr tail)
+{
+	pntr newCellPntr;
+	cell *res = alloc_cell(tsk);
+	res->type = CELL_CONS;
+	res->field1 = head;
+	res->field2 = tail;
+
+	make_pntr(newCellPntr,res);
+	return newCellPntr;
+}
+
+
 //// get the last cell from a list
-cell* get_last_cell(task *tsk, pntr list)
+cell* get_last_cell(task *tsk, pntr *list)
 {
 	pntr tail;
 	cell *lastCell;
 	
-	if( pntrtype(list) != CELL_CONS ){
+	if( pntrtype(*list) != CELL_CONS ){
 		return NULL;
 	}else{
-		lastCell = get_pntr(list);
-		tail = resolve_pntr(get_pntr(list)->field2);
-		while(pntrequal(tail, tsk->globnilpntr)){
+		lastCell = get_pntr(*list);
+		tail = resolve_pntr(get_pntr(*list)->field2);
+		while(!pntrequal(tail, tsk->globnilpntr)){
 			lastCell = get_pntr(tail);
 			tail = resolve_pntr(lastCell->field2);
 		}
@@ -290,17 +314,18 @@ cell* get_last_cell(task *tsk, pntr list)
 }
 
 //// concatenate 2 lists, which are formed with (cons * (cons * ... nil))
-pntr connect_lists(task *tsk, pntr list1, pntr list2)
+pntr connect_lists(task *tsk, pntr *list1, pntr *list2)
 {
 	cell *lastCell = get_last_cell(tsk, list1);
 	
-	make_pntr(lastCell->field2, get_pntr(list2));
-	return list1;
+	make_pntr(lastCell->field2, get_pntr(*list2));
+	return *list1;
 }
 
 //// make list using embeded cons with the given data
 //// e.g. str == (cons str[0] (cons str[1] (cons str[2] nil)))
 //// return a pntr, pointing to the list
+/*
 pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
 {
   pntr p = tsk->globnilpntr;
@@ -315,6 +340,33 @@ pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
   }
   *prev = tail;
   return p;
+}
+*/
+
+pntr data_to_list(task *tsk, const char *data, int size, pntr tail)
+{
+	int i;
+	pntr preList;
+	
+	if(size <= 0){
+		return tsk->globnilpntr;
+	}
+	
+	cell *lastCell = alloc_cell(tsk);
+	lastCell->type = CELL_CONS;
+	set_pntrdouble(lastCell->field1, data[size-1]);
+	lastCell->field2 = tsk->globnilpntr;
+	make_pntr(preList, lastCell);
+	
+	for(i=size-2; i>=0; i--){
+		cell *ch = alloc_cell(tsk);
+    	ch->type = CELL_CONS;
+    	set_pntrdouble(ch->field1,data[i]);
+    	ch->field2 = preList;
+    	make_pntr(preList, ch);
+	}
+	
+	return preList;
 }
 
 //// convert a string into array list (cons cons...)
@@ -547,7 +599,7 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
     	set_error(tsk, "error1: could not handle file: %s", fileName);
 		return;
     }
-    
+
     char *singleFileName;
     char *compressionType;
     char *fileSize;
@@ -560,34 +612,43 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 	while ((d = zzip_readdir (dir))){
 		counter++;
 		/* orignal size / compression-type / compression-ratio / filename */
-		singleFileName = d->d_name;
+		singleFileName = strcat(d->d_name, " ");
 		pSingleFileName = string_to_array(tsk, singleFileName);	//// convert the string to cons list
 		
-		sprintf(compressionType, "%s", zzip_compr_str(d->d_compr));
+		sprintf(compressionType, "%s ", zzip_compr_str(d->d_compr));
 		pCompressionType = string_to_array(tsk, compressionType);
 		
-		sprintf(fileSize, "%6d", d->st_size);
+		sprintf(fileSize, "%d ", d->st_size);
 		pFileSize = string_to_array(tsk, fileSize);
 		
-		sprintf(compressedSize, "%d", d->d_csize);
+		sprintf(compressedSize, "%d ", d->d_csize);
 		pCompressedSize = string_to_array(tsk, compressedSize);
 		
+//		printf("cell type: %s \t", cell_type(preList));
 		//// link the cons lists to form a new list
-		singleList = connect_lists(tsk, pSingleFileName, pCompressionType);
-		singleList = connect_lists(tsk, singleList, pFileSize);
-		singleList = connect_lists(tsk, singleList, pCompressedSize);
+//		singleList = connect_lists(tsk, &pSingleFileName, &pCompressionType);
+//		singleList = connect_lists(tsk, &singleList, &pFileSize);
+//		singleList = connect_lists(tsk, &singleList, &pCompressedSize);
 		
+		//// make cons from the last element to the beginning element
+		singleList = make_cons(tsk, pCompressedSize, tsk->globnilpntr);
+		singleList = make_cons(tsk, pFileSize, singleList);
+		singleList = make_cons(tsk, pCompressionType, singleList);
+		singleList = make_cons(tsk, pSingleFileName, singleList);
+		
+		 
 		if(counter == 1){
-			preList = singleList;
+			preList = make_cons(tsk, singleList, tsk->globnilpntr);
+//			printf("cell type: %s \t", cell_type(preList));
 		}else{
-			connect_lists(tsk, preList, singleList);
+			preList = make_cons(tsk, singleList, preList);
+//			printf("cell type: %s \n", cell_type(preList));
 		}
 	}
 	
 	argstack[0] = preList;
-	
+//	printf("cell type: %s \n", cell_type(argstack[0]));
 }
-
 
 //// Initialization of builtin functions' information
 const builtin builtin_info[NUM_BUILTINS] = {
