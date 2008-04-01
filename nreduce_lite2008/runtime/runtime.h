@@ -175,7 +175,7 @@ typedef struct builtin {
   int nargs;	//// number of arguments needed for this buildin f
   int nstrict;	//// 
   builtin_f f;	//// function pointer
-} builtin;
+} builtin, extfunc;
 
 typedef struct pntrstack {
   int alloc;  //// Number of all allocated stack space, including used and unused space
@@ -229,6 +229,9 @@ pntr data_to_list(task *tsk, const char *data, int size, pntr tail);
 int get_builtin(const char *name);
 pntr string_to_array(task *tsk, const char *str);
 int array_to_string(pntr refpntr, char **str);
+
+//// external functions 
+int get_extfunc(const char *name);
 
 /* cell */
 

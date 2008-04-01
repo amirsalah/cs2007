@@ -3,9 +3,26 @@
 
 #endif /*BUILTINS_H_*/
 
-static const char *numnames[4] = {"first", "second", "third", "fourth"};
+#include "src/nreduce.h"
+#include "compiler/source.h"
+#include "compiler/util.h"
+#include "runtime.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <ctype.h>
+#include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <dirent.h>
 
-static unsigned char NAN_BITS[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0xFF };
+
+
+void setnumber(pntr *cptr, double val);
 
 //// check if the type of specified argument (by number) is the same as _type
 #define CHECK_ARG(_argno,_type) {                                       \
