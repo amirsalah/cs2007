@@ -29,6 +29,7 @@
 #include "src/nreduce.h"
 #include "compiler/source.h"
 #include "runtime/runtime.h"
+#include "runtime/extfuncs.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -55,6 +56,7 @@ char* cell_type(pntr cell_pntr){
 		case 7: cell_type_str = "CELL_NIL"; break;
 		case 8: cell_type_str = "CELL_NUMBER"; break;
 		case 9: cell_type_str = "CELL_COUNT"; break;
+		case 10: cell_type_str = "CELL_EXTFUNC"; break;
 		default: break;
 	}
 	return cell_type_str;
@@ -146,6 +148,13 @@ static pntr instantiate_scomb_r(task *tsk, scomb *sc, snode *source,
     dest->type = CELL_BUILTIN;
     make_pntr(dest->field1,source->bif);
     make_pntr(p,dest);
+    return p;
+  case SNODE_EXTFUNC:
+    //// creat a cell of extension function
+    dest = alloc_cell(tsk);
+    dest->type = CELL_EXTFUNC;
+    make_pntr(dest->field1, source->extf);
+    make_pntr(p, dest);
     return p;
   case SNODE_SCREF: {
     return makescref(tsk,source->sc);
@@ -399,6 +408,78 @@ void reduce(task *tsk, pntrstack *s)
       s->count--;
       break;
     }
+    //// Very much similar to the case CELL_BUILTIN
+    case CELL_EXTFUNC: {
+	    int extf = (int)get_pntr(get_pntr(target)->field1);	//// get the build in function(bif) index
+ 	    int reqargs;		//// number of arguments required
+  	    int strictargs;	//// number of must-have arguments
+  	    int i;
+  	    int strictok = 0;
+  	    assert(extf >= 0);
+      	assert(NUM_EXTFUNCS > extf);
+
+      	reqargs = extfunc_info[extf].nargs;
+      	strictargs = extfunc_info[extf].nstrict;
+
+	  	//// make sure the number of arguments is sufficient
+	  	//// 1 is the builtin cell itself, so should be deducted
+      	if (s->count-1-oldtop < reqargs) {
+        	fprintf(stderr,"Extension function %s requires %d args; have only %d\n",
+                extfunc_info[extf].name,reqargs,s->count-1-oldtop);
+        	exit(1);
+     	}
+
+		/* Replace application cells on stack with the corresponding arguments */
+  	    //// note the corresponding arguments may also be application cells 
+ 	    for (i = s->count-1; i >= s->count-reqargs; i--) {
+			pntr arg = pntrstack_at(s,i-1);
+      		assert(i > oldtop);
+        	assert(CELL_APPLICATION == pntrtype(arg));
+		//  printf("type:%i ", pntrtype(s->data[i]));
+        	s->data[i] = get_pntr(arg)->field2;
+		//  printf("type:%i ", pntrtype(s->data[i]));
+      	}
+
+      	/* Reduce arguments */
+      	//// reduce arguments from the outermost application cell, which closest to the tip of the graph
+     	 //// until all the arguments are available
+      	for (i = 0; i < strictargs; i++)
+        	reduce_single(tsk,s,s->data[s->count-1-i]);
+
+      	/* Ensure all stack items are values (not indirection cells) */
+      	for (i = 0; i < strictargs; i++)
+        	s->data[s->count-1-i] = resolve_pntr(s->data[s->count-1-i]);
+
+      	/* Are any strict arguments not yet reduced? */
+      	for (i = 0; i < strictargs; i++) {
+        	pntr argval = resolve_pntr(s->data[s->count-1-i]);
+        	if (CELL_APPLICATION != pntrtype(argval)) {
+          	strictok++;	//// count the number of valid arguments which are stored on stack
+       		} else {
+          		break;
+        	}
+      	}
+
+      	extfunc_info[extf].f(tsk,&s->data[s->count-reqargs]);	//// the address of first arguments on stack is used
+      	if (tsk->error)
+        	fatal("%s",tsk->error);
+      	s->count -= (reqargs-1);	//// only keep arg[0], in which it stores the result of performing builtin func
+
+      	/* UPDATE */
+
+      	s->data[s->count-1] = resolve_pntr(s->data[s->count-1]);
+
+      	get_pntr(s->data[s->count-2])->type = CELL_IND;
+      	get_pntr(s->data[s->count-2])->field1 = s->data[s->count-1];
+
+#ifdef SHOW_STACK
+	  show_stack(tsk->streamstack);
+#endif
+
+     	 s->count--;
+      	break;
+    }
+ 
     default:
       fprintf(stderr,"Encountered %s\n",cell_types[pntrtype(target)]);
       abort();

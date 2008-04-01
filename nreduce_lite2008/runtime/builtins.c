@@ -54,9 +54,7 @@
 #endif
 
 const char *numnames[4] = {"first", "second", "third", "fourth"};
-
 unsigned char NAN_BITS[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0xFF };
-
 
 const builtin builtin_info[NUM_BUILTINS];
 
