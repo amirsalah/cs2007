@@ -7,7 +7,8 @@ libruntime_la_SOURCES = task.c \
 	reduction.c \
 	rngs.c rngs.h \
 	rvgs.c rvgs.h \
-	zzip.h
+	zzip.h \
+	external_functions.c
 
 libruntime_la_LDFLAGS = -lzzip
 

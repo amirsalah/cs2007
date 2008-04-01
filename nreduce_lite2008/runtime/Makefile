@@ -48,7 +48,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libruntime_la_LIBADD =
 am_libruntime_la_OBJECTS = task.lo builtins.lo memory.lo reduction.lo \
-	rngs.lo rvgs.lo
+	rngs.lo rvgs.lo external_functions.lo
 libruntime_la_OBJECTS = $(am_libruntime_la_OBJECTS)
 libruntime_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -187,7 +187,8 @@ libruntime_la_SOURCES = task.c \
 	reduction.c \
 	rngs.c rngs.h \
 	rvgs.c rvgs.h \
-	zzip.h
+	zzip.h \
+	external_functions.c
 
 libruntime_la_LDFLAGS = -lzzip
 INCLUDES = -I..
@@ -251,6 +252,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/builtins.Plo
+include ./$(DEPDIR)/external_functions.Plo
 include ./$(DEPDIR)/memory.Plo
 include ./$(DEPDIR)/reduction.Plo
 include ./$(DEPDIR)/rngs.Plo

@@ -36,6 +36,7 @@
 struct task;
 
 //// B indicates Build-in functions, these numbers are used as snode->bif
+
 #define B_ADD            0
 #define B_SUBTRACT       1
 #define B_MULTIPLY       2
@@ -78,10 +79,10 @@ struct task;
 
 #define B_RANDOMNUM      33
 
-#define B_ZZIP_DIR_REAL  34
-#define B_ZZIP_VERSION   35
-#define B_ZZIP_READ_DIRENT 36
-#define B_ZZIP_READ		 37
+//#define B_ZZIP_DIR_REAL  34
+//#define B_ZZIP_VERSION   35
+//#define B_ZZIP_READ_DIRENT 36
+//#define B_ZZIP_READ		 37
 
 //// number of total buildin functions
 #define NUM_BUILTINS     38

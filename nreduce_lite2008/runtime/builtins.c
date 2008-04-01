@@ -29,6 +29,7 @@
 #include "src/nreduce.h"
 #include "compiler/source.h"
 #include "compiler/util.h"
+#include "builtins.h"
 #include "runtime.h"
 #include <stdio.h>
 #include <string.h>
@@ -52,24 +53,7 @@
 #define O_BINARY 0
 #endif
 
-static const char *numnames[4] = {"first", "second", "third", "fourth"};
-
-static unsigned char NAN_BITS[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0xFF };
-
-//// check if the type of specified argument (by number) is the same as _type
-#define CHECK_ARG(_argno,_type) {                                       \
-    if ((_type) != pntrtype(argstack[(_argno)])) {                      \
-      invalid_arg(tsk,argstack[(_argno)],0,(_argno),(_type));           \
-      return;                                                           \
-    }                                                                   \
-  }
-
-#define CHECK_NUMERIC_ARGS(bif)                                         \
-  if ((CELL_NUMBER != pntrtype(argstack[1])) ||                         \
-      (CELL_NUMBER != pntrtype(argstack[0]))) {                         \
-    invalid_binary_args(tsk,argstack,bif);                              \
-    return;                                                             \
-  }
+extern void b_zzip_read(task *tsk, pntr *argstack);
 
 const builtin builtin_info[NUM_BUILTINS];
 
@@ -656,61 +640,6 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 	
 	argstack[0] = preList;
 //	printf("cell type: %s \n", cell_type(argstack[0]));
-}
-
-//// increase the memory space allocated to the string (str)
-char* string_mkroom(char *str, const int newSize)
-{
-	return realloc(str, newSize);
-}
-
-//// read a file contents from either a archive of real directory
-static void b_zzip_read(task *tsk, pntr *argstack)
-{
-	char *fileName;
-	pntr p = argstack[0];
-	int badtype;
-	
-	CHECK_ARG(0, CELL_CONS);
-	if((badtype = array_to_string(p, &fileName)) >= 0){
-		set_error(tsk, "error1: argument is not a string (contains non-char: %s)", cell_types[badtype]);
-		return;
-	}
-	
-	ZZIP_FILE* fp = zzip_open (fileName, O_RDONLY|O_BINARY);
-
-    if (! fp){
-   		perror (fileName);
-    }
-    
-    int bufSize = 2, blockSize = 1024, numBlocks = 1;
-    char buf[bufSize];
-    int n, counter = 0;
-    char *contents = (char *)calloc(blockSize, sizeof(char));
-    
-    /* read chunks of bufSize bytes into buf and concatenate them into previous string */
-    while( (n = (zzip_read(fp, buf, bufSize-1))) > 0){
-    	counter++;
-    	
-    	if(counter == 1){
-//    		strcpy(contents, buf);
-			strncat(contents, buf, bufSize-1);
-			bufSize = 21;
-    	}else{
-    		int originalSize = strlen(contents);
-    		if( ((blockSize*numBlocks) - (originalSize + 1)) < bufSize){
-    			numBlocks++;
-    			contents = string_mkroom(contents, blockSize*numBlocks);
-    		}
-
-    		strncat(contents, buf, bufSize-1);
-//    		printf("%s\n\n\n", contents);
-    	}
-    	buf[n] = '\0';
-    }
-    
-    argstack[0] = string_to_array(tsk, contents);
-
 }
 
 //// Initialization of builtin functions' information
