@@ -446,7 +446,6 @@ static void b_randomnum(task *tsk, pntr *argstack)
 //    setnumber(&argstack[0], zzip_file_real(3));
 }
 
-
 //// Initialization of builtin functions' information
 const builtin builtin_info[NUM_BUILTINS] = {
 /* Arithmetic operations */

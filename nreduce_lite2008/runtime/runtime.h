@@ -85,7 +85,7 @@ struct task;
 //#define B_ZZIP_READ		 37
 
 //// number of total buildin functions
-#define NUM_BUILTINS     38
+#define NUM_BUILTINS     34
 
 //// Check if the cell _c is empty or not
 #define checkcell(_c) ({ if (CELL_EMPTY == (_c)->type) \

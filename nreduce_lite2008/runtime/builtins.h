@@ -21,7 +21,6 @@
 #include <dirent.h>
 
 
-
 void setnumber(pntr *cptr, double val);
 
 //// check if the type of specified argument (by number) is the same as _type
