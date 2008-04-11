@@ -1,0 +1,13 @@
+To run the lexer, following the steps:
+
+STEP 1:
+make
+
+STEP 2:
+java XMLLexer
+
+STEP 3:
+input a line from the console
+
+e.g. cat MachineSample.xml | java XMLLexer > result
+then you can check the output from the file "resutl"
