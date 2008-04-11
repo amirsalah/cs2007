@@ -61,10 +61,9 @@ class Yytoken {
   public int m_line;
   public int m_charBegin;
   public int m_charEnd;
-  
+
   public String toString() {
-      return "Token #"+m_index+": "+m_text+" (line "+m_line+", character pos"
-	  +m_charBegin+":"+m_charEnd+" )";
+  	  return "<" + m_charBegin + "," + m_charEnd + "," + m_text + "," + sym.getTokenName(m_index) + ">";
   }
 }
 
@@ -89,38 +88,21 @@ NONNEWLINE_WHITE_SPACE_CHAR=[\ \t\b\012]
 WHITE_SPACE_CHAR=[\n\ \t\b\012]
 STRING_TEXT=(\\\"|[^\n\"]|\\{WHITE_SPACE_CHAR}+\\)*
 COMMENT_TEXT=([^-]|-[^-]|--[^>])*
-ATTRIBUTE_NAME="version"|"name"|"type"|"state"|"trans"|"extends"|"implements"
+ATTRIBUTE_NAME="version"|"name"|"type"|"state"|"trans"|"extends"|"implements"|"kind"
 NAMECHAR={ALPHA}|{DIGIT}|"."|"-"|"_"|":"
 NMTOKEN=({NAMECHAR})+
 PCDATA = ([^<])*
 
+ROOTELEMENT="SYSTEM-SPEC"
+
 %% 
 
-<YYINITIAL> "," { return (new Yytoken(sym.tCOMMA,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ":" { return (new Yytoken(sym.tCOLON,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ";" { return (new Yytoken(sym.tSEMICOLON,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "(" { return (new Yytoken(sym.tLPAREN,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ")" { return (new Yytoken(sym.tRPAREN,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "[" { return (new Yytoken(sym.tLBRACK,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "]" { return (new Yytoken(sym.tRBRACK,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "{" { return (new Yytoken(sym.tLBRACE,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "}" { return (new Yytoken(sym.tRBRACE,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "." { return (new Yytoken(sym.tDOT,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "+" { return (new Yytoken(sym.tPLUS,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "-" { return (new Yytoken(sym.tMINUS,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "*" { return (new Yytoken(sym.tSTAR,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "/" { return (new Yytoken(sym.tSLASH,yytext(),yyline,yychar,yychar+1)); }
+
 <YYINITIAL> "=" { return (new Yytoken(sym.tEQUALS,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "<>" { return (new Yytoken(sym.tNOTEQUALS,yytext(),yyline,yychar,yychar+2)); }
-<YYINITIAL> "<"  { return (new Yytoken(sym.tLESSTHAN,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "<=" { return (new Yytoken(sym.tLESSOREQUAL,yytext(),yyline,yychar,yychar+2)); }
+<YYINITIAL> "<"  { return (new Yytoken(sym.tMARK,yytext(),yyline,yychar,yychar+1)); }
 <YYINITIAL> ">"  { return (new Yytoken(sym.tCLOSETAG,yytext(),yyline,yychar,yychar+1)); }
 <YYINITIAL> "/>"  { return (new Yytoken(sym.tENDELEMENT,yytext(),yyline,yychar,yychar+1)); }
 
-<YYINITIAL> ">=" { return (new Yytoken(sym.tGREATEROREQUAL,yytext(),yyline,yychar,yychar+2)); }
-<YYINITIAL> "&"  { return (new Yytoken(sym.tAND,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> "|"  { return (new Yytoken(sym.tOR,yytext(),yyline,yychar,yychar+1)); }
-<YYINITIAL> ":=" { return (new Yytoken(sym.tBECOMES,yytext(),yyline,yychar,yychar+2)); }
 
 <YYINITIAL> {NONNEWLINE_WHITE_SPACE_CHAR}+ { }
 
@@ -170,7 +152,7 @@ PCDATA = ([^<])*
 				yybegin(GETPCDATA);
 				return (new Yytoken(sym.tARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));}
 
-<YYINITIAL> "</SYSTEM-SPEC>" {return (new Yytoken(sym.tEND_SYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</SYSTEM-SPEC"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_SYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
 <YYINITIAL> "</INTERFACE>" {return (new Yytoken(sym.tEND_INTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
 <YYINITIAL> "</MACHINE>" {return (new Yytoken(sym.tEND_MACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
 <YYINITIAL> "</INSTANCE>" {return (new Yytoken(sym.tEND_INSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
@@ -178,6 +160,12 @@ PCDATA = ([^<])*
 <YYINITIAL> "</EVENTDEF>" {return (new Yytoken(sym.tEND_EVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
 <YYINITIAL> "</STATE>" {return (new Yytoken(sym.tEND_STATE, yytext(), yyline, yychar, yychar+yytext().length()));}
 <YYINITIAL> "</TRANSITION>" {return (new Yytoken(sym.tEND_TRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
+
+<YYINITIAL> "<!DOCTYPE" {return (new Yytoken(sym.tDOCTYPE, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> {ROOTELEMENT} {return (new Yytoken(sym.tROOT, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "<?xml" {return (new Yytoken(sym.tXMLHEAD, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "?>" {return (new Yytoken(sym.tEND_XMLHEAD, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "SYSTEM" {return (new Yytoken(sym.tSYSTEM, yytext(), yyline, yychar, yychar+yytext().length()));}
 
 
 <YYINITIAL> \"{NMTOKEN}\" {
