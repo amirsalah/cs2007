@@ -1,7 +1,11 @@
+/* Author: Bo CHEN
+ * ID: a1139520
+ */
+ 
 import java.lang.System;
 import compiler.sym;
 
-class XmlLexer {
+class XMLLexer {
     public static void main(String argv[]) throws java.io.IOException {
 	Yylex yy = new Yylex(System.in);
 	Yytoken t;
