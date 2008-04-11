@@ -1,16 +1,7 @@
 import java.lang.System;
-import compiler.sym;  // In here, all the definitions of token values
+import compiler.sym;
 
 class XmlLexer {
-    /*
-     * Just a simple driver - loops till end-of-file **
-     * prints out the yytoken received..via the to_string method in yytoken
-     *
-     * **NOTE: Eof weirdness - For some strange reason (as yet unresolved)
-     * it takes 3 (three) ^D's to make EOF happen.  Don't know why.
-     *
-     */
-
     public static void main(String argv[]) throws java.io.IOException {
 	Yylex yy = new Yylex(System.in);
 	Yytoken t;
@@ -63,7 +54,7 @@ class Yytoken {
   public int m_charEnd;
 
   public String toString() {
-  	  return "<" + m_charBegin + "," + m_charEnd + "," + m_text + "," + sym.getTokenName(m_index) + ">";
+  	  return "<" + ++m_charBegin + "," + m_charEnd + "," + m_text + "," + sym.getTokenName(m_index) + ">";
   }
 }
 
@@ -172,7 +163,7 @@ ROOTELEMENT="SYSTEM-SPEC"
 	String str =  yytext().substring(1,yytext().length() - 1);
 	
 	Utility.my_assert(str.length() == yytext().length() - 2);
-	return (new Yytoken(sym.tSTRING,str,yyline,yychar,yychar + str.length()));
+	return (new Yytoken(sym.tATTRIBUTE_VALUE,str,yyline,yychar,yychar + str.length()));
 }
 
 <YYINITIAL> \"{NMTOKEN} {
@@ -180,7 +171,7 @@ ROOTELEMENT="SYSTEM-SPEC"
 
 	Utility.error(Utility.E_UNCLOSEDSTR);
 	Utility.my_assert(str.length() == yytext().length() - 1);
-	return (new Yytoken(sym.tSTRING,str,yyline,yychar,yychar + str.length()));
+	return (new Yytoken(sym.tATTRIBUTE_VALUE,str,yyline,yychar,yychar + str.length()));
 } 
 
 <GETPCDATA> {PCDATA} {

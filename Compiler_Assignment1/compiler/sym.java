@@ -18,8 +18,6 @@ public class sym {
 
     public static final int tCLOSETAG	    = 20; // >
 
-    public static final int tPROCEDURE      = 25; // procedure
-
     public static final int tSTRING         = 28; // "..a string"
 
     
@@ -97,8 +95,6 @@ public class sym {
 				break;				
     	case 20: tokenName = "tCLOSETAG";
 				break;				
-    	case 25: tokenName = "tPROCEDURE";
-				break;
     	case 28: tokenName = "tSTRING";
 				break;
     	case 30: tokenName = "tATTRIBUTE_NAME";
