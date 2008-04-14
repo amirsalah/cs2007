@@ -74,7 +74,7 @@ public class CodeGen {
 	          case 1:
 	            throw new RuntimeException("Error parsing line (key without value):\n" + line);
 	          case 2:
-	            ga.setAttribute(values[0], values[1]);
+//	            ga.setAttribute(values[0], values[1]);
 	            break;
 	          default:
 	            throw new RuntimeException("Error parsing line (too many tokens):\n" + line);
