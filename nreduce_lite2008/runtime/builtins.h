@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -20,8 +21,19 @@
 #include <errno.h>
 #include <dirent.h>
 
+#include "runtime/rngs.h"
+#include "runtime/rvgs.h"
+
+
+#define MAX_BUILTINS 100
 
 void setnumber(pntr *cptr, double val);
+void invalid_arg(task *tsk, pntr arg, int bif, int argno, int type);
+void invalid_binary_args(task *tsk, pntr *argstack, int bif);
+int pntr_is_char(pntr p);
+pntr string_to_array(task *tsk, const char *str);
+int array_to_string(pntr refpntr, char **str);
+
 
 //// check if the type of specified argument (by number) is the same as _type
 #define CHECK_ARG(_argno,_type) {                                       \
