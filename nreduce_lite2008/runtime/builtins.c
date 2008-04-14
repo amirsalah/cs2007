@@ -26,28 +26,7 @@
 
 #define BUILTINS_C
 
-#include "src/nreduce.h"
-#include "compiler/source.h"
-#include "compiler/util.h"
 #include "runtime/builtins.h"
-#include "runtime.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <math.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <dirent.h>
-
-#include "runtime/rngs.h"
-#include "runtime/rvgs.h"
-#include <zzip/zzip.h>
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -300,7 +279,12 @@ int array_to_string(pntr refpntr, char **str)
     if (CELL_CONS == pntrtype(p)) {
       cell *c = get_pntr(p);
       pntr head = resolve_pntr(c->field1);
+//      cell *headcell = get_pntr(head);
+//      cell *Lheadcell = get_pntr(headcell->field1);
+//      cell *LLheadcell = get_pntr(Lheadcell->field1);
       pntr tail = resolve_pntr(c->field2);
+//      cell *tailcell = get_pntr(tail);
+//      cell *Rtailcell = get_pntr(tailcell->field2);
       if (pntr_is_char(head)) {
         char cc = (char)pntrdouble(head);
         array_append(buf,&cc,1);

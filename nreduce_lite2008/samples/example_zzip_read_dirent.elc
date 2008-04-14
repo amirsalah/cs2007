@@ -13,4 +13,4 @@ printstrings lst =
                      nil)
 
 
-main = (printstrings (zzip_read_dirent "/home/smaxll/Project/workspace/zipc/test.zip"))
+main = (printstrings (zzip_read_dirent "/home/smaxll/workspace/nreduce_lite2008/src/zipc/test.zip"))
