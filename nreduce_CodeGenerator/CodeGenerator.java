@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.StreamTokenizer;
 
 /* Generate binding code for ELC and foreign c functions */
 
@@ -12,6 +8,7 @@ public class CodeGenerator {
 	// Main method
 	//-------------------
 	public static void main(String[] args) {
+	    String def_dir = "DefinitionFile/";
 	    // Check for correct number of args
 	    if (args.length < 1 || args.length > 2)
 	    {
@@ -20,12 +17,13 @@ public class CodeGenerator {
 	    }
 	    
 	    // Check if the definition file exist
-	    String def_file = args[0];
+	    String def_file = def_dir + args[0];
 	    if(!fileExist(def_file)){
 	    	System.out.println("File: " + def_file + " does not exist");
 	    } else {
-	        // Read the file
-	        
+	        // Process the file
+	        XSLTProcessor defProcessor = new XSLTProcessor(def_file);
+	        defProcessor.genELCWrappers();
 	    }
 		
 	}
