@@ -16,7 +16,7 @@
 
 <!-- user-defined c struct -->
 <!ELEMENT STRUCT ((STRUCTCOM|STRUCTDEC)*)>
-<!ATTLIST STRUCT name NMTOKEN #REQUIRED type NMTOKEN #REQUIRED>
+<!ATTLIST STRUCT type NMTOKEN #REQUIRED>
 
 <!-- c struct declare -->
 <!ELEMENT STRUCTDEC EMPTY>
