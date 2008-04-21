@@ -21,6 +21,14 @@
             <PARAMETER name="fileName" type="String" />
             <PARAMETER name="fi" type="struct  FileInfo" />
 		</METHOD>
+		<METHOD name="returnServerState">
+		    <RESULT name="serverState" type="String" />
+		</METHOD>
+		<METHOD name="ckNum">
+		    <RESULT name="nS" type="String" /><PARAMETER
+		        name="num" type="int"
+		    />
+		</METHOD>
 	</INTERFACE>
     
 	<STRUCT type="FileInfo">
