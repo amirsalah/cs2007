@@ -37,7 +37,7 @@
         </xsl:for-each>
 
         <!--ELC GEN: mk**** to generate ELC routine for end users to construct C struct in ELC programs-->
-        <xsl:value-of select="concat('mk', $structType, ' ')"></xsl:value-of>
+        <xsl:value-of select="concat('mk', substring-after($structType, &quot; &quot;), ' ')"></xsl:value-of>
         <xsl:for-each select="./*">
             <xsl:value-of select="concat(./@name, ' ')"></xsl:value-of>
         </xsl:for-each>
@@ -49,7 +49,7 @@
         </xsl:value-of>
 
         <!--ELC GEN: Force evaluation of all struct in -->
-        <xsl:value-of select="concat('force', $structType, ' obj = (forcelist (mk', $structType, ' ')"></xsl:value-of>
+        <xsl:value-of select="concat('force', substring-after($structType, &quot; &quot;), ' obj = (forcelist (mk', substring-after($structType, &quot; &quot;), ' ')"></xsl:value-of>
         <xsl:for-each select="./*">
             <xsl:call-template name="forceStructCom">
             <xsl:with-param name="structType" select="$structType"></xsl:with-param>
@@ -77,11 +77,11 @@
 	   <xsl:param name="structCom"></xsl:param>
 	       <xsl:choose>
 	           <xsl:when test="$structCom/@type='String'">
-	               <xsl:value-of select="concat('(forcelist (', $structType, '_', $structCom/@name, ' obj)) ' )"></xsl:value-of></xsl:when>
+	               <xsl:value-of select="concat('(forcelist (', substring-after($structType, &quot; &quot;), '_', $structCom/@name, ' obj)) ' )"></xsl:value-of></xsl:when>
 	           <xsl:when test="local-name($structCom)='STRUCTDEC'">
-	               <xsl:value-of select="concat('(force', $structCom/@type, ' (', $structType, '_', $structCom/@name, ' obj)) ' )"></xsl:value-of></xsl:when>
+	               <xsl:value-of select="concat('(force', substring-after($structCom/@type, &quot; &quot;), ' (', substring-after($structType, &quot; &quot;), '_', $structCom/@name, ' obj)) ' )"></xsl:value-of></xsl:when>
 	           <xsl:otherwise>
-	               <xsl:value-of select="concat('(', $structType, '_', $structCom/@name, ' obj) ' )"></xsl:value-of>
+	               <xsl:value-of select="concat('(', substring-after($structType, &quot; &quot;), '_', $structCom/@name, ' obj) ' )"></xsl:value-of>
 	           </xsl:otherwise>
             </xsl:choose>
     </xsl:template>
@@ -91,7 +91,7 @@
         <xsl:param name="structType"></xsl:param>
         <xsl:param name="structCom"></xsl:param>
         <xsl:param name="NO"></xsl:param>
-            <xsl:value-of select="concat($structType, '_', $structCom/@name, ' obj = (item ', $NO, ' obj)' )"></xsl:value-of>
+            <xsl:value-of select="concat(substring-after($structType, &quot; &quot;), '_', $structCom/@name, ' obj = (item ', $NO, ' obj)' )"></xsl:value-of>
     </xsl:template>
     
     <!--Function: recursively generate: e.g. (cons item1 (cons item2... )))-->
