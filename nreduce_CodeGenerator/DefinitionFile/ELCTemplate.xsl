@@ -125,7 +125,7 @@
             <xsl:call-template name="createForcelist">
             <xsl:with-param name="paramNode" select="."></xsl:with-param></xsl:call-template>
         </xsl:for-each>
-        <xsl:value-of select="concat(')')"></xsl:value-of>
+        <xsl:value-of select="')'"></xsl:value-of>
     </xsl:template>
     
     <!--Fucntion: recusively test if given method contains any its parameters contain String or struct, return xl:boolean-->
