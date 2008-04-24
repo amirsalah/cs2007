@@ -11,7 +11,7 @@ int get_extfunc(const char *name)
   return -1;
 }
 
-/* util functions */
+/******** util functions *********/
 //// similar to b_cons(), which returns a pntr pointing to a cell
 pntr make_cons(task *tsk, pntr head, pntr tail)
 {
@@ -25,6 +25,29 @@ pntr make_cons(task *tsk, pntr head, pntr tail)
 	return newCellPntr;
 }
 
+
+pntr head(task *tsk, pntr pCell){
+    pntr cellHead;
+    if(pntrtype(pCell) == CELL_CONS){
+        cellHead = get_pntr(pCell)->field1;
+    }else {
+        set_error(tsk,"head: expected cons, got %s",cell_types[pntrtype(pCell)]);
+    }
+    
+    return cellHead;
+}
+
+pntr tail(task *tsk, pntr pCell){
+    pntr cellTail;
+    
+    if(pntrtype(pCell) == CELL_CONS){
+        cellTail = get_pntr(pCell)->field2;
+    }else {
+        set_error(tsk,"tail: expected cons, got %s",cell_types[pntrtype(pCell)]);
+    }
+    
+    return cellTail;
+}
 //// get the last cell from a list
 cell* get_last_cell(task *tsk, pntr *list)
 {
@@ -261,6 +284,142 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 //	printf("cell type: %s \n", cell_type(argstack[0]));
 }
 
+/*********************** Test drawRectangles1 ***************************************/
+typedef struct Rectangle Rectangle;
+typedef struct Color Color;
+
+struct Rectangle {
+    int width;
+    int height;
+    Color *col;
+};
+
+struct Color {
+    int red;
+    int blue;
+    int green;
+};
+
+int drawRectangles(char *userName, double xPos, int yPos, Rectangle *rect){
+    //Check the arguments
+
+    if(strcmp(userName, "SmAxlL")){
+        return 0;
+    }
+    
+    if(xPos != 1.5){
+        return 0;
+    }
+    
+    if(yPos != 2){
+        return 0;
+    }
+    
+    if( (rect->width != 10) | (rect->height != 15) | (rect->col->red != 100) | (rect->col->blue != 150)){
+        return 0;
+    }
+    
+    return 1;
+}
+
+// Declare constructor and destructor fucntions
+
+Rectangle *newRectangle();
+void free_Rectangle(Rectangle *r);
+Color *new_Color();
+void free_Color(Color *col);
+
+Rectangle *new_Rectangle() {
+    Rectangle *rect = malloc(sizeof(Rectangle));
+    
+    return rect;
+}
+
+void free_Rectangle(Rectangle *r) {
+    free_Color(r->col);
+    free(r);
+}
+
+Color *new_Color(){
+    Color *col = malloc(sizeof(Color));
+    
+    return col;
+}
+
+void free_Color(Color *col){
+    free(col);
+}
+
+
+static void b_drawRectangles1(task *tsk, pntr *argstack)
+{
+    pntr val1 = argstack[3]; // userName
+    pntr val2 = argstack[2]; // xPos
+    pntr val3 = argstack[1]; // yPos
+    pntr val4 = argstack[0]; // Rectangle
+    
+    int badtype;
+    
+    char *userName;
+    double xPos;
+    int yPos;
+    Rectangle *rect = new_Rectangle();
+
+    
+    int result;
+
+    /* Check validity of each parameter */
+    CHECK_ARG(3, CELL_CONS);
+    CHECK_ARG(2, CELL_NUMBER);
+    CHECK_ARG(1, CELL_NUMBER);
+    CHECK_ARG(0, CELL_CONS);
+    
+    /* initialize all the struct */
+    if( (badtype = array_to_string(val1,&userName)) > 0) {
+        set_error(tsk,"string: argument is not a string (contains non-char: %s)",
+                  cell_types[badtype]);
+        return;
+      }
+    
+    xPos = pntrdouble(val2);
+    yPos = pntrdouble(val3);
+    
+    //    int type = pntrtype(val4_val1);
+    //    pntr i = get_pntr(val4)->field1;
+    //    set_pntrdouble(p, number);
+
+//    pntr t = resolve_pntr(get_pntr(val4)->field2);
+    int type;
+    
+    pntr val4_val1 = resolve_pntr(head(tsk, val4));
+    rect->width = pntrdouble(val4_val1);
+    
+    pntr val4_val2 = resolve_pntr(head(tsk, resolve_pntr(tail(tsk, val4))));
+    rect->height = pntrdouble(val4_val2);
+    
+    /* if val4_val3 is also a number, then pntr val4_val3 = head(tail(tail val4)) */
+    Color *col = new_Color();
+    rect->col = col;
+    
+    pntr col_val = resolve_pntr(head (tsk, resolve_pntr(tail (tsk, resolve_pntr((tail(tsk, val4))) ))));  // root pntr for Color struct
+//    type = pntrtype(col_val);
+    pntr col_val1 = resolve_pntr(head(tsk, col_val));
+//    type = pntrtype(col_val1);
+    col->red = pntrdouble(col_val1);
+    
+    pntr col_val2 = resolve_pntr(head(tsk, resolve_pntr(tail (tsk, col_val))));
+    col->blue = pntrdouble(col_val2);
+    
+    pntr col_val3 = resolve_pntr(head(tsk, resolve_pntr(tail (tsk, resolve_pntr(tail (tsk, col_val))))));
+    col->green = pntrdouble(col_val3);
+    
+    result = drawRectangles(userName, xPos, yPos, rect);
+    
+    setnumber(&argstack[0], result);
+    
+}
+
+
 const extfunc extfunc_info[NUM_EXTFUNCS] = {
 //// zzip functions
 { "zzip_dir_real",  1, 1, b_zzip_dir_real  },
@@ -269,4 +428,5 @@ const extfunc extfunc_info[NUM_EXTFUNCS] = {
 { "zzip_version",     0, 0, b_zzip_version    },
 { "zzip_read_dirent", 1, 1, b_zzip_read_dirent},
 { "zzip_read",        1, 1, b_zzip_read	      },
+{ "drawRectangles1",  4, 4, b_drawRectangles1  },
 };

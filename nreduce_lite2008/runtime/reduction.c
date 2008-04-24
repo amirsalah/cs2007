@@ -350,14 +350,14 @@ void reduce(task *tsk, pntrstack *s)
       int strictok = 0;
       assert(bif >= 0);
       
-      if(isExtFunc){
+      if(isExtFunc > 0){
           assert(NUM_EXTFUNCS > bif);
       } else {
           assert(NUM_BUILTINS > bif);
       }
 
       //// Check if it is a builtin function or a external function
-      if(isExtFunc){
+      if(isExtFunc > 0){
         	reqargs = extfunc_info[bif].nargs;
         	strictargs = extfunc_info[bif].nstrict;
       } else {
@@ -368,7 +368,7 @@ void reduce(task *tsk, pntrstack *s)
 	  //// make sure the number of arguments is sufficient
 	  //// 1 is the builtin cell itself, so should be deducted
       if (s->count-1-oldtop < reqargs) {
-          if(isExtFunc){
+          if(isExtFunc > 0){
               fprintf(stderr,"External function %s requires %d args; have only %d\n",
                       extfunc_info[bif].name,reqargs,s->count-1-oldtop);
               exit(1);
@@ -412,7 +412,7 @@ void reduce(task *tsk, pntrstack *s)
         }
       }
       
-      if(isExtFunc){
+      if(isExtFunc > 0){
     	  extfunc_info[bif].f(tsk,&s->data[s->count-reqargs]);
       } else {
     	  builtin_info[bif].f(tsk,&s->data[s->count-reqargs]);	//// the address of first arguments on stack is used

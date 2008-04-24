@@ -98,6 +98,23 @@
 "\n"\
 "error str =\n"\
 "(error1 (forcelist str))\n"\
+"\n"\
+"\n"\
+"\n"\
+"\n"\
+"Rectangle_width obj = (item 0 obj)\n"\
+"Rectangle_height obj = (item 1 obj)\n"\
+"Rectangle_col obj = (item 2 obj)\n"\
+"mkRectangle width height col = (cons width (cons height (cons col nil)))\n"\
+"forceRectangle obj = (forcelist (mkRectangle (Rectangle_width obj) (Rectangle_height obj) (forceColor (Rectangle_col obj)) ))\n"\
+"\n"\
+"Color_red obj = (item 0 obj)\n"\
+"Color_blue obj = (item 1 obj)\n"\
+"Color_green obj = (item 2 obj)\n"\
+"mkColor red blue green = (cons red (cons blue (cons green nil)))\n"\
+"forceColor obj = (forcelist (mkColor (Color_red obj) (Color_blue obj) (Color_green obj) ))\n"\
+"\n"\
+"drawRectangles userName xPos yPos rect = (drawRectangles1 (forcelist userName) xPos yPos (forceRectangle rect) )\n"\
 " "
 const module_info module_defs[2] = {
 { "prelude", "(module) prelude.elc", prelude_module },
