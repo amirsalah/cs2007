@@ -160,7 +160,7 @@
 	       </xsl:choose>
        </xsl:for-each>
     <xsl:value-of select="concat('};', $NEWLINE, $NEWLINE)"></xsl:value-of>
-</xsl:template><!--Function: gen struct constructor and destructor, e.g. Rectangle *new_Rectangle(); and its definition--><xsl:template
+</xsl:template><!--Function: gen struct constructor and destructor, e.g. Rectangle *new_Rectangle(); free_Rectangle() and its definition--><xsl:template
         name="structsCreator"
     >
     <xsl:param name="structs"></xsl:param>
@@ -176,8 +176,15 @@
 <xsl:value-of select="concat($NEWLINE, '/* Definition of the constructors and destructors */', $NEWLINE)"></xsl:value-of>
     <xsl:for-each select="$structs/STRUCT">
         <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '() {', $NEWLINE)"></xsl:value-of>
-        <xsl:value-of select="concat($INDENT, substring-after(@type, ' '), ' *', @name, ' = malloc(sizeof(', substring-after(@type, ' '), '));', $NEWLINE)"></xsl:value-of>
-        <xsl:value-of select="concat($INDENT, 'return ', @name, ';', $NEWLINE, '}', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat($INDENT, substring-after(@type, ' '), ' *ret',  ' = malloc(sizeof(', substring-after(@type, ' '), '));', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat($INDENT, 'return ret;', $NEWLINE, '}', $NEWLINE)"></xsl:value-of><!--gen free_Struct()--><xsl:value-of
+            select="concat('void free_', substring-after(@type, ' '), '(', substring-after(@type, ' '), ' *f_', substring-after(@type, ' '), ') {', $NEWLINE)"
+        >
+</xsl:value-of>
+        <!--free each struct inside current struct--><xsl:for-each select="./STRUCTDEC">
+            <xsl:value-of select="concat($INDENT, 'free_', substring-after(@type, ' '), '(f_', substring-after(../@type, ' '), '-&gt;', @name, ');', $NEWLINE)"></xsl:value-of>
+        </xsl:for-each>
+        <xsl:value-of select="concat($INDENT, 'free(f_', substring-after(@type, ' '), ');', $NEWLINE, '}', $NEWLINE, $NEWLINE)"></xsl:value-of>
     </xsl:for-each>
     <xsl:value-of select="$NEWLINE"></xsl:value-of></xsl:template>
 
