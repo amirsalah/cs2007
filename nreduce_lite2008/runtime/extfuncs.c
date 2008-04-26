@@ -34,7 +34,7 @@ pntr head(task *tsk, pntr pCell){
         set_error(tsk,"head: expected cons, got %s",cell_types[pntrtype(pCell)]);
     }
     
-    return cellHead;
+    return resolve_pntr(cellHead);
 }
 
 pntr tail(task *tsk, pntr pCell){
@@ -46,7 +46,7 @@ pntr tail(task *tsk, pntr pCell){
         set_error(tsk,"tail: expected cons, got %s",cell_types[pntrtype(pCell)]);
     }
     
-    return cellTail;
+    return resolve_pntr(cellTail);
 }
 //// get the last cell from a list
 cell* get_last_cell(task *tsk, pntr *list)
@@ -285,11 +285,16 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 }
 
 /*********************** Test drawRectangles1 ***************************************/
+
+
+/* Testing:            *********enlargeRectangle1*************  */
 typedef struct Rectangle Rectangle;
 typedef struct Color Color;
+typedef struct gray gray;
 
 struct Rectangle {
     int width;
+    char *creator;
     int height;
     Color *col;
 };
@@ -298,7 +303,50 @@ struct Color {
     int red;
     int blue;
     int green;
+    gray *cg;
 };
+
+struct gray {
+    char *country;
+    int grayCode;
+};
+
+
+
+/* Declear the struct constructor and destructor */
+Rectangle *new_Rectangle();
+void free_Rectangle(Rectangle *f_Rectangle);
+Color *new_Color();
+void free_Color(Color *f_Color);
+gray *new_gray();
+void free_gray(gray *f_gray);
+
+/* Definition of the constructors and destructors */
+Rectangle *new_Rectangle() {
+    Rectangle *ret = malloc(sizeof(Rectangle));
+    return ret;
+}
+void free_Rectangle(Rectangle *f_Rectangle) {
+    free_Color(f_Rectangle->col);
+    free(f_Rectangle);
+}
+
+Color *new_Color() {
+    Color *ret = malloc(sizeof(Color));
+    return ret;
+}
+void free_Color(Color *f_Color) {
+    free_gray(f_Color->cg);
+    free(f_Color);
+}
+
+gray *new_gray() {
+    gray *ret = malloc(sizeof(gray));
+    return ret;
+}
+void free_gray(gray *f_gray) {
+    free(f_gray);
+}
 
 int drawRectangles(char *userName, double xPos, int yPos, Rectangle *rect){
     //Check the arguments
@@ -315,110 +363,160 @@ int drawRectangles(char *userName, double xPos, int yPos, Rectangle *rect){
         return 0;
     }
     
-    if( (rect->width != 10) | (rect->height != 15) | (rect->col->red != 100) | (rect->col->blue != 150)){
+    if( (rect->width != 10) |  (rect->height != 15) | (rect->col->red != 100) | (rect->col->blue != 150) | (rect->col->green != 200) ){
         return 0;
     }
     
+    
+    
     return 1;
-}
-
-// Declare constructor and destructor fucntions
-
-Rectangle *newRectangle();
-void free_Rectangle(Rectangle *r);
-Color *new_Color();
-void free_Color(Color *col);
-
-Rectangle *new_Rectangle() {
-    Rectangle *rect = malloc(sizeof(Rectangle));
-    
-    return rect;
-}
-
-void free_Rectangle(Rectangle *r) {
-    free_Color(r->col);
-    free(r);
-}
-
-Color *new_Color(){
-    Color *col = malloc(sizeof(Color));
-    
-    return col;
-}
-
-void free_Color(Color *col){
-    free(col);
 }
 
 
 static void b_drawRectangles1(task *tsk, pntr *argstack)
 {
+    /* pointers to the parameters */
     pntr val1 = argstack[3]; // userName
     pntr val2 = argstack[2]; // xPos
     pntr val3 = argstack[1]; // yPos
-    pntr val4 = argstack[0]; // Rectangle
-    
+    pntr val4 = argstack[0]; // rect
     int badtype;
-    
+
+    /* the result value to be return */
+    int numRect;
+
     char *userName;
     double xPos;
     int yPos;
     Rectangle *rect = new_Rectangle();
-
-    
-    int result;
 
     /* Check validity of each parameter */
     CHECK_ARG(3, CELL_CONS);
     CHECK_ARG(2, CELL_NUMBER);
     CHECK_ARG(1, CELL_NUMBER);
     CHECK_ARG(0, CELL_CONS);
-    
-    /* initialize all the struct */
-    if( (badtype = array_to_string(val1,&userName)) > 0) {
-        set_error(tsk,"string: argument is not a string (contains non-char: %s)",
-                  cell_types[badtype]);
+
+    /* Initialize all arguments for this method */
+    if( (badtype = array_to_string(val1, &userName)) > 0) {
+        set_error(tsk, "string: argument is not a string (contains non-char: %s)", cell_types[badtype]);
         return;
-      }
-    
+    }
+
     xPos = pntrdouble(val2);
     yPos = pntrdouble(val3);
-    
-    //    int type = pntrtype(val4_val1);
-    //    pntr i = get_pntr(val4)->field1;
-    //    set_pntrdouble(p, number);
 
-//    pntr t = resolve_pntr(get_pntr(val4)->field2);
-    int type;
+    /* Initialize the struct: Rectangle */
+    pntr rect_val1 = head(tsk, val4);
+    rect->width = pntrdouble(rect_val1);
+    pntr rect_val2 = head(tsk, tail(tsk, val4));
+    if( (badtype = array_to_string(rect_val2, &(rect->creator) )) > 0) {
+        set_error(tsk, "string: argument is not a string (contains non-char: %s)", cell_types[badtype]);
+        return;
+    }
+
+    pntr rect_val3 = head(tsk, tail(tsk, tail(tsk, val4)));
+    rect->height = pntrdouble(rect_val3);
+
+    /* Initialize another struct: Color*/
+    Color *rect_col = new_Color( );
+    rect->col = rect_col;
+    /* new root pntr for struct Color */
+    pntr rect_col_val = head(tsk, tail(tsk, tail(tsk, tail(tsk, val4))));
+    pntr rect_col_val1 = head(tsk, rect_col_val);
+    rect_col->red = pntrdouble(rect_col_val1);
+    pntr rect_col_val2 = head(tsk, tail(tsk, rect_col_val));
+    rect_col->blue = pntrdouble(rect_col_val2);
+    pntr rect_col_val3 = head(tsk, tail(tsk, tail(tsk, rect_col_val)));
+    rect_col->green = pntrdouble(rect_col_val3);
+
+    /* Initialize another struct: gray*/
+    gray *rect_col_cg = new_gray( );
+    rect_col->cg = rect_col_cg;
+    /* new root pntr for struct gray */
+    pntr rect_col_cg_val = head(tsk, tail(tsk, tail(tsk, tail(tsk, rect_col_val))));
+    pntr rect_col_cg_val1 = head(tsk, rect_col_cg_val);
+    if( (badtype = array_to_string(rect_col_cg_val1, &(rect_col_cg->country) )) > 0) {
+        set_error(tsk, "string: argument is not a string (contains non-char: %s)", cell_types[badtype]);
+        return;
+    }
+
+    pntr rect_col_cg_val2 = head(tsk, tail(tsk, rect_col_cg_val));
+    rect_col_cg->grayCode = pntrdouble(rect_col_cg_val2);
+
+    /* end Initialization of struct Rectangle */
+
+    /* Call the method and get the return value */
+    numRect = drawRectangles(userName, xPos, yPos, rect);
     
-    pntr val4_val1 = resolve_pntr(head(tsk, val4));
-    rect->width = pntrdouble(val4_val1);
-    
-    pntr val4_val2 = resolve_pntr(head(tsk, resolve_pntr(tail(tsk, val4))));
-    rect->height = pntrdouble(val4_val2);
-    
-    /* if val4_val3 is also a number, then pntr val4_val3 = head(tail(tail val4)) */
-    Color *col = new_Color();
-    rect->col = col;
-    
-    pntr col_val = resolve_pntr(head (tsk, resolve_pntr(tail (tsk, resolve_pntr((tail(tsk, val4))) ))));  // root pntr for Color struct
-//    type = pntrtype(col_val);
-    pntr col_val1 = resolve_pntr(head(tsk, col_val));
-//    type = pntrtype(col_val1);
-    col->red = pntrdouble(col_val1);
-    
-    pntr col_val2 = resolve_pntr(head(tsk, resolve_pntr(tail (tsk, col_val))));
-    col->blue = pntrdouble(col_val2);
-    
-    pntr col_val3 = resolve_pntr(head(tsk, resolve_pntr(tail (tsk, resolve_pntr(tail (tsk, col_val))))));
-    col->green = pntrdouble(col_val3);
-    
-    result = drawRectangles(userName, xPos, yPos, rect);
-    
-    setnumber(&argstack[0], result);
+    setnumber(&argstack[0], numRect);
     
 }
 
+/*    enlarge() */
+static void b_enlargeRect1(task *tsk, pntr *argstack)
+{
+    /* pointers to the parameters */
+    pntr val1 = argstack[1]; // originalRect
+    pntr val2 = argstack[0]; // times
+    int badtype;
+
+    /* the result value to be return */
+    Rectangle *rect_return = new_Rectangle();
+
+    Rectangle *originalRect = new_Rectangle();
+    int times;
+
+    /* Check validity of each parameter */
+    CHECK_ARG(1, CELL_CONS);
+    CHECK_ARG(0, CELL_NUMBER);
+
+    /* Initialize all arguments for this method */
+
+    /* Initialize the struct: Rectangle */
+    pntr originalRect_val1 = head(tsk, val1);
+    originalRect->width = pntrdouble(originalRect_val1);
+    pntr originalRect_val2 = head(tsk, tail(tsk, val1));
+    if( (badtype = array_to_string(originalRect_val2, &(originalRect->creator) )) > 0) {
+        set_error(tsk, "string: argument is not a string (contains non-char: %s)", cell_types[badtype]);
+        return;
+    }
+
+    pntr originalRect_val3 = head(tsk, tail(tsk, tail(tsk, val1)));
+    originalRect->height = pntrdouble(originalRect_val3);
+
+    /* Initialize another struct: Color*/
+    Color *originalRect_col = new_Color( );
+    originalRect->col = originalRect_col;
+    /* new root pntr for struct Color */
+    pntr originalRect_col_val = head(tsk, tail(tsk, tail(tsk, tail(tsk, val1))));
+    pntr originalRect_col_val1 = head(tsk, originalRect_col_val);
+    originalRect_col->red = pntrdouble(originalRect_col_val1);
+    pntr originalRect_col_val2 = head(tsk, tail(tsk, originalRect_col_val));
+    originalRect_col->blue = pntrdouble(originalRect_col_val2);
+    pntr originalRect_col_val3 = head(tsk, tail(tsk, tail(tsk, originalRect_col_val)));
+    originalRect_col->green = pntrdouble(originalRect_col_val3);
+
+    /* Initialize another struct: gray*/
+    gray *originalRect_col_cg = new_gray( );
+    originalRect_col->cg = originalRect_col_cg;
+    /* new root pntr for struct gray */
+    pntr originalRect_col_cg_val = head(tsk, tail(tsk, tail(tsk, tail(tsk, originalRect_col_val))));
+    pntr originalRect_col_cg_val1 = head(tsk, originalRect_col_cg_val);
+    if( (badtype = array_to_string(originalRect_col_cg_val1, &(originalRect_col_cg->country) )) > 0) {
+        set_error(tsk, "string: argument is not a string (contains non-char: %s)", cell_types[badtype]);
+        return;
+    }
+
+    pntr originalRect_col_cg_val2 = head(tsk, tail(tsk, originalRect_col_cg_val));
+    originalRect_col_cg->grayCode = pntrdouble(originalRect_col_cg_val2);
+
+    /* end Initialization of struct Rectangle */
+    times = pntrdouble(val2);
+
+    /* Call the method and get the return value */
+//    rect_return = enlargeRect(originalRect, times);
+
+}
 
 const extfunc extfunc_info[NUM_EXTFUNCS] = {
 //// zzip functions
@@ -429,4 +527,5 @@ const extfunc extfunc_info[NUM_EXTFUNCS] = {
 { "zzip_read_dirent", 1, 1, b_zzip_read_dirent},
 { "zzip_read",        1, 1, b_zzip_read	      },
 { "drawRectangles1",  4, 4, b_drawRectangles1  },
+{ "enlargeRect1", 2, 2, b_enlargeRect1},
 };
