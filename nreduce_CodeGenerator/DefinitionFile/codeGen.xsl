@@ -331,12 +331,9 @@
     <xsl:choose>
         <xsl:when test="$result/@type = 'int' or $result/@type = 'double'">
             <xsl:value-of select="concat($INDENT, 'set_pntrdouble(p_', $result/@name, ', ', $result/@name, ');', $NEWLINE, $NEWLINE)"></xsl:value-of>
-            <xsl:value-of select="concat($INDENT, '/* set the return value */', $NEWLINE)"></xsl:value-of>
-            <xsl:value-of select="concat($INDENT, 'argstack[0] = p_', $result/@name, ';', $NEWLINE)"></xsl:value-of></xsl:when>
+        </xsl:when>
         <xsl:when test="$result/@type = 'String'">
             <xsl:value-of select="concat($INDENT, 'p_', $result/@name, ' = string_to_array(tsk, ', $result/@name, ');', $NEWLINE)"></xsl:value-of>
-            <xsl:value-of select="concat($INDENT, '/* set the return value */', $NEWLINE)"></xsl:value-of>
-            <xsl:value-of select="concat($INDENT, 'argstack[0] = p_', $result/@name, ';', $NEWLINE)"></xsl:value-of>
             </xsl:when>
         <xsl:when test="starts-with($result/@type, 'struct')">
             <xsl:value-of select="concat($NEWLINE, $INDENT, '/* Translate C struct to ELC struct */', $NEWLINE)"></xsl:value-of>
@@ -347,7 +344,8 @@
                 <xsl:with-param name="struct" select="/FUNCDEF/STRUCT[normalize-space(@type) = $structType]"></xsl:with-param></xsl:call-template></xsl:when>
 
     </xsl:choose>
-
+    <xsl:value-of select="concat($INDENT, '/* set the return value */', $NEWLINE)"></xsl:value-of>
+    <xsl:value-of select="concat($INDENT, 'argstack[0] = p_', $result/@name, ';', $NEWLINE)"></xsl:value-of>
 </xsl:template>
 
 <!--Function: translate C struct to ELC struct, e.g. pntr p_originalRect = make_cons(tsk, p_originalRect_width ...--><xsl:template
@@ -398,9 +396,22 @@
 </xsl:value-of>
     <xsl:value-of select="concat($INDENT, 'pntr p_', $paramName, ' = ')"></xsl:value-of>
     <xsl:for-each select="$struct/*">
-        <xsl:choose>
-            <xsl:when test="name(.)='STRUCTCOM'">
-                <xsl:value-of>concat('make_cons(tsk, p_', $paramName, '_', @name, ', ')</xsl:value-of></xsl:when></xsl:choose></xsl:for-each>
+        <xsl:value-of select="concat('make_cons(tsk, p_', $paramName, '_', @name, ', ')"></xsl:value-of>
+        
+    </xsl:for-each>
+    
+    <xsl:value-of select="'tsk-&gt;globnilpntr'"></xsl:value-of><xsl:call-template name="genBrackets">
+        <xsl:with-param name="count" select="count($struct/*)"></xsl:with-param></xsl:call-template><xsl:value-of select="concat(';', $NEWLINE, $NEWLINE)"></xsl:value-of>
+</xsl:template>
+
+    <!--Function: gen brackets, e.g. ))))))), the number is specified as parameter count--><xsl:template
+        name="genBrackets"
+    >
+    <xsl:param name="count"></xsl:param>
+    <xsl:if test="$count &gt; 0">
+        <xsl:value-of select="')'"></xsl:value-of>
+        <xsl:call-template name="genBrackets">
+            <xsl:with-param name="count" select="$count - 1"></xsl:with-param></xsl:call-template></xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>
