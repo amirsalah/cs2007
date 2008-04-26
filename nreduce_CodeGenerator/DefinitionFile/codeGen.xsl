@@ -20,6 +20,8 @@
 	>
     <xsl:call-template name="genStructTypedef">
         <xsl:with-param name="structs" select="."></xsl:with-param></xsl:call-template>
+    <xsl:call-template name="structsCreator">
+        <xsl:with-param name="structs" select="."></xsl:with-param></xsl:call-template>
 </xsl:template><!--Gen: method-->
       <xsl:template match="/FUNCDEF/INTERFACE/METHOD">
       <xsl:call-template name="genMethodHead">
@@ -40,7 +42,16 @@
               name="initArgs"
           >
     <xsl:with-param name="method" select="."></xsl:with-param>
-</xsl:call-template>
+</xsl:call-template><!--call the method--><xsl:value-of select="concat($NEWLINE, $INDENT, '/* Call the method and get the return value */', $NEWLINE)"></xsl:value-of>
+          <xsl:value-of select="concat($INDENT, ./RESULT/@name, ' = ', @name, '(')"></xsl:value-of>
+          <xsl:for-each select="./PARAMETER">
+              <!--gen the list of parameters for this method--><xsl:choose>
+    <xsl:when test="position() = last()">
+        <xsl:value-of select="@name"></xsl:value-of></xsl:when>
+    <xsl:otherwise>
+        <xsl:value-of select="concat(@name, ', ')"></xsl:value-of></xsl:otherwise></xsl:choose>
+              </xsl:for-each>
+          <xsl:value-of select="concat(');', $NEWLINE, $NEWLINE)"></xsl:value-of>
 
       </xsl:template>
     
@@ -149,22 +160,43 @@
 	       </xsl:choose>
        </xsl:for-each>
     <xsl:value-of select="concat('};', $NEWLINE, $NEWLINE)"></xsl:value-of>
-</xsl:template>
-
-<!--Function: Check arguments, e.g.  CHECK_ARG(0, CELL_CONS)--><xsl:template
-        name="chkArg"
+</xsl:template><!--Function: gen struct constructor and destructor, e.g. Rectangle *new_Rectangle(); and its definition--><xsl:template
+        name="structsCreator"
     >
+    <xsl:param name="structs"></xsl:param>
+    <!--Declear these struct constructors and destructors-->
+    <xsl:value-of
+        select="concat($NEWLINE, '/* Declear the struct constructor and destructor */', $NEWLINE)"
+    >
+</xsl:value-of>
+    <xsl:for-each select="$structs/STRUCT">
+        <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '();', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat(substring-after(@type, ' '), ' *free_', substring-after(@type, ' '), '();', $NEWLINE)"></xsl:value-of>
+        </xsl:for-each>
+<xsl:value-of select="concat($NEWLINE, '/* Definition of the constructors and destructors */', $NEWLINE)"></xsl:value-of>
+    <xsl:for-each select="$structs/STRUCT">
+        <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '() {', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat($INDENT, substring-after(@type, ' '), ' *', @name, ' = malloc(sizeof(', substring-after(@type, ' '), '));', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat($INDENT, 'return ', @name, ';', $NEWLINE, '}', $NEWLINE)"></xsl:value-of>
+    </xsl:for-each>
+    <xsl:value-of select="$NEWLINE"></xsl:value-of></xsl:template>
+
+    <!--Function: Check arguments, e.g.  CHECK_ARG(0, CELL_CONS)-->
+    <xsl:template name="chkArg" >
     <xsl:param name="method"></xsl:param>
-    <xsl:variable name="numParam" select="count($method/PARAMETER)"></xsl:variable>
-    <xsl:value-of select="concat($INDENT, '/* Check validity of each parameter */', $NEWLINE)"></xsl:value-of>
-    
-    <xsl:for-each select="$method/PARAMETER"><xsl:choose>
-    <xsl:when test="@type='int' or @type='double'">
-        <xsl:value-of select="concat($INDENT, 'CHECK_ARG(', $numParam - position(), ', CELL_NUMBER);', $NEWLINE )"></xsl:value-of></xsl:when>
-    <xsl:when test="@type='String' or starts-with(@type, &quot;struct&quot;)">
-        <xsl:value-of select="concat($INDENT, 'CHECK_ARG(', $numParam - position(), ', CELL_CONS);', $NEWLINE )"></xsl:value-of></xsl:when></xsl:choose></xsl:for-each>
-    <xsl:value-of select="$NEWLINE"></xsl:value-of>
-</xsl:template>
+        <xsl:variable name="numParam" select="count($method/PARAMETER)"></xsl:variable>
+        <xsl:value-of select="concat($INDENT, '/* Check validity of each parameter */', $NEWLINE)"></xsl:value-of>
+        <xsl:for-each select="$method/PARAMETER">
+            <xsl:choose>
+                <xsl:when test="@type='int' or @type='double'">
+                    <xsl:value-of select="concat($INDENT, 'CHECK_ARG(', $numParam - position(), ', CELL_NUMBER);', $NEWLINE )"></xsl:value-of></xsl:when>
+                <xsl:when test="@type='String' or starts-with(@type, &quot;struct&quot;)">
+                    <xsl:value-of select="concat($INDENT, 'CHECK_ARG(', $numParam - position(), ', CELL_CONS);', $NEWLINE )"></xsl:value-of>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
+        <xsl:value-of select="$NEWLINE"></xsl:value-of>
+    </xsl:template>
 
     <!--Function: initialize arguments, e.g. userName = "SmAxlL"; xPos = 10;-->
     <xsl:template name="initArgs" >
@@ -186,7 +218,10 @@
                     <xsl:with-param name="struct" select="/FUNCDEF/STRUCT[normalize-space(@type)=$structType]"></xsl:with-param>
                     <xsl:with-param name="structName" select="@name"></xsl:with-param>
                     <xsl:with-param name="rootPntr" select="concat('val', position())"></xsl:with-param></xsl:call-template>
-                <xsl:value-of select="concat($NEWLINE, $INDENT, '/* end Initialization of ', normalize-space(@type), ' */', $NEWLINE)"></xsl:value-of></xsl:when></xsl:choose></xsl:for-each>
+                <xsl:value-of select="concat($NEWLINE, $INDENT, '/* end Initialization of ', normalize-space(@type), ' */', $NEWLINE)"></xsl:value-of>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:for-each>
     </xsl:template>
     
     <!--Function: initialize all c struct arguments. e.g. Rectangle->width=10, col->red =100;-->
@@ -200,7 +235,8 @@
                 <xsl:value-of select="concat($INDENT, 'pntr ', $structName, '_val', position(), ' = ')"></xsl:value-of>
                 <xsl:call-template name="getElement">
                     <xsl:with-param name="rootCONS" select="$rootPntr"></xsl:with-param>
-                    <xsl:with-param name="pos" select="position()"></xsl:with-param></xsl:call-template>
+                    <xsl:with-param name="pos" select="position()"></xsl:with-param>
+                </xsl:call-template>
                 <xsl:value-of select="concat(';', $NEWLINE)"></xsl:value-of>
                 <xsl:value-of select="concat($INDENT, $structName, '-&gt;', @name, ' = pntrdouble(', $structName, '_val', position(), ');', $NEWLINE)"></xsl:value-of></xsl:when>
             <xsl:when test="@type='String'">
@@ -241,7 +277,7 @@
             </xsl:when></xsl:choose></xsl:for-each>
 </xsl:template>
 
-<!--Function:  find target in a cons tree, e.g. head(tsk, tail(tsk, tail(tsk pntr)))-->
+    <!--Function:  find target in a cons tree, e.g. head(tsk, tail(tsk, tail(tsk pntr)))-->
     <xsl:template name="getElement">
         <xsl:param name="rootCONS"></xsl:param>
         <xsl:param name="pos"></xsl:param>
@@ -249,13 +285,14 @@
             <xsl:value-of select="'head(tsk, '"></xsl:value-of>
             <xsl:call-template name="genTails">
                 <xsl:with-param name="rootCONS" select="$rootCONS"></xsl:with-param>
-                <xsl:with-param name="numTails" select="$pos - 1"></xsl:with-param></xsl:call-template>
-            <xsl:value-of select="')'"></xsl:value-of></xsl:if></xsl:template>
-        
-        <!--Function: recursively generate certain numbers of tail, e.g. (tail tsk, (tail (tsk, tail(tsk pntr)))))-->
-        <xsl:template
-        name="genTails"
-    >
+                <xsl:with-param name="numTails" select="$pos - 1"></xsl:with-param>
+            </xsl:call-template>
+            <xsl:value-of select="')'"></xsl:value-of>
+        </xsl:if>
+    </xsl:template>
+
+    <!--Function: recursively generate certain numbers of tail, e.g. (tail tsk, (tail (tsk, tail(tsk pntr)))))-->
+    <xsl:template name="genTails" >
     <xsl:param name="rootCONS"></xsl:param>
     <xsl:param name="numTails"></xsl:param>
     <xsl:choose>
@@ -265,9 +302,12 @@
             <xsl:value-of select="'tail(tsk, '"></xsl:value-of>
             <xsl:call-template name="genTails">
                 <xsl:with-param name="rootCONS" select="$rootCONS"></xsl:with-param>
-                <xsl:with-param name="numTails" select="$numTails - 1"></xsl:with-param></xsl:call-template>
-            <xsl:value-of select="')'"></xsl:value-of></xsl:when></xsl:choose>
-</xsl:template>
+                <xsl:with-param name="numTails" select="$numTails - 1"></xsl:with-param>
+            </xsl:call-template>
+            <xsl:value-of select="')'"></xsl:value-of>
+        </xsl:when>
+    </xsl:choose>
+    </xsl:template>
 
 </xsl:stylesheet>
 
