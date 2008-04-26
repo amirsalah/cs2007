@@ -15,9 +15,8 @@
       <xsl:apply-templates select="/FUNCDEF/INTERFACE/METHOD"></xsl:apply-templates></xsl:template>
 	
 
-	<!--Gen: struct definition, e.g. typedef struct FileInfo FileInfo--><xsl:template
-	    match="/FUNCDEF"
-	>
+	<!--Gen: struct definition, e.g. typedef struct FileInfo FileInfo-->
+    <xsl:template match="/FUNCDEF" >
     <xsl:call-template name="genStructTypedef">
         <xsl:with-param name="structs" select="."></xsl:with-param></xsl:call-template>
     <xsl:call-template name="structsCreator">
@@ -52,10 +51,15 @@
         <xsl:value-of select="concat(@name, ', ')"></xsl:value-of></xsl:otherwise></xsl:choose>
               </xsl:for-each>
           <xsl:value-of select="concat(');', $NEWLINE, $NEWLINE)"></xsl:value-of>
+          <!--Gen: translate C data type to ELC data type--><xsl:value-of select="concat($INDENT, '/* Translate the resultant pntr to be return */', $NEWLINE)"></xsl:value-of><xsl:value-of select="concat($INDENT, 'pntr p_', ./RESULT/@name, ';', $NEWLINE)"></xsl:value-of>
+          <xsl:call-template name="returnResult">
+              <xsl:with-param name="method" select="."></xsl:with-param></xsl:call-template>
+          <xsl:value-of select="concat('}', $NEWLINE)"></xsl:value-of>
 
       </xsl:template>
-    
-    <!--Function: gen method head, e.g. static void b_readfile1(task *tsk, pntr *argstack)-->
+      
+
+      <!--Function: gen method head, e.g. static void b_readfile1(task *tsk, pntr *argstack)-->
     <xsl:template name="genMethodHead">
     <xsl:param name="method"></xsl:param>
         <xsl:variable name="f_method">
@@ -158,35 +162,36 @@
                 <xsl:when test='starts-with(@type, "struct")'>
                     <xsl:value-of select="concat($INDENT, substring-after(@type, &quot; &quot;), ' *', @name, ';', $NEWLINE)"></xsl:value-of></xsl:when>
 	       </xsl:choose>
-       </xsl:for-each>
-    <xsl:value-of select="concat('};', $NEWLINE, $NEWLINE)"></xsl:value-of>
-</xsl:template><!--Function: gen struct constructor and destructor, e.g. Rectangle *new_Rectangle(); free_Rectangle() and its definition--><xsl:template
-        name="structsCreator"
-    >
+        </xsl:for-each>
+        <xsl:value-of select="concat('};', $NEWLINE, $NEWLINE)"></xsl:value-of>
+    </xsl:template>
+
+    <!--Function: gen struct constructor and destructor, e.g. Rectangle *new_Rectangle(); free_Rectangle() and its definition-->
+    <xsl:template name="structsCreator" >
     <xsl:param name="structs"></xsl:param>
     <!--Declear these struct constructors and destructors-->
-    <xsl:value-of
-        select="concat($NEWLINE, '/* Declear the struct constructor and destructor */', $NEWLINE)"
-    >
-</xsl:value-of>
-    <xsl:for-each select="$structs/STRUCT">
-        <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '();', $NEWLINE)"></xsl:value-of>
-        <xsl:value-of select="concat(substring-after(@type, ' '), ' *free_', substring-after(@type, ' '), '();', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat($NEWLINE, '/* Declear the struct constructor and destructor */', $NEWLINE)" ></xsl:value-of>
+        <xsl:for-each select="$structs/STRUCT">
+            <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '();', $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat('void free_', substring-after(@type, ' '), '(', substring-after(@type, ' '), ' *f_', substring-after(@type, ' '), ');', $NEWLINE)">
+            </xsl:value-of>
         </xsl:for-each>
-<xsl:value-of select="concat($NEWLINE, '/* Definition of the constructors and destructors */', $NEWLINE)"></xsl:value-of>
-    <xsl:for-each select="$structs/STRUCT">
-        <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '() {', $NEWLINE)"></xsl:value-of>
-        <xsl:value-of select="concat($INDENT, substring-after(@type, ' '), ' *ret',  ' = malloc(sizeof(', substring-after(@type, ' '), '));', $NEWLINE)"></xsl:value-of>
-        <xsl:value-of select="concat($INDENT, 'return ret;', $NEWLINE, '}', $NEWLINE)"></xsl:value-of><!--gen free_Struct()--><xsl:value-of
-            select="concat('void free_', substring-after(@type, ' '), '(', substring-after(@type, ' '), ' *f_', substring-after(@type, ' '), ') {', $NEWLINE)"
-        >
-</xsl:value-of>
-        <!--free each struct inside current struct--><xsl:for-each select="./STRUCTDEC">
-            <xsl:value-of select="concat($INDENT, 'free_', substring-after(@type, ' '), '(f_', substring-after(../@type, ' '), '-&gt;', @name, ');', $NEWLINE)"></xsl:value-of>
+        <xsl:value-of select="concat($NEWLINE, '/* Definition of the constructors and destructors */', $NEWLINE)"></xsl:value-of>
+        <xsl:for-each select="$structs/STRUCT">
+            <xsl:value-of select="concat(substring-after(@type, ' '), ' *new_', substring-after(@type, ' '), '() {', $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat($INDENT, substring-after(@type, ' '), ' *ret',  ' = malloc(sizeof(', substring-after(@type, ' '), '));', $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat($INDENT, 'return ret;', $NEWLINE, '}', $NEWLINE)"></xsl:value-of>
+            <!--gen free_Struct()-->
+            <xsl:value-of select="concat('void free_', substring-after(@type, ' '), '(', substring-after(@type, ' '), ' *f_', substring-after(@type, ' '), ') {', $NEWLINE)" >
+            </xsl:value-of>
+            <!--free each struct inside current struct-->
+            <xsl:for-each select="./STRUCTDEC">
+                <xsl:value-of select="concat($INDENT, 'free_', substring-after(@type, ' '), '(f_', substring-after(../@type, ' '), '-&gt;', @name, ');', $NEWLINE)"></xsl:value-of>
+            </xsl:for-each>
+            	<xsl:value-of select="concat($INDENT, 'free(f_', substring-after(@type, ' '), ');', $NEWLINE, '}', $NEWLINE, $NEWLINE)"></xsl:value-of>
         </xsl:for-each>
-        <xsl:value-of select="concat($INDENT, 'free(f_', substring-after(@type, ' '), ');', $NEWLINE, '}', $NEWLINE, $NEWLINE)"></xsl:value-of>
-    </xsl:for-each>
-    <xsl:value-of select="$NEWLINE"></xsl:value-of></xsl:template>
+        <xsl:value-of select="$NEWLINE"></xsl:value-of>
+    </xsl:template>
 
     <!--Function: Check arguments, e.g.  CHECK_ARG(0, CELL_CONS)-->
     <xsl:template name="chkArg" >
@@ -259,19 +264,19 @@
                 <xsl:value-of select="concat($INDENT, '}', $NEWLINE, $NEWLINE)"></xsl:value-of>
             </xsl:when>
             <xsl:when test='starts-with(@type, "struct")'>
-                <xsl:value-of select="concat($NEWLINE, $INDENT, '/* Initialize another struct: ', substring-after(@type, &quot; &quot;), '*/', $NEWLINE)"></xsl:value-of><!--define the struct, e.g. Color rect_col = new_Color();-->
+                <xsl:value-of select="concat($NEWLINE, $INDENT, '/* Initialize another struct: ', substring-after(@type, &quot; &quot;), '*/', $NEWLINE)"></xsl:value-of>
+                <!--define the struct, e.g. Color rect_col = new_Color();-->
                 <xsl:value-of select="concat($INDENT, substring-after(@type, &quot; &quot;), ' *', $structName, '_', @name, ' = new_', substring-after(@type, &quot; &quot;), '( );', $NEWLINE)"></xsl:value-of>
                 <!--initialize the original struct member, e.g. rect->col = rect_col;-->
                 <xsl:value-of select="concat($INDENT, $structName, '-&gt;', @name, ' = ', $structName, '_', @name, ';', $NEWLINE)" >
                 </xsl:value-of>
-                <!--new root pntr for the struct inside--><xsl:value-of
-                    select="concat($INDENT, '/* new root pntr for ', @type, ' */', $NEWLINE)"
-                >
-</xsl:value-of>
+                <!--new root pntr for the struct inside-->
+                <xsl:value-of select="concat($INDENT, '/* new root pntr for ', @type, ' */', $NEWLINE)" ></xsl:value-of>
                 <xsl:value-of select="concat($INDENT, 'pntr ', $structName, '_', @name, '_val = ')"></xsl:value-of>
                 <xsl:call-template name="getElement">
                     <xsl:with-param name="rootCONS" select="$rootPntr"></xsl:with-param>
-                    <xsl:with-param name="pos" select="position()"></xsl:with-param></xsl:call-template>
+                    <xsl:with-param name="pos" select="position()"></xsl:with-param>
+                </xsl:call-template>
                 <xsl:value-of select="concat(';', $NEWLINE)"></xsl:value-of>
                 <xsl:variable name="newStructType" select="normalize-space(@type)"></xsl:variable>
                 <xsl:variable name="newRootPntr" select="concat($structName, '_', @name, '_val')"></xsl:variable>
@@ -281,8 +286,10 @@
                     <xsl:with-param name="structName" select="concat($structName, '_', @name)"></xsl:with-param>
                     <xsl:with-param name="rootPntr" select="$newRootPntr"></xsl:with-param>
                 </xsl:call-template>                
-            </xsl:when></xsl:choose></xsl:for-each>
-</xsl:template>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:for-each>
+    </xsl:template>
 
     <!--Function:  find target in a cons tree, e.g. head(tsk, tail(tsk, tail(tsk pntr)))-->
     <xsl:template name="getElement">
@@ -315,6 +322,86 @@
         </xsl:when>
     </xsl:choose>
     </xsl:template>
+    
+    <!--Function: return result, e.g. argstack[0] = p_rect_return;--><xsl:template
+        name="returnResult"
+    >
+    <xsl:param name="method"></xsl:param>
+    <xsl:variable name="result" select="$method/RESULT"></xsl:variable>
+    <xsl:choose>
+        <xsl:when test="$result/@type = 'int' or $result/@type = 'double'">
+            <xsl:value-of select="concat($INDENT, 'set_pntrdouble(p_', $result/@name, ', ', $result/@name, ');', $NEWLINE, $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat($INDENT, '/* set the return value */', $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat($INDENT, 'argstack[0] = p_', $result/@name, ';', $NEWLINE)"></xsl:value-of></xsl:when>
+        <xsl:when test="$result/@type = 'String'">
+            <xsl:value-of select="concat($INDENT, 'p_', $result/@name, ' = string_to_array(tsk, ', $result/@name, ');', $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat($INDENT, '/* set the return value */', $NEWLINE)"></xsl:value-of>
+            <xsl:value-of select="concat($INDENT, 'argstack[0] = p_', $result/@name, ';', $NEWLINE)"></xsl:value-of>
+            </xsl:when>
+        <xsl:when test="starts-with($result/@type, 'struct')">
+            <xsl:value-of select="concat($NEWLINE, $INDENT, '/* Translate C struct to ELC struct */', $NEWLINE)"></xsl:value-of>
+            <xsl:variable name="structType" select="normalize-space($result/@type)"></xsl:variable>
+            <xsl:call-template name="structConversion">
+                <xsl:with-param name="spName" select="$result/@name"></xsl:with-param>
+                <xsl:with-param name="paramName" select="$result/@name"></xsl:with-param>
+                <xsl:with-param name="struct" select="/FUNCDEF/STRUCT[normalize-space(@type) = $structType]"></xsl:with-param></xsl:call-template></xsl:when>
+
+    </xsl:choose>
+
+</xsl:template>
+
+<!--Function: translate C struct to ELC struct, e.g. pntr p_originalRect = make_cons(tsk, p_originalRect_width ...--><xsl:template
+        name="structConversion"
+    >
+        <xsl:param name="spName"><!--struct parameter name, which is like, rect->col->....--></xsl:param>
+        <xsl:param name="paramName"></xsl:param>
+        <xsl:param name="struct"></xsl:param><!--recursively invoke every struct inside before itself to be generated-->
+        <xsl:for-each select="$struct/*[name()='STRUCTDEC' ]">
+            <xsl:variable name="newStructType"
+                select="normalize-space(./@type)"
+            >
+            </xsl:variable>
+            <xsl:call-template name="structConversion">
+                <xsl:with-param name="spName"
+                    select="concat($spName, '-&gt;', @name)"
+                >
+                </xsl:with-param>
+                <xsl:with-param name="paramName"
+                    select="concat($paramName, '_', @name)"
+                >
+                </xsl:with-param>
+                <xsl:with-param name="struct"
+                    select="/FUNCDEF/STRUCT[normalize-space(@type) = $newStructType]"
+                >
+                </xsl:with-param>
+            </xsl:call-template>
+
+        </xsl:for-each>
+        <xsl:value-of
+            select="concat($NEWLINE, $INDENT, '/* pntr for ', normalize-space($struct/@type), '*/', $NEWLINE)"
+        >
+        </xsl:value-of><!--Gen: pntr to the struct itself-->
+        <xsl:for-each select="$struct/*[name()='STRUCTCOM' ]">
+            <xsl:choose>
+                <xsl:when test="@type = 'String'">
+                    <xsl:value-of
+                        select="concat($INDENT, 'pntr p_', $paramName, '_', @name, ' = string_to_array(tsk, ', $spName, '-&gt;', @name, ');', $NEWLINE)"
+                    >
+                    </xsl:value-of></xsl:when>
+                <xsl:when test="@type = 'int' or @type = 'double'">
+                    <xsl:value-of select="concat($INDENT, 'pntr p_', $paramName, '_', @name, ';', $NEWLINE)"></xsl:value-of>
+                    <xsl:value-of select="concat($INDENT, 'set_pntrdouble(p_', $paramName, '_', @name, ', ', $spName, '-&gt;', @name, ');', $NEWLINE)"></xsl:value-of></xsl:when></xsl:choose>
+
+</xsl:for-each><!--Gen: root pntr for this struct--><xsl:value-of
+            select="concat($INDENT, '/* the root pntr for ', normalize-space($struct/@type), ' */', $NEWLINE)"
+        >
+</xsl:value-of>
+    <xsl:value-of select="concat($INDENT, 'pntr p_', $paramName, ' = ')"></xsl:value-of>
+    <xsl:for-each select="$struct/*">
+        <xsl:choose>
+            <xsl:when test="name(.)='STRUCTCOM'">
+                <xsl:value-of>concat('make_cons(tsk, p_', $paramName, '_', @name, ', ')</xsl:value-of></xsl:when></xsl:choose></xsl:for-each>
+</xsl:template>
 
 </xsl:stylesheet>
 
