@@ -270,7 +270,7 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 		singleList = make_cons(tsk, pCompressionType, singleList);
 		singleList = make_cons(tsk, pSingleFileName, singleList);
 		
-		 
+		
 		if(counter == 1){
 			preList = make_cons(tsk, singleList, tsk->globnilpntr);
 //			printf("cell type: %s \t", cell_type(preList));
@@ -279,7 +279,7 @@ static void b_zzip_read_dirent(task *tsk, pntr *argstack)
 //			printf("cell type: %s \n", cell_type(preList));
 		}
 	}
-	
+
 	argstack[0] = preList;
 //	printf("cell type: %s \n", cell_type(argstack[0]));
 }
@@ -315,11 +315,21 @@ struct gray {
 
 /* Declear the struct constructor and destructor */
 Rectangle *new_Rectangle();
+//Rectangle *new_Rectangle(char *userName);
 void free_Rectangle(Rectangle *f_Rectangle);
 Color *new_Color();
 void free_Color(Color *f_Color);
 gray *new_gray();
 void free_gray(gray *f_gray);
+
+/*
+Rectangle *new_Rectangle(char *userName){
+    Rectangle *r= new_Rectangle();
+    r->creator = userName;
+    
+    return r;
+}
+*/
 
 /* Definition of the constructors and destructors */
 Rectangle *new_Rectangle() {
@@ -452,6 +462,19 @@ static void b_drawRectangles1(task *tsk, pntr *argstack)
     
 }
 
+Rectangle *enlargeRect(Rectangle *oriRect, int times){
+    oriRect->height = oriRect->height * times;
+    oriRect->width = oriRect->width * times;
+    oriRect->creator = "HUA";
+    oriRect->col->blue = 222;
+    oriRect->col->green = 333;
+    oriRect->col->red = 444;
+    oriRect->col->cg->country = "Australia";
+    oriRect->col->cg->grayCode = 13;
+    return oriRect;
+}
+
+
 /*    enlarge() */
 static void b_enlargeRect1(task *tsk, pntr *argstack)
 {
@@ -514,8 +537,39 @@ static void b_enlargeRect1(task *tsk, pntr *argstack)
     times = pntrdouble(val2);
 
     /* Call the method and get the return value */
-//    rect_return = enlargeRect(originalRect, times);
+    rect_return = enlargeRect(originalRect, times);
 
+/*TODO code generation for transfer c data types to ELC data types */    
+    pntr p_rect_return;
+    
+//    make_cons(tsk, pCompressedSize, tsk->globnilpntr);
+    pntr p_originalRect_col_cg_country = string_to_array(tsk, originalRect_col_cg->country);
+    pntr p_originalRect_col_cg_grayCode;
+    set_pntrdouble(p_originalRect_col_cg_grayCode, originalRect_col_cg->grayCode);
+    
+    pntr p_originalRect_col_cg_root = make_cons(tsk, p_originalRect_col_cg_country, make_cons(tsk, p_originalRect_col_cg_grayCode, tsk->globnilpntr));
+    
+
+    pntr p_originalRect_col_red;
+    set_pntrdouble(p_originalRect_col_red, originalRect_col->red);
+    pntr p_originalRect_col_blue;
+    set_pntrdouble(p_originalRect_col_blue, originalRect_col->blue);
+    pntr p_originalRect_col_green;
+    set_pntrdouble(p_originalRect_col_green, originalRect_col->green);
+    pntr p_originalRect_col_cg = p_originalRect_col_cg_root;
+    pntr p_originalRect_col_root = make_cons(tsk, p_originalRect_col_red, make_cons(tsk, p_originalRect_col_blue, make_cons(tsk, p_originalRect_col_green, make_cons(tsk, p_originalRect_col_cg, tsk->globnilpntr))));
+
+    pntr p_originalRect_width;
+    set_pntrdouble(p_originalRect_width, originalRect->width);
+    pntr p_originalRect_creator = string_to_array(tsk, originalRect->creator);
+    pntr p_originalRect_height;
+    set_pntrdouble(p_originalRect_height, originalRect->height);
+    pntr p_originalRect_col = p_originalRect_col_root;
+    pntr p_originalRect = make_cons(tsk, p_originalRect_width, make_cons(tsk, p_originalRect_creator, make_cons(tsk, p_originalRect_height, make_cons(tsk, p_originalRect_col, tsk->globnilpntr)) ));
+
+    p_rect_return = p_originalRect;
+
+    argstack[0] = p_rect_return;
 }
 
 const extfunc extfunc_info[NUM_EXTFUNCS] = {
