@@ -535,41 +535,47 @@ static void b_enlargeRect1(task *tsk, pntr *argstack)
 
     /* end Initialization of struct Rectangle */
     times = pntrdouble(val2);
-
+    
     /* Call the method and get the return value */
     rect_return = enlargeRect(originalRect, times);
-
-/*TODO code generation for transfer c data types to ELC data types */    
-    pntr p_rect_return;
     
-//    make_cons(tsk, pCompressedSize, tsk->globnilpntr);
-    pntr p_originalRect_col_cg_country = string_to_array(tsk, originalRect_col_cg->country);
-    pntr p_originalRect_col_cg_grayCode;
-    set_pntrdouble(p_originalRect_col_cg_grayCode, originalRect_col_cg->grayCode);
-    
-    pntr p_originalRect_col_cg_root = make_cons(tsk, p_originalRect_col_cg_country, make_cons(tsk, p_originalRect_col_cg_grayCode, tsk->globnilpntr));
-    
+    /* Translate the resultant pntr to be return */
 
-    pntr p_originalRect_col_red;
-    set_pntrdouble(p_originalRect_col_red, originalRect_col->red);
-    pntr p_originalRect_col_blue;
-    set_pntrdouble(p_originalRect_col_blue, originalRect_col->blue);
-    pntr p_originalRect_col_green;
-    set_pntrdouble(p_originalRect_col_green, originalRect_col->green);
-    pntr p_originalRect_col_cg = p_originalRect_col_cg_root;
-    pntr p_originalRect_col_root = make_cons(tsk, p_originalRect_col_red, make_cons(tsk, p_originalRect_col_blue, make_cons(tsk, p_originalRect_col_green, make_cons(tsk, p_originalRect_col_cg, tsk->globnilpntr))));
+    /* Translate C struct to ELC struct */
 
-    pntr p_originalRect_width;
-    set_pntrdouble(p_originalRect_width, originalRect->width);
-    pntr p_originalRect_creator = string_to_array(tsk, originalRect->creator);
-    pntr p_originalRect_height;
-    set_pntrdouble(p_originalRect_height, originalRect->height);
-    pntr p_originalRect_col = p_originalRect_col_root;
-    pntr p_originalRect = make_cons(tsk, p_originalRect_width, make_cons(tsk, p_originalRect_creator, make_cons(tsk, p_originalRect_height, make_cons(tsk, p_originalRect_col, tsk->globnilpntr)) ));
+    /* pntr for struct gray*/
+    pntr p_rect_return_col_cg_country = string_to_array(tsk, rect_return->col->cg->country);
+    pntr p_rect_return_col_cg_grayCode;
+    set_pntrdouble(p_rect_return_col_cg_grayCode, rect_return->col->cg->grayCode);
+    /* the root pntr for struct gray */
+    pntr p_rect_return_col_cg = make_cons(tsk, p_rect_return_col_cg_country, make_cons(tsk, p_rect_return_col_cg_grayCode, tsk->globnilpntr));
 
-    p_rect_return = p_originalRect;
 
+    /* pntr for struct Color*/
+    pntr p_rect_return_col_red;
+    set_pntrdouble(p_rect_return_col_red, rect_return->col->red);
+    pntr p_rect_return_col_blue;
+    set_pntrdouble(p_rect_return_col_blue, rect_return->col->blue);
+    pntr p_rect_return_col_green;
+    set_pntrdouble(p_rect_return_col_green, rect_return->col->green);
+    /* the root pntr for struct Color */
+    pntr p_rect_return_col = make_cons(tsk, p_rect_return_col_red, make_cons(tsk, p_rect_return_col_blue, make_cons(tsk, p_rect_return_col_green, make_cons(tsk, p_rect_return_col_cg, tsk->globnilpntr))));
+
+
+    /* pntr for struct Rectangle*/
+    pntr p_rect_return_width;
+    set_pntrdouble(p_rect_return_width, rect_return->width);
+    pntr p_rect_return_creator = string_to_array(tsk, rect_return->creator);
+    pntr p_rect_return_height;
+    set_pntrdouble(p_rect_return_height, rect_return->height);
+    /* the root pntr for struct Rectangle */
+    pntr p_rect_return = make_cons(tsk, p_rect_return_width, make_cons(tsk, p_rect_return_creator, make_cons(tsk, p_rect_return_height, make_cons(tsk, p_rect_return_col, tsk->globnilpntr))));
+
+    /* set the return value */
     argstack[0] = p_rect_return;
+
+    /* Free the return struct */
+    free_Rectangle(rect_return);
 }
 
 const extfunc extfunc_info[NUM_EXTFUNCS] = {
@@ -581,5 +587,5 @@ const extfunc extfunc_info[NUM_EXTFUNCS] = {
 { "zzip_read_dirent", 1, 1, b_zzip_read_dirent},
 { "zzip_read",        1, 1, b_zzip_read	      },
 { "drawRectangles1",  4, 4, b_drawRectangles1  },
-{ "enlargeRect1", 2, 2, b_enlargeRect1},
+{ "enlargeRect1",     2, 2, b_enlargeRect1},
 };
