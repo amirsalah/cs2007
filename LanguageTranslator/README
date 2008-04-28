@@ -1,0 +1,17 @@
+################  Lexer  ##################
+To run the lexer, following the steps:
+
+STEP 1:
+make
+
+STEP 2:
+java lexer.XMLLexer
+
+STEP 3:
+input a line from the console
+
+e.g. cat source_language/MachineSample.xml | java lexer.XMLLexer > output/lexer_result
+then you can check the output from the file "lexer_resutl" in the folder "output"
+
+
+###############  Parser  ##################
