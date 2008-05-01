@@ -111,10 +111,7 @@ fragment LETTER
 fragment WS  :
         (   ' '
         |   '\t'
-        |  ( '\n'
-            |	'\r\n'
-            |	'\r'
-            )
+        |  ( '\n' |	'\r\n' |	'\r' )
         )+
     ;    
 
