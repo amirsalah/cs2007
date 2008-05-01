@@ -92,15 +92,14 @@
 "reverse lst =\n"\
 "(reverse1 lst nil)\n"\
 "\n"\
-"\n"\
 "stringtonum str =\n"\
 "(stringtonum1 (forcelist str))\n"\
 "\n"\
 "error str =\n"\
 "(error1 (forcelist str))\n"\
-"\n"\
-"\n"\
-"\n"\
+" "
+#define zzip_module \
+"import prelude\n"\
 "\n"\
 "Rectangle_width obj = (item 0 obj)\n"\
 "Rectangle_creator obj = (item 1 obj)\n"\
@@ -124,8 +123,9 @@
 "drawRectangles userName xPos yPos rect = (drawRectangles1 (forcelist userName) xPos yPos (forceRectangle rect) )\n"\
 "enlargeRect originalRect times = (enlargeRect1 (forceRectangle originalRect) times )\n"\
 " "
-const module_info module_defs[2] = {
+const module_info module_defs[3] = {
 { "prelude", "(module) prelude.elc", prelude_module },
+{ "zzip", "(module) zzip.elc", zzip_module },
 { 0, 0, 0 },
 };
 const module_info *modules = module_defs;
