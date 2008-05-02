@@ -1,9 +1,9 @@
 JLEX = ./tools/jlex.jar
 LEXER_DIR = lexer
 # the input file for jlex
-LEXER_INPUT = lexer/XMLLexer.lex
+LEXER_INPUT = lexer/XMLLexer
 # The generated lexer source file
-LEXER_SOURCE = lexer/XMLLexer.lex.java
+LEXER_SOURCE = lexer/XMLLexer.java
 
 # Directory which stores executable files
 EXE_DIR = ./bin

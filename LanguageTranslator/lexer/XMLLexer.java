@@ -4,15 +4,16 @@
 package lexer;
 import java.lang.System;
 import lexer.symbol.sym;
-class XMLLexer {
-    public static void main(String argv[]) throws java.io.IOException {
-	Yylex yy = new Yylex(System.in);
-	Yytoken t;
-	do {
-	    t = yy.yylex();
-	    System.out.println(t);
-	} while (t.m_index != sym.EOF);
-    }
+import lexer.Yytoken;
+import java.io.FileReader;
+public class XMLLexer {
+        private Yylex yy;
+        public XMLLexer(String sourceFileName) throws java.io.IOException {
+            yy = new Yylex(new FileReader(sourceFileName));
+        }
+        public Yylex getLexer(){
+            return yy;
+        }
 }
 class Utility {
   public static void my_assert(boolean expr) { 
@@ -35,23 +36,6 @@ class Utility {
   public static void error(int code) {
 	System.out.println(errorMsg[code]);
       }
-}
-class Yytoken {
-  Yytoken (int index, String text, int line, int charBegin, int charEnd) {
-	m_index = index;
-	m_text = new String(text);
-	m_line = line;
-	m_charBegin = charBegin;
-	m_charEnd = charEnd;
-      }
-  public int m_index;
-  public String m_text;
-  public int m_line;
-  public int m_charBegin;
-  public int m_charEnd;
-  public String toString() {
-  	  return "<" + ++m_charBegin + "," + m_charEnd + "," + m_text + "," + sym.getTokenName(m_index) + ">";
-  }
 }
 
 
@@ -113,9 +97,9 @@ class Yylex {
 	private final int COMMENTLINE = 2;
 	private final int yy_state_dtrans[] = {
 		0,
-		45,
-		168,
-		48
+		48,
+		171,
+		51
 	};
 	private void yybegin (int state) {
 		yy_lexical_state = state;
@@ -440,7 +424,7 @@ class Yylex {
 		/* 169 */ YY_NOT_ACCEPT,
 		/* 170 */ YY_NOT_ACCEPT,
 		/* 171 */ YY_NOT_ACCEPT,
-		/* 172 */ YY_NOT_ACCEPT,
+		/* 172 */ YY_NO_ANCHOR,
 		/* 173 */ YY_NOT_ACCEPT,
 		/* 174 */ YY_NOT_ACCEPT,
 		/* 175 */ YY_NOT_ACCEPT,
@@ -457,7 +441,7 @@ class Yylex {
 		/* 186 */ YY_NOT_ACCEPT,
 		/* 187 */ YY_NOT_ACCEPT,
 		/* 188 */ YY_NOT_ACCEPT,
-		/* 189 */ YY_NO_ANCHOR,
+		/* 189 */ YY_NOT_ACCEPT,
 		/* 190 */ YY_NOT_ACCEPT,
 		/* 191 */ YY_NOT_ACCEPT,
 		/* 192 */ YY_NOT_ACCEPT,
@@ -480,7 +464,7 @@ class Yylex {
 		/* 209 */ YY_NOT_ACCEPT,
 		/* 210 */ YY_NOT_ACCEPT,
 		/* 211 */ YY_NOT_ACCEPT,
-		/* 212 */ YY_NOT_ACCEPT,
+		/* 212 */ YY_NO_ANCHOR,
 		/* 213 */ YY_NOT_ACCEPT,
 		/* 214 */ YY_NOT_ACCEPT,
 		/* 215 */ YY_NOT_ACCEPT,
@@ -495,69 +479,69 @@ class Yylex {
 		/* 224 */ YY_NOT_ACCEPT,
 		/* 225 */ YY_NOT_ACCEPT,
 		/* 226 */ YY_NOT_ACCEPT,
-		/* 227 */ YY_NO_ANCHOR,
+		/* 227 */ YY_NOT_ACCEPT,
 		/* 228 */ YY_NOT_ACCEPT,
 		/* 229 */ YY_NOT_ACCEPT,
-		/* 230 */ YY_NOT_ACCEPT,
+		/* 230 */ YY_NO_ANCHOR,
 		/* 231 */ YY_NOT_ACCEPT,
 		/* 232 */ YY_NOT_ACCEPT,
 		/* 233 */ YY_NOT_ACCEPT,
 		/* 234 */ YY_NOT_ACCEPT,
 		/* 235 */ YY_NOT_ACCEPT,
 		/* 236 */ YY_NOT_ACCEPT,
-		/* 237 */ YY_NOT_ACCEPT,
+		/* 237 */ YY_NO_ANCHOR,
 		/* 238 */ YY_NOT_ACCEPT,
 		/* 239 */ YY_NOT_ACCEPT,
-		/* 240 */ YY_NOT_ACCEPT,
-		/* 241 */ YY_NOT_ACCEPT,
-		/* 242 */ YY_NOT_ACCEPT,
-		/* 243 */ YY_NOT_ACCEPT,
+		/* 240 */ YY_NO_ANCHOR,
+		/* 241 */ YY_NO_ANCHOR,
+		/* 242 */ YY_NO_ANCHOR,
+		/* 243 */ YY_NO_ANCHOR,
 		/* 244 */ YY_NO_ANCHOR,
-		/* 245 */ YY_NOT_ACCEPT,
+		/* 245 */ YY_NO_ANCHOR,
 		/* 246 */ YY_NOT_ACCEPT,
 		/* 247 */ YY_NOT_ACCEPT,
 		/* 248 */ YY_NOT_ACCEPT,
 		/* 249 */ YY_NOT_ACCEPT,
-		/* 250 */ YY_NO_ANCHOR,
+		/* 250 */ YY_NOT_ACCEPT,
 		/* 251 */ YY_NOT_ACCEPT,
 		/* 252 */ YY_NOT_ACCEPT,
-		/* 253 */ YY_NO_ANCHOR,
-		/* 254 */ YY_NO_ANCHOR,
-		/* 255 */ YY_NO_ANCHOR,
-		/* 256 */ YY_NO_ANCHOR,
-		/* 257 */ YY_NO_ANCHOR,
-		/* 258 */ YY_NO_ANCHOR,
-		/* 259 */ YY_NOT_ACCEPT,
+		/* 253 */ YY_NOT_ACCEPT,
+		/* 254 */ YY_NOT_ACCEPT,
+		/* 255 */ YY_NOT_ACCEPT,
+		/* 256 */ YY_NOT_ACCEPT,
+		/* 257 */ YY_NOT_ACCEPT,
+		/* 258 */ YY_NOT_ACCEPT,
+		/* 259 */ YY_NO_ANCHOR,
 		/* 260 */ YY_NOT_ACCEPT,
-		/* 261 */ YY_NOT_ACCEPT,
-		/* 262 */ YY_NOT_ACCEPT,
-		/* 263 */ YY_NOT_ACCEPT,
-		/* 264 */ YY_NOT_ACCEPT,
-		/* 265 */ YY_NOT_ACCEPT,
-		/* 266 */ YY_NOT_ACCEPT,
-		/* 267 */ YY_NOT_ACCEPT,
+		/* 261 */ YY_NO_ANCHOR,
+		/* 262 */ YY_NO_ANCHOR,
+		/* 263 */ YY_NO_ANCHOR,
+		/* 264 */ YY_NO_ANCHOR,
+		/* 265 */ YY_NO_ANCHOR,
+		/* 266 */ YY_NO_ANCHOR,
+		/* 267 */ YY_NO_ANCHOR,
 		/* 268 */ YY_NO_ANCHOR,
-		/* 269 */ YY_NO_ANCHOR,
-		/* 270 */ YY_NO_ANCHOR,
-		/* 271 */ YY_NO_ANCHOR,
-		/* 272 */ YY_NO_ANCHOR,
-		/* 273 */ YY_NO_ANCHOR,
-		/* 274 */ YY_NO_ANCHOR,
-		/* 275 */ YY_NO_ANCHOR,
-		/* 276 */ YY_NO_ANCHOR,
+		/* 269 */ YY_NOT_ACCEPT,
+		/* 270 */ YY_NOT_ACCEPT,
+		/* 271 */ YY_NOT_ACCEPT,
+		/* 272 */ YY_NOT_ACCEPT,
+		/* 273 */ YY_NOT_ACCEPT,
+		/* 274 */ YY_NOT_ACCEPT,
+		/* 275 */ YY_NOT_ACCEPT,
+		/* 276 */ YY_NOT_ACCEPT,
 		/* 277 */ YY_NOT_ACCEPT,
 		/* 278 */ YY_NOT_ACCEPT,
-		/* 279 */ YY_NOT_ACCEPT,
-		/* 280 */ YY_NOT_ACCEPT,
-		/* 281 */ YY_NOT_ACCEPT,
-		/* 282 */ YY_NOT_ACCEPT,
+		/* 279 */ YY_NO_ANCHOR,
+		/* 280 */ YY_NO_ANCHOR,
+		/* 281 */ YY_NO_ANCHOR,
+		/* 282 */ YY_NO_ANCHOR,
 		/* 283 */ YY_NO_ANCHOR,
-		/* 284 */ YY_NO_ANCHOR,
-		/* 285 */ YY_NO_ANCHOR,
-		/* 286 */ YY_NO_ANCHOR,
-		/* 287 */ YY_NO_ANCHOR,
-		/* 288 */ YY_NOT_ACCEPT,
-		/* 289 */ YY_NOT_ACCEPT,
+		/* 284 */ YY_NOT_ACCEPT,
+		/* 285 */ YY_NOT_ACCEPT,
+		/* 286 */ YY_NOT_ACCEPT,
+		/* 287 */ YY_NOT_ACCEPT,
+		/* 288 */ YY_NO_ANCHOR,
+		/* 289 */ YY_NO_ANCHOR,
 		/* 290 */ YY_NO_ANCHOR,
 		/* 291 */ YY_NO_ANCHOR,
 		/* 292 */ YY_NO_ANCHOR,
@@ -565,9 +549,7 @@ class Yylex {
 		/* 294 */ YY_NO_ANCHOR,
 		/* 295 */ YY_NO_ANCHOR,
 		/* 296 */ YY_NO_ANCHOR,
-		/* 297 */ YY_NO_ANCHOR,
-		/* 298 */ YY_NO_ANCHOR,
-		/* 299 */ YY_NO_ANCHOR
+		/* 297 */ YY_NO_ANCHOR
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
 "50:8,5:2,6,50:2,9,50:18,5,7,46,50:10,8,49,4,48:10,49,50,2,1,3,45,50,37,47,3" +
@@ -575,75 +557,76 @@ class Yylex {
 "8,50,17,47:2,23,11,47:3,14,47,25,24,18,16,15,21,47,12,13,19,47,10,47,22,20," +
 "47,50:5,0:2")[0];
 
-	private int yy_rmap[] = unpackFromString(1,300,
-"0,1:2,2,1,3,4,5,1:2,6,1:2,7,1:2,8,1,9,1:26,10,11,1,12,1:3,13,1,14,11,15,16," +
-"17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41," +
-"42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66," +
-"67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91," +
-"92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112" +
-",113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,13" +
-"1,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,1" +
-"50,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168," +
-"169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187" +
-",188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,20" +
-"6,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,2" +
-"25,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243," +
-"244,245,246,247,248,249,7,250,251,252,253,254,255,7,256")[0];
+	private int yy_rmap[] = unpackFromString(1,298,
+"0,1:2,2,1,3,4,5,1:2,6,1:2,7,1:2,8,1,9,1:29,10,11,1,12,13,1,14,11,15,16,17,1" +
+"8,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,4" +
+"3,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,6" +
+"8,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,9" +
+"3,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113" +
+",114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,13" +
+"2,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,1" +
+"51,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169," +
+"170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188" +
+",189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,20" +
+"7,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,2" +
+"26,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244," +
+"245,246,247,7,248,249,250,251,252,253,7,254")[0];
 
-	private int yy_nxt[][] = unpackFromString(257,51,
-"1,2,3,4,5,6:2,53:2,-1,7,297,298,276,299,298,258,298:2,268,298:5,269,287,298" +
-":18,58,61,298,53:3,-1:55,52,-1:2,57,-1:18,60,-1,63,66,68,69,70,71,-1,72,-1," +
-"73,-1:2,74,-1:3,193,75,-1:8,8,-1:52,6:2,-1:54,298,290,298:33,-1:2,298,291,-" +
-"1:10,10,-1,10:35,-1,11,10:3,-1:11,298:35,-1:2,298,291,-1:43,240,-1:17,134,-" +
-"1,298:35,-1:2,298,291,-1:2,1,55:5,46,55,64,55:42,-1,55:7,165,55:42,1,56,169" +
-",56:48,-1:26,76,-1,77,190,277,-1:2,259,-1:27,298,13,298:33,-1:2,298,291,-1:" +
-"3,56,-1,56:48,-1:8,78,-1:32,79,-1:12,9,-1:57,298:13,13,298:21,-1:2,298,291," +
-"-1:29,80,191,-1:11,229,-1:18,10,-1,10:35,-1:2,10:3,-1:11,298:3,13,298:31,-1" +
-":2,298,291,-1:37,228,-1,194,-1:14,55:7,166,55:42,-1:10,298:20,18,298:14,-1:" +
-"2,298,291,-1:45,192,-1:17,298:6,13,298:28,-1:2,298,291,-1:31,81,-1:7,82,-1:" +
-"50,230,-1:51,83,-1:46,84,-1:45,195,-1:53,196,-1:2,85,-1:57,232,-1:30,86,-1:" +
-"55,231,233,-1:57,246,-1:23,12,-1:82,197,-1:36,245,-1:52,90,-1:54,204,-1:55," +
-"92,-1:39,93,-1,201,-1:66,207,-1:24,97,-1:61,247,-1:56,100,-1:49,205,-1:55,1" +
-"02,-1:40,103,-1:7,104,-1:39,105,-1:52,106,-1:64,108,-1:41,210,-1:61,238,-1:" +
-"30,14,-1:55,289,-1:50,15,-1:53,114,-1:46,16,-1:62,116,-1:44,117,-1:46,118,-" +
-"1:46,17,-1:61,119,-1:48,120,-1:53,121,-1:53,122,-1:35,282,-1:52,125,-1:55,2" +
-"41,-1:44,126,-1:52,19,-1:49,20,-1:63,21,-1:37,22,-1:51,218,-1:55,130,-1:52," +
-"131,-1:42,23,-1:25,24,-1,122:2,-1:74,217,-1:23,25,-1:88,135,-1:40,137,-1:27" +
-",265,-1:70,138,-1:51,26,-1:53,140,-1:55,141,-1:16,27,-1,132:2,-1:78,142,-1:" +
-"42,144,-1:53,146,-1:24,28,-1:76,29,-1:54,149,-1:53,30,-1:43,31,-1:53,151,-1" +
-":46,152,-1:66,32,-1:37,224,-1:45,153,-1:60,154,-1:17,33,-1:76,155,-1:61,157" +
-",-1:45,34,-1:44,35,-1:24,36,-1,152:2,-1:75,243,-1:22,37,-1:50,38,-1:76,160," +
-"-1:55,39,-1:48,40,-1:52,163,-1:19,41,-1:79,42,-1:50,164,-1:21,43,-1:50,44,-" +
-"1,164:2,-1:45,55:7,167,55:42,-1,55:2,47,55:47,-1,55:2,-1,55:47,1,-1:54,170," +
-"-1:83,171,-1:6,172,-1:38,173,-1:2,174,-1:57,175,-1:36,176,-1:66,177,-1:43,1" +
-"78,-1:46,179,-1:59,180,-1:43,181,-1:55,182,-1:40,183,-1:61,184,-1:43,185,-1" +
-":45,186,-1:24,49,-1:50,50,-1:81,187,-1:44,188,-1:25,51,-1:57,298:8,54,298:2" +
-"6,-1:2,298,291,-1:45,87,-1:44,251,-1:42,203,-1:63,198,-1:43,200,-1:41,94,-1" +
-":52,95,-1:54,236,-1:55,202,-1:39,288,-1,98,-1:66,237,-1:35,107,-1:56,109,-1" +
-":49,101,-1:55,208,-1:37,213,-1:52,248,-1:64,262,-1:41,211,-1:46,212,-1:61,2" +
-"15,-1:44,129,-1:46,127,-1:53,128,-1:46,133,-1:55,132,-1:57,136,-1:17,145,-1" +
-":70,242,-1:54,148,-1:52,143,-1:45,147,-1:53,156,-1:49,226,-1:48,158,-1:61,1" +
-"59,-1:39,161,-1:31,298:11,54,298:23,-1:2,298,291,-1:39,89,-1:55,88,-1:43,91" +
-",-1:41,206,-1:52,96,-1:59,267,-1:47,110,-1:55,112,-1:39,113,-1:51,115,-1:61" +
-",239,-1:43,220,-1:46,139,-1:55,221,-1:45,150,-1:50,162,-1:31,298:6,59,298:2" +
-"8,-1:2,298,291,-1:30,209,-1:59,234,-1:47,111,-1:45,123,-1:61,216,-1:20,298:" +
-"9,54,298:25,-1:2,298,291,-1:30,99,-1:51,124,-1:31,298:6,62,298:28,-1:2,298," +
-"291,-1:12,298:19,65,298:15,-1:2,298,291,-1:12,298:5,67,298:29,-1:2,298,291," +
-"-1:12,298:13,62,298:21,-1:2,298,291,-1:12,298:9,62,298:25,-1:2,298,291,-1:1" +
-"2,298:7,189,298:27,-1:2,298,291,-1:36,199,-1:48,235,-1:57,249,-1:41,214,-1:" +
-"54,219,-1:53,222,-1:39,223,-1:57,225,-1:45,252,-1:32,298:2,271,298:7,227,29" +
-"8:24,-1:2,298,291,-1:12,298:4,244,298:30,-1:2,298,291,-1:12,298:7,250,298:2" +
-"7,-1:2,298,291,-1:12,298:7,253,298:27,-1:2,298,291,-1:12,298:18,254,298:16," +
-"-1:2,298,291,-1:12,298:4,255,298:30,-1:2,298,291,-1:12,298:6,256,298:28,-1:" +
-"2,298,291,-1:12,298:6,257,298:28,-1:2,298,291,-1:12,298:9,270,298:25,-1:2,2" +
-"98,291,-1:31,278,-1:7,260,-1:41,261,-1:59,263,-1:49,264,-1:42,266,-1:55,281" +
-",-1:27,298:16,272,298:18,-1:2,298,291,-1:12,298:3,273,298:31,-1:2,298,291,-" +
-"1:12,298,274,298:33,-1:2,298,291,-1:12,298,275,298:33,-1:2,298,291,-1:12,29" +
-"8:17,283,298:17,-1:2,298,291,-1:30,279,-1:57,280,-1:25,298:2,284,298:32,-1:" +
-"2,298,291,-1:12,298:9,285,298:25,-1:2,298,291,-1:12,298:11,294,298:23,-1:2," +
-"298,291,-1:12,298:14,295,298:20,-1:2,298,291,-1:12,298,296,298:33,-1:2,298," +
-"291,-1:12,298:8,286,298:26,-1:2,298,291,-1:12,298:12,292,298:22,-1:2,298,29" +
-"1,-1:12,298:8,293,298:26,-1:2,298,291,-1:2");
+	private int yy_nxt[][] = unpackFromString(255,51,
+"1,2,3,4,5,6:2,53:2,-1,7,295,296,268,297,296,245,296:2,259,296:5,261,283,296" +
+":18,58,61,296,53:3,-1:55,52,-1:2,57,-1:18,60,-1,63,66,68,69,70,71,-1,72,-1," +
+"73,-1:2,74,-1:3,176,75,-1:8,8,-1:52,6:2,-1:54,296,288,296:33,-1:2,296,289,-" +
+"1:10,10,-1,10:35,-1,11,10:3,-1:11,296:35,-1:2,296,289,-1:43,226,-1:17,135,-" +
+"1,296:35,-1:2,296,289,-1:2,1,55:5,49,55,64,55:42,-1,55:7,168,55:42,1,56,-1," +
+"56:48,-1:26,76,-1,77,173,269,-1:2,246,-1:3,284,-1:6,275,-1:16,296,13,296:33" +
+",-1:2,296,289,-1:3,56,-1,56:48,-1:8,78,-1:32,79,-1:12,9,-1:57,296:13,13,296" +
+":21,-1:2,296,289,-1:29,80,174,-1:11,214,-1:18,10,-1,10:35,-1:2,10:3,-1:11,2" +
+"96:3,13,296:31,-1:2,296,289,-1:37,213,-1,177,-1:14,55:7,169,55:42,-1:10,296" +
+":20,18,296:14,-1:2,296,289,-1:45,175,-1:17,296:6,13,296:28,-1:2,296,289,-1:" +
+"31,81,-1:7,82,-1:50,215,-1:51,83,-1:46,84,-1:45,178,-1:53,179,-1:2,85,-1:57" +
+",217,-1:30,86,-1:55,216,218,-1:57,232,-1:23,12,-1:82,180,-1:36,231,-1:52,90" +
+",-1:54,187,-1:55,92,-1:39,93,-1,184,-1:66,190,-1:24,97,-1:61,233,-1:56,100," +
+"-1:49,188,-1:55,102,-1:40,103,-1:7,104,-1:39,105,-1:52,106,-1:64,108,-1:41," +
+"193,-1:61,224,-1:30,14,-1:55,287,-1:50,15,-1:53,114,-1:46,16,-1:62,116,-1:4" +
+"4,117,-1:46,118,-1:46,17,-1:61,119,-1:48,120,-1:53,121,-1:53,122,-1:35,278," +
+"-1:52,125,-1:55,227,-1:44,127,-1:52,19,-1:49,20,-1:63,21,-1:37,22,-1:51,202" +
+",-1:55,131,-1:52,132,-1:42,23,-1:25,24,-1,122:2,-1:74,201,-1:23,25,-1,124:2" +
+",-1:85,136,-1:12,26,-1,126:2,-1:75,139,-1:27,253,-1:70,140,-1:51,27,-1:53,1" +
+"42,-1:55,143,-1:16,28,-1,133:2,-1:78,144,-1:42,146,-1:53,148,-1:24,29,-1,13" +
+"7:2,-1:47,30,-1,138:2,-1:73,31,-1:54,151,-1:53,32,-1:43,33,-1:53,153,-1:46," +
+"154,-1:66,34,-1:37,209,-1:45,155,-1:60,156,-1:17,35,-1,149:2,-1:73,157,-1:6" +
+"1,160,-1:45,36,-1:44,37,-1:24,38,-1,154:2,-1:75,229,-1:22,39,-1,156:2,-1:47" +
+",40,-1,157:2,-1:73,163,-1:24,41,-1,159:2,-1:78,42,-1:48,43,-1:52,166,-1:19," +
+"44,-1,163:2,-1:76,45,-1:50,167,-1:21,46,-1,166:2,-1:47,47,-1,167:2,-1:45,55" +
+":7,170,55:42,-1,55:2,50,55:47,-1,55:2,-1,55:47,1,-1:60,296:8,54,296:26,-1:2" +
+",296,289,-1:45,87,-1:44,238,-1:42,186,-1:63,181,-1:43,183,-1:41,94,-1:52,95" +
+",-1:54,222,-1:55,185,-1:39,286,-1,98,-1:66,223,-1:35,107,-1:56,109,-1:49,10" +
+"1,-1:55,191,-1:37,197,-1:52,234,-1:64,249,-1:41,194,-1:46,195,-1:61,199,-1:" +
+"44,130,-1:46,128,-1:61,126,-1:42,129,-1:46,134,-1:55,133,-1:57,137,-1:17,14" +
+"7,-1:70,228,-1:54,150,-1:52,145,-1:45,149,-1:53,158,-1:46,159,-1:53,211,-1:" +
+"48,161,-1:61,162,-1:39,164,-1:31,296:11,54,296:23,-1:2,296,289,-1:39,89,-1:" +
+"55,88,-1:43,91,-1:41,189,-1:52,96,-1:59,256,-1:48,196,-1:49,110,-1:55,112,-" +
+"1:39,113,-1:51,115,-1:61,225,-1:43,204,-1:46,141,-1:55,205,-1:45,152,-1:50," +
+"165,-1:31,296:6,59,296:28,-1:2,296,289,-1:30,192,-1:59,220,-1:47,111,-1:45," +
+"123,-1:61,200,-1:44,138,-1:26,296:9,54,296:25,-1:2,296,289,-1:30,99,-1:51,1" +
+"24,-1:31,296:6,62,296:28,-1:2,296,289,-1:12,296:19,65,296:15,-1:2,296,289,-" +
+"1:12,296:5,67,296:29,-1:2,296,289,-1:12,296:13,62,296:21,-1:2,296,289,-1:12" +
+",296:9,62,296:25,-1:2,296,289,-1:12,296:7,172,296:27,-1:2,296,289,-1:36,182" +
+",-1:48,221,-1:57,235,-1:41,198,-1:54,203,-1:53,206,-1:47,207,-1:42,208,-1:5" +
+"7,210,-1:54,219,-1:41,239,-1:62,236,-1:39,252,-1:31,296:2,263,296:7,212,296" +
+":24,-1:2,296,289,-1:32,258,-1:30,296:4,230,296:30,-1:2,296,289,-1:12,296:7," +
+"237,296:27,-1:2,296,289,-1:12,296:7,240,296:27,-1:2,296,289,-1:12,296:18,24" +
+"1,296:16,-1:2,296,289,-1:12,296:4,242,296:30,-1:2,296,289,-1:12,296:6,243,2" +
+"96:28,-1:2,296,289,-1:12,296:6,244,296:28,-1:2,296,289,-1:12,296:9,262,296:" +
+"25,-1:2,296,289,-1:31,270,-1:7,247,-1:41,248,-1:55,257,-1:54,250,-1:49,251," +
+"-1:42,254,-1:64,255,-1:36,271,-1:64,260,-1:41,274,-1:27,296:16,264,296:18,-" +
+"1:2,296,289,-1:12,296:3,265,296:31,-1:2,296,289,-1:12,296,266,296:33,-1:2,2" +
+"96,289,-1:12,296,267,296:33,-1:2,296,289,-1:12,296:17,279,296:17,-1:2,296,2" +
+"89,-1:34,276,-1:2,285,-1:59,277,-1:34,272,-1:57,273,-1:25,296:2,280,296:32," +
+"-1:2,296,289,-1:12,296:9,281,296:25,-1:2,296,289,-1:12,296:11,292,296:23,-1" +
+":2,296,289,-1:12,296:14,293,296:20,-1:2,296,289,-1:12,296,294,296:33,-1:2,2" +
+"96,289,-1:12,296:8,282,296:26,-1:2,296,289,-1:12,296:12,290,296:22,-1:2,296" +
+",289,-1:12,296:8,291,296:26,-1:2,296,289,-1:2");
 
 	public Yytoken yylex ()
 		throws java.io.IOException {
@@ -810,94 +793,112 @@ class Yylex {
 					case -26:
 						break;
 					case 26:
-						{return (new Yytoken(sym.tMACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{
+	return (new Yytoken(sym.tEND_GUARD, yytext(), yyline, yychar, yychar+yytext().length()));
+}
 					case -27:
 						break;
 					case 27:
-						{
-				yybegin(GETPCDATA);
-				return (new Yytoken(sym.tACTION, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tMACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -28:
 						break;
 					case 28:
-						{return (new Yytoken(sym.tEND_METHOD, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{
+				yybegin(GETPCDATA);
+				return (new Yytoken(sym.tACTION, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -29:
 						break;
 					case 29:
-						{return (new Yytoken(sym.tDOCTYPE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tEND_METHOD, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -30:
 						break;
 					case 30:
-						{return (new Yytoken(sym.tEVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{
+	return (new Yytoken(sym.tEND_ACTION, yytext(), yyline, yychar, yychar+yytext().length()));
+}
 					case -31:
 						break;
 					case 31:
-						{return (new Yytoken(sym.tINSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tDOCTYPE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -32:
 						break;
 					case 32:
-						{return (new Yytoken(sym.tOUTGOING, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tEVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -33:
 						break;
 					case 33:
-						{return (new Yytoken(sym.tEND_MACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tINSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -34:
 						break;
 					case 34:
-						{return (new Yytoken(sym.tPARAMETER, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tOUTGOING, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -35:
 						break;
 					case 35:
-						{return (new Yytoken(sym.tINTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tEND_MACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -36:
 						break;
 					case 36:
-						{
-				yybegin(GETPCDATA);
-				return (new Yytoken(sym.tARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tPARAMETER, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -37:
 						break;
 					case 37:
-						{return (new Yytoken(sym.tEND_EVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tINTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -38:
 						break;
 					case 38:
-						{return (new Yytoken(sym.tEND_INSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{
+				yybegin(GETPCDATA);
+				return (new Yytoken(sym.tARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -39:
 						break;
 					case 39:
-						{return (new Yytoken(sym.tTRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tEND_EVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -40:
 						break;
 					case 40:
-						{return (new Yytoken(sym.tROOT, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tEND_INSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -41:
 						break;
 					case 41:
-						{return (new Yytoken(sym.tEND_INTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{
+	return (new Yytoken(sym.tEND_ARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));
+}
 					case -42:
 						break;
 					case 42:
-						{return (new Yytoken(sym.tSYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tTRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -43:
 						break;
 					case 43:
-						{return (new Yytoken(sym.tEND_TRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tROOT, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -44:
 						break;
 					case 44:
-						{return (new Yytoken(sym.tEND_SYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
+						{return (new Yytoken(sym.tEND_INTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -45:
 						break;
 					case 45:
-						{ }
+						{return (new Yytoken(sym.tSYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -46:
 						break;
 					case 46:
-						{ }
+						{return (new Yytoken(sym.tEND_TRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
 					case -47:
 						break;
 					case 47:
+						{return (new Yytoken(sym.tEND_SYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
+					case -48:
+						break;
+					case 48:
+						{ }
+					case -49:
+						break;
+					case 49:
+						{ }
+					case -50:
+						break;
+					case 50:
 						{ 
 	comment_count = comment_count - 1; 
 	Utility.my_assert(comment_count >= 0);
@@ -905,32 +906,12 @@ class Yylex {
     		yybegin(YYINITIAL);
 	}
 }
-					case -48:
-						break;
-					case 48:
-						{
-	return (new Yytoken(sym.tPCDATA, yytext(), yyline, yychar, yychar + yytext().length()));
-}
-					case -49:
-						break;
-					case 49:
-						{
-	yybegin(YYINITIAL);
-	return (new Yytoken(sym.tEND_GUARD, yytext(), yyline, yychar, yychar+yytext().length()));
-}
-					case -50:
-						break;
-					case 50:
-						{
-	yybegin(YYINITIAL);
-	return (new Yytoken(sym.tEND_ACTION, yytext(), yyline, yychar, yychar+yytext().length()));
-}
 					case -51:
 						break;
 					case 51:
 						{
 	yybegin(YYINITIAL);
-	return (new Yytoken(sym.tEND_ARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));
+	return (new Yytoken(sym.tPCDATA, yytext(), yyline, yychar, yychar + yytext().length()));
 }
 					case -52:
 						break;
@@ -956,6 +937,7 @@ class Yylex {
 						break;
 					case 56:
 						{
+	yybegin(YYINITIAL);
 	return (new Yytoken(sym.tPCDATA, yytext(), yyline, yychar, yychar + yytext().length()));
 }
 					case -56:
@@ -1016,7 +998,7 @@ class Yylex {
 }
 					case -63:
 						break;
-					case 189:
+					case 172:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1024,7 +1006,7 @@ class Yylex {
 }
 					case -64:
 						break;
-					case 227:
+					case 212:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1032,7 +1014,7 @@ class Yylex {
 }
 					case -65:
 						break;
-					case 244:
+					case 230:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1040,7 +1022,7 @@ class Yylex {
 }
 					case -66:
 						break;
-					case 250:
+					case 237:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1048,7 +1030,7 @@ class Yylex {
 }
 					case -67:
 						break;
-					case 253:
+					case 240:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1056,7 +1038,7 @@ class Yylex {
 }
 					case -68:
 						break;
-					case 254:
+					case 241:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1064,7 +1046,7 @@ class Yylex {
 }
 					case -69:
 						break;
-					case 255:
+					case 242:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1072,7 +1054,7 @@ class Yylex {
 }
 					case -70:
 						break;
-					case 256:
+					case 243:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1080,7 +1062,7 @@ class Yylex {
 }
 					case -71:
 						break;
-					case 257:
+					case 244:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1088,7 +1070,7 @@ class Yylex {
 }
 					case -72:
 						break;
-					case 258:
+					case 245:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1096,7 +1078,7 @@ class Yylex {
 }
 					case -73:
 						break;
-					case 268:
+					case 259:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1104,7 +1086,7 @@ class Yylex {
 }
 					case -74:
 						break;
-					case 269:
+					case 261:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1112,7 +1094,7 @@ class Yylex {
 }
 					case -75:
 						break;
-					case 270:
+					case 262:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1120,7 +1102,7 @@ class Yylex {
 }
 					case -76:
 						break;
-					case 271:
+					case 263:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1128,7 +1110,7 @@ class Yylex {
 }
 					case -77:
 						break;
-					case 272:
+					case 264:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1136,7 +1118,7 @@ class Yylex {
 }
 					case -78:
 						break;
-					case 273:
+					case 265:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1144,7 +1126,7 @@ class Yylex {
 }
 					case -79:
 						break;
-					case 274:
+					case 266:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1152,7 +1134,7 @@ class Yylex {
 }
 					case -80:
 						break;
-					case 275:
+					case 267:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1160,7 +1142,7 @@ class Yylex {
 }
 					case -81:
 						break;
-					case 276:
+					case 268:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1168,7 +1150,7 @@ class Yylex {
 }
 					case -82:
 						break;
-					case 283:
+					case 279:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1176,7 +1158,7 @@ class Yylex {
 }
 					case -83:
 						break;
-					case 284:
+					case 280:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1184,7 +1166,7 @@ class Yylex {
 }
 					case -84:
 						break;
-					case 285:
+					case 281:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1192,7 +1174,7 @@ class Yylex {
 }
 					case -85:
 						break;
-					case 286:
+					case 282:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1200,7 +1182,7 @@ class Yylex {
 }
 					case -86:
 						break;
-					case 287:
+					case 283:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1208,7 +1190,7 @@ class Yylex {
 }
 					case -87:
 						break;
-					case 290:
+					case 288:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1216,7 +1198,7 @@ class Yylex {
 }
 					case -88:
 						break;
-					case 291:
+					case 289:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1224,7 +1206,7 @@ class Yylex {
 }
 					case -89:
 						break;
-					case 292:
+					case 290:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1232,7 +1214,7 @@ class Yylex {
 }
 					case -90:
 						break;
-					case 293:
+					case 291:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1240,7 +1222,7 @@ class Yylex {
 }
 					case -91:
 						break;
-					case 294:
+					case 292:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1248,7 +1230,7 @@ class Yylex {
 }
 					case -92:
 						break;
-					case 295:
+					case 293:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1256,7 +1238,7 @@ class Yylex {
 }
 					case -93:
 						break;
-					case 296:
+					case 294:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1264,7 +1246,7 @@ class Yylex {
 }
 					case -94:
 						break;
-					case 297:
+					case 295:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1272,7 +1254,7 @@ class Yylex {
 }
 					case -95:
 						break;
-					case 298:
+					case 296:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
@@ -1280,7 +1262,7 @@ class Yylex {
 }
 					case -96:
 						break;
-					case 299:
+					case 297:
 						{
 	    System.out.println("Illegal string: <" + yytext() + ">");
 		Utility.error(Utility.E_UNMATCHED_STRING);
