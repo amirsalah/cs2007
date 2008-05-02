@@ -1,3 +1,8 @@
+/* 
+ * Author: Bo CHEN
+ * student ID: 1139520
+ */
+
 import java.io.FileReader;
 import lexer.XMLLexer;
 import lexer.Yytoken;
@@ -10,40 +15,38 @@ public class LTDriver {
     //-------------------
     public static void main(String[] args) {
         // Check for correct number of args
-        if (args.length != 2){
+        if (args.length < 1 | args.length > 2){
             printUsage();
             return;
-         }
+        }
 
-         // Set source file
-         String sourceFile = args[1];
-         
-         // Check the arguments
-         if(!isValidOption(args[0])){
-             printUsage();
-             return;
-         }
-         
-         // use the lexer
-         XMLLexer lexer;
-         String source_dir = "source_language/";
-         if(args[0].equals("-lexer")){
-             try{
-                 lexer = new XMLLexer(source_dir.concat(sourceFile));
-                 lexer.generateOutput();
-             }
-             catch(java.io.IOException e){
-                 System.out.println("Error. File: " + sourceFile + " cannot be solved");
-                 System.exit(0);
-             }
-         }
+        // Check the arguments
+        if(!isValidOption(args[0])){
+            printUsage();
+            return;
+        }
 
+        boolean manualInput;
+        String sourceFile = null;
+        // Set source file
+        if(args.length == 1){
+            manualInput = true;
+        }else{
+            manualInput = false;
+             sourceFile = args[1];
+        }
+        
+        
+        // invoke the lexer
+        if(args[0].equals("-lexer")){
+            lexing(manualInput, sourceFile);
+        }
 
     }
     
-    //---------------------------
-    // Output the program usage
-    //---------------------------
+    /**
+     * Output the program usage
+     */
     static protected void printUsage()
     {
       System.out.println("Usage: java LTDriver [OPTION] [SOURCE FILE]");
@@ -70,5 +73,27 @@ public class LTDriver {
         return false;
     }
 
-
+    /**
+     * Use the lexer
+     * @param manualInput true if user will manually input the source code, false if the source file is provided
+     * @param sourceFile the source file name, null if manualInput is true
+     */
+    static protected void lexing(boolean manualInput, String sourceFile){
+        XMLLexer lexer;
+        String source_dir = "source_language/";
+        
+        try{
+            lexer = new XMLLexer();
+            if(manualInput){
+                lexer.manualLexer();
+            } else {
+                lexer.autoLexer(source_dir.concat(sourceFile));
+            }
+        }
+        catch(java.io.IOException e){
+            System.out.println("Error. File: " + sourceFile + " cannot be solved");
+            System.exit(0);
+        }
+    }
+    
 }

@@ -5,7 +5,7 @@ STEP 1:
 make
 
 STEP 2:
-java lexer.XMLLexer
+java LTDriver -lexer MachineSample.xml
 
 STEP 3:
 input a line from the console
