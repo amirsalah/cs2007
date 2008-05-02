@@ -6,16 +6,19 @@ package lexer;
 
 import java.lang.System;
 import lexer.symbol.sym;
+import lexer.Yytoken;
+import java.io.FileReader;
 
-class XMLLexer {
-    public static void main(String argv[]) throws java.io.IOException {
-	Yylex yy = new Yylex(System.in);
-	Yytoken t;
-	do {
-	    t = yy.yylex();
-	    System.out.println(t);
-	} while (t.m_index != sym.EOF);
-    }
+public class XMLLexer {
+        private Yylex yy;
+
+        public XMLLexer(String sourceFileName) throws java.io.IOException {
+            yy = new Yylex(new FileReader(sourceFileName));
+        }
+    
+        public Yylex getLexer(){
+            return yy;
+        }
 }
 
 class Utility {
@@ -42,26 +45,6 @@ class Utility {
   public static void error(int code) {
 	System.out.println(errorMsg[code]);
       }
-}
-
-class Yytoken {
-  Yytoken (int index, String text, int line, int charBegin, int charEnd) {
-	m_index = index;
-	m_text = new String(text);
-	m_line = line;
-	m_charBegin = charBegin;
-	m_charEnd = charEnd;
-      }
-
-  public int m_index;
-  public String m_text;
-  public int m_line;
-  public int m_charBegin;
-  public int m_charEnd;
-
-  public String toString() {
-  	  return "<" + ++m_charBegin + "," + m_charEnd + "," + m_text + "," + sym.getTokenName(m_index) + ">";
-  }
 }
 
 %%
@@ -150,13 +133,13 @@ ROOTELEMENT="SYSTEM-SPEC"
 				return (new Yytoken(sym.tARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));}
 
 <YYINITIAL> "</SYSTEM-SPEC"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_SYSTEMSPEC, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</INTERFACE>" {return (new Yytoken(sym.tEND_INTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</MACHINE>" {return (new Yytoken(sym.tEND_MACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</INSTANCE>" {return (new Yytoken(sym.tEND_INSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</METHOD>" {return (new Yytoken(sym.tEND_METHOD, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</EVENTDEF>" {return (new Yytoken(sym.tEND_EVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</STATE>" {return (new Yytoken(sym.tEND_STATE, yytext(), yyline, yychar, yychar+yytext().length()));}
-<YYINITIAL> "</TRANSITION>" {return (new Yytoken(sym.tEND_TRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</INTERFACE"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_INTERFACE, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</MACHINE"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_MACHINE, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</INSTANCE"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_INSTANCE, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</METHOD"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_METHOD, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</EVENTDEF"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_EVENTDEF, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</STATE"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_STATE, yytext(), yyline, yychar, yychar+yytext().length()));}
+<YYINITIAL> "</TRANSITION"({WHITE_SPACE_CHAR})*">" {return (new Yytoken(sym.tEND_TRANSITION, yytext(), yyline, yychar, yychar+yytext().length()));}
 
 <YYINITIAL> "<!DOCTYPE" {return (new Yytoken(sym.tDOCTYPE, yytext(), yyline, yychar, yychar+yytext().length()));}
 <YYINITIAL> {ROOTELEMENT} {return (new Yytoken(sym.tROOT, yytext(), yyline, yychar, yychar+yytext().length()));}
@@ -181,21 +164,19 @@ ROOTELEMENT="SYSTEM-SPEC"
 } 
 
 <GETPCDATA> {PCDATA} {
+	yybegin(YYINITIAL);
 	return (new Yytoken(sym.tPCDATA, yytext(), yyline, yychar, yychar + yytext().length()));
 }
 
-<GETPCDATA> "</ACTION>" {
-	yybegin(YYINITIAL);
+<YYINITIAL> "</ACTION"({WHITE_SPACE_CHAR})*">" {
 	return (new Yytoken(sym.tEND_ACTION, yytext(), yyline, yychar, yychar+yytext().length()));
 }
 
-<GETPCDATA> "</GUARD>" {
-	yybegin(YYINITIAL);
+<YYINITIAL> "</GUARD"({WHITE_SPACE_CHAR})*">" {
 	return (new Yytoken(sym.tEND_GUARD, yytext(), yyline, yychar, yychar+yytext().length()));
 }
 
-<GETPCDATA> "</ARGUMENT>" {
-	yybegin(YYINITIAL);
+<YYINITIAL> "</ARGUMENT"({WHITE_SPACE_CHAR})*">" {
 	return (new Yytoken(sym.tEND_ARGUMENT, yytext(), yyline, yychar, yychar+yytext().length()));
 }
 
