@@ -8,10 +8,16 @@ import lexer.Yytoken;
 import java.io.FileReader;
 public class XMLLexer {
     private Yylex yy;
-    public XMLLexer(String sourceFileName) throws java.io.IOException {
-        yy = new Yylex(new FileReader(sourceFileName));
+    public void manualLexer() throws java.io.IOException {
+        yy = new Yylex(System.in);
+        Yytoken t;
+        do {
+            t = yy.yylex();
+            System.out.println(t);
+        } while (t.m_index != sym.EOF);
     }
-    public void generateOutput() throws java.io.IOException{
+    public void autoLexer(String sourceFileName) throws java.io.IOException{
+        yy = new Yylex(new FileReader(sourceFileName));
         Yytoken t;
         do {
             t = yy.yylex();
