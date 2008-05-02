@@ -7,13 +7,17 @@ import lexer.symbol.sym;
 import lexer.Yytoken;
 import java.io.FileReader;
 public class XMLLexer {
-        private Yylex yy;
-        public XMLLexer(String sourceFileName) throws java.io.IOException {
-            yy = new Yylex(new FileReader(sourceFileName));
-        }
-        public Yylex getLexer(){
-            return yy;
-        }
+    private Yylex yy;
+    public XMLLexer(String sourceFileName) throws java.io.IOException {
+        yy = new Yylex(new FileReader(sourceFileName));
+    }
+    public void generateOutput() throws java.io.IOException{
+        Yytoken t;
+        do {
+            t = yy.yylex();
+            System.out.println(t);
+        } while (t.m_index != sym.EOF);
+    }
 }
 class Utility {
   public static void my_assert(boolean expr) { 
