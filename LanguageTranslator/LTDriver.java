@@ -3,7 +3,6 @@
  * student ID: 1139520
  */
 
-import java.io.FileReader;
 import lexer.XMLLexer;
 import lexer.Yytoken;
 import lexer.symbol.sym;
@@ -33,13 +32,18 @@ public class LTDriver {
             manualInput = true;
         }else{
             manualInput = false;
-             sourceFile = args[1];
+            sourceFile = args[1];
         }
         
         
         // invoke the lexer
         if(args[0].equals("-lexer")){
             lexing(manualInput, sourceFile);
+        }
+        
+        // invoke the parser
+        if(args[0].equals("-parser")){
+            parsing(sourceFile);
         }
 
     }
@@ -53,7 +57,7 @@ public class LTDriver {
       System.out.println("  Options:");
       System.out.println("          -lexer        generate output from the lexer");
       System.out.println("          -parser       generate output from the parser");
-      System.out.println("          SOURCE FILE   the XML file to be translated");
+      System.out.println("  SOURCE FILE           the XML file to be translated");
     }
     
     /**
