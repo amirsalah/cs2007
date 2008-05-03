@@ -6,6 +6,7 @@
 import lexer.XMLLexer;
 import lexer.Yytoken;
 import lexer.symbol.sym;
+import parser.XMLParser;
 
 public class LTDriver {
 
@@ -42,8 +43,10 @@ public class LTDriver {
         }
         
         // invoke the parser
+        XMLParser parser;
         if(args[0].equals("-parser")){
-            parsing(sourceFile);
+            parser = new XMLParser(sourceFile);
+            parser.parsing();
         }
 
     }
@@ -84,7 +87,7 @@ public class LTDriver {
      */
     static protected void lexing(boolean manualInput, String sourceFile){
         XMLLexer lexer;
-        String source_dir = "source_language/";
+        String source_dir = "../source_language/";
         
         try{
             lexer = new XMLLexer();

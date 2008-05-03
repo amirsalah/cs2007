@@ -5,6 +5,7 @@ STEP 1:
 make
 
 STEP 2:
+cd bin
 java LTDriver -lexer MachineSample.xml
 
 STEP 3:

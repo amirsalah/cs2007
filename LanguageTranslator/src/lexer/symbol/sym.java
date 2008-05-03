@@ -20,7 +20,7 @@ public class sym {
 
     public static final int tMARK           = 18; // <
 
-    public static final int tCLOSETAG       = 20; // >
+    public static final int tENDTAG       = 20; // >
 
     public static final int tSTRING         = 28; // "..a string"
 
@@ -97,7 +97,7 @@ public class sym {
                 break;
         case 18: tokenName = "tMARK";
                 break;              
-        case 20: tokenName = "tCLOSETAG";
+        case 20: tokenName = "tENDTAG";
                 break;              
         case 28: tokenName = "tSTRING";
                 break;
@@ -169,9 +169,9 @@ public class sym {
                 break;
         case 63: tokenName = "tEND_ARGUMENT";
                 break;
-        case 64: tokenName = "tEND_DOCTYPE";
+        case 64: tokenName = "tDOCTYPE";
                 break;
-        case 65: tokenName = "tEND_ROOT";
+        case 65: tokenName = "tROOT";
                 break;
         case 66: tokenName = "tXMLHEAD";
                 break;
