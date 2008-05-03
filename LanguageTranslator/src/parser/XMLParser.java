@@ -18,8 +18,8 @@ public class XMLParser {
         String source_dir = "../source_language/";
         lexer = new XMLLexer();
         try{
-//            lexer.initLexer(source_dir.concat(sourceFile));
-            lexer.initLexer("source_language/" + sourceFile);
+            lexer.initLexer(source_dir.concat(sourceFile));
+//            lexer.initLexer("source_language/" + sourceFile);
         }
         catch (java.io.IOException ioe){
             System.err.println("source file: " + sourceFile + " initialization failed");
