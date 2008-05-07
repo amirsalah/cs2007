@@ -5,7 +5,7 @@ public class ParentNode extends AbstractViewableMachineNode {
     
     public void prettyPrint(int indentLevel){
         indent(indentLevel);
-        System.out.println("<PARENT name=\"" + att_name + "\">");
+        System.out.println("<PARENT name=\"" + att_name + "\"/>");
     }
     
     public void setAttribute_name(String name){

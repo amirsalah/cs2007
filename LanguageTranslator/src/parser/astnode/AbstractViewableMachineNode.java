@@ -7,7 +7,7 @@ public abstract class AbstractViewableMachineNode
     
     protected void indent(int indentLevel){
         for(int i=0; i<indentLevel; i++){
-            System.out.print("  ");
+            System.out.print(" ");
         }
     }
 }

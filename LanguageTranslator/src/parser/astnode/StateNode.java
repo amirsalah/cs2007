@@ -14,7 +14,7 @@ public class StateNode extends AbstractViewableMachineNode {
         }
         
         indent(indentLevel);
-        System.out.print("</STATE>");
+        System.out.println("</STATE>");
     }
     
     public void setAttribute_name(String name){

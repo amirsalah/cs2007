@@ -14,7 +14,7 @@ public class InterfaceNode extends AbstractViewableMachineNode {
         }
         
         indent(indentLevel);
-        System.out.print("</INTERFACE>");
+        System.out.println("</INTERFACE>");
     }
     
     public void setAttribute_name(String name){

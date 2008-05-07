@@ -14,7 +14,7 @@ public class MethodNode extends AbstractViewableMachineNode {
         }
         
         indent(indentLevel);
-        System.out.print("</METHOD>");
+        System.out.println("</METHOD>");
     }
     
     public void setAttribute_name(String name){

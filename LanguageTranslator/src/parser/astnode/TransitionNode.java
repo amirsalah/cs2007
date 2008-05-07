@@ -14,7 +14,7 @@ public class TransitionNode extends AbstractViewableMachineNode {
         }
         
         indent(indentLevel);
-        System.out.print("</TRANSITION>");
+        System.out.println("</TRANSITION>");
     }
     
     public void setAttribute_name(String name){

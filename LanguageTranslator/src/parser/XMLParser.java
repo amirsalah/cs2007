@@ -44,6 +44,8 @@ public class XMLParser {
         }
         
         if(validCode){
+            rootNode.display();
+            rootNode.prettyPrint(0);
             return true;
         }else{
             return false;
@@ -135,7 +137,7 @@ public class XMLParser {
         if(validCode){
             System.out.println("##The source code is valid##");
         }else{
-            System.out.println("##The source code is invalid##");
+            System.out.println("##The source code is invalid, tree visualization turned off##");
         }
         return;
     }

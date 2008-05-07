@@ -6,7 +6,7 @@ public class ClassNode extends AbstractViewableMachineNode {
     
     public void prettyPrint(int indentLevel){
         indent(indentLevel);
-        System.out.println("<CLASS name=\"" + att_name + "\" implements=\"" + att_implements + "\"/");
+        System.out.println("<CLASS name=\"" + att_name + "\" implements=\"" + att_implements + "\"/>");
     }
     
     public void setAttribute_name(String name){

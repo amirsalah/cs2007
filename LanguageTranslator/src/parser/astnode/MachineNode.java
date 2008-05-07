@@ -15,7 +15,7 @@ public class MachineNode extends AbstractViewableMachineNode {
         }
         
         indent(indentLevel);
-        System.out.print("</MACHINE>");
+        System.out.println("</MACHINE>");
     }
     
     public void setAttribute_extends(String att_extends){
