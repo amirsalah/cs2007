@@ -15,7 +15,7 @@ public class InstanceNode extends AbstractViewableMachineNode {
         }
         
         indent(indentLevel);
-        System.out.print("</INSTANCE>");
+        System.out.println("</INSTANCE>");
     }
     
     public void setAttribute_kind(String att_kind){

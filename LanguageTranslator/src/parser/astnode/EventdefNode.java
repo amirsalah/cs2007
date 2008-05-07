@@ -12,6 +12,7 @@ public class EventdefNode extends AbstractViewableMachineNode {
         for(Iterator i=this.childIterator(); i.hasNext();){
             ((MachineDTDNode)i.next()).prettyPrint(indentLevel+2);
         }
+        indent(indentLevel);
         System.out.println("</EVENTDEF>");
     }
     
