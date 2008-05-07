@@ -5,14 +5,16 @@ STEP 1:
 make
 
 STEP 2:
-cd bin
+cd src
 java LTDriver -lexer MachineSample.xml
 
-STEP 3:
-input a line from the console
-
-e.g. cat source_language/MachineSample.xml | java lexer.XMLLexer > output/lexer_result
-then you can check the output from the file "lexer_resutl" in the folder "output"
-
+STEP 2 (2): Alternative, using manual lexer by the command: 
+java LTDriver -lexer
 
 ###############  Parser  ##################
+STEP 1:
+make
+
+STEP 2:
+cd src
+java LTDriver -parser MachineSample.xml
