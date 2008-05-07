@@ -9,17 +9,21 @@ import lexer.Yytoken;
 import lexer.XMLLexer;
 import exception.RecognitionException;
 import lexer.symbol.sym;
+import parser.astnode.*;
 
 public class XMLParser {
     private XMLLexer lexer;
     private Yytoken currentToken;
+    private boolean debuggingParser = true;
+    private boolean validCode = true;
+    private AbstractViewableMachineNode rootNode;
     
     public XMLParser(String sourceFile){
         String source_dir = "../source_language/";
         lexer = new XMLLexer();
         try{
-            lexer.initLexer(source_dir.concat(sourceFile));
-//            lexer.initLexer("source_language/" + sourceFile);
+//            lexer.initLexer(source_dir.concat(sourceFile));
+            lexer.initLexer("source_language/" + sourceFile);
         }
         catch (java.io.IOException ioe){
             System.err.println("source file: " + sourceFile + " initialization failed");
@@ -38,7 +42,12 @@ public class XMLParser {
         catch (RecognitionException re){
             System.out.println("parsing failed, the source code isn't valid");
         }
-        return true;
+        
+        if(validCode){
+            return true;
+        }else{
+            return false;
+        }
     }
     
     /**
@@ -75,18 +84,44 @@ public class XMLParser {
         if(symbol == currentToken.m_index){
             advanceLexer();
         } else {
-            System.err.println("mismatch symbol: " + sym.getTokenName(symbol));
+            System.err.println("mismatch: mustbe  " + sym.getTokenName(symbol));
+            System.err.println("          got     " + sym.getTokenName(currentToken.m_index));
+            validCode = false;
         }
     }
+    
+    /**
+     * Test if the given symbol is correct without advancing to next token
+     * @param symbol
+     * @return
+     */
+    private boolean mustbe_noAdvance(int symbol){
+        if(symbol == currentToken.m_index){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private void printDebugInfo(String functionName){
+        if(debuggingParser){
+            System.out.println(functionName);
+            System.out.println("current token: " + currentToken.m_text);
+            System.out.println();
+        }
+    }
+    
     
     /**
      * 
      * @throws RecognitionException
      */
     public void n_document() throws RecognitionException{
+        printDebugInfo("n_document()");
+        
         if(have(sym.tXMLHEAD)){
             n_xmlDECL();
-        } 
+        }
         
         if(have(sym.tDOCTYPE)){
             n_docTYPE();
@@ -95,57 +130,73 @@ public class XMLParser {
         mustbe(sym.tSYSTEMSPEC);
         n_system_spec();
         mustbe(sym.EOF);
-        System.out.println("The source code is valid");
+        printDebugInfo("n_document() end");
+        System.out.println("parsing finished");
+        if(validCode){
+            System.out.println("##The source code is valid##");
+        }else{
+            System.out.println("##The source code is invalid##");
+        }
         return;
     }
     
     public void n_xmlDECL() throws RecognitionException {
+        printDebugInfo("n_xmlDECL()");
+
         while(have(sym.tATTRIBUTE_NAME)){
             n_attribute();
         }
+        
+        printDebugInfo("n_xmlDECL() end");
         mustbe(sym.tEND_XMLHEAD);
     }
     
     public void n_docTYPE() throws RecognitionException {
+        printDebugInfo("n_docType()");
+
         mustbe(sym.tROOT);
         mustbe(sym.tSYSTEM);
         mustbe(sym.tATTRIBUTE_VALUE);
+        
+        printDebugInfo("n_docTyep() end");
         mustbe(sym.tENDTAG);
     }
     
     public void n_system_spec() throws RecognitionException {
+        printDebugInfo("n_system_spec()");
+        rootNode = new SystemSpecNode();
         mustbe(sym.tENDTAG);
         
         mustbe(sym.tINTERFACE);
-        n_interface();
+        n_interface(rootNode);
         
         while(have(sym.tINTERFACE)){
-            n_interface();
+            n_interface(rootNode);
         }
         
         mustbe(sym.tCLASS);
-        n_class();
+        n_class(rootNode);
         
         while(have(sym.tCLASS)){
-            n_class();
+            n_class(rootNode);
         }
 
         mustbe(sym.tMACHINE);
-        n_machine();
+        n_machine(rootNode);
         
         while(have(sym.tMACHINE)){
-            n_machine();
+            n_machine(rootNode);
         }
 
         mustbe(sym.tINSTANCE);
-        n_instance();
+        n_instance(rootNode);
         
         while(have(sym.tINSTANCE)){
-            n_instance();
+            n_instance(rootNode);
         }
         
+        printDebugInfo("n_system_spec() end");
         mustbe(sym.tEND_SYSTEMSPEC);
-
     }
 
     public void n_attribute() {
@@ -154,213 +205,442 @@ public class XMLParser {
         mustbe(sym.tATTRIBUTE_VALUE);
     }
     
-    public void n_interface(){
+    public void n_interface(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_interface()");
+        // create a node, and set its parent node
+        AbstractViewableMachineNode node = new InterfaceNode();
+        parentNode.addChild(node);
+        
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        // set the attribute of the node
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((InterfaceNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
         
         mustbe(sym.tENDTAG);
         
         while(have(sym.tPARENT)){
-            n_parent();
+            n_parent(node);
         }
         
         while(have(sym.tMETHOD)){
-            n_method();
+            n_method(node);
         }
-        
+        printDebugInfo("n_interface() end");
         mustbe(sym.tEND_INTERFACE);
     }
     
-    public void n_parent(){
-        mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+    public void n_parent(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_parent()");
         
+        AbstractViewableMachineNode node = new ParentNode();
+        parentNode.addChild(node);
+        
+        mustbe(sym.tATTRIBUTE_NAME);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((ParentNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        printDebugInfo("n_parent() end");
         mustbe(sym.tENDELEMENT);
     }
     
-    public void n_method(){
+    public void n_method(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_method()");
+        
+        AbstractViewableMachineNode node = new MethodNode();
+        parentNode.addChild(node);
+        
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((MethodNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
         
         mustbe(sym.tENDTAG);
         
         mustbe(sym.tRESULT);
-        n_result();
+        n_result(node);
         
         while(have(sym.tPARAMETER)){
-            n_parameter();
+            n_parameter(node);
         }
-        
+        printDebugInfo("n_method() end");
         mustbe(sym.tEND_METHOD);
     }
     
-    public void n_result(){
-        mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+    public void n_result(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_result()");
         
+        AbstractViewableMachineNode node = new ResultNode();
+        parentNode.addChild(node);
+        
+        mustbe(sym.tATTRIBUTE_NAME);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((ResultNode) node).setAttribute_type(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        printDebugInfo("n_result() end");
         mustbe(sym.tENDELEMENT);
     }
     
-    public void n_parameter(){
+    public void n_parameter(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_parameter()");
+        
+        AbstractViewableMachineNode node = new ParameterNode();
+        parentNode.addChild(node);
+
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((ParameterNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
         
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
         
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((ParameterNode) node).setAttribute_type(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        printDebugInfo("n_parameter() end");
         mustbe(sym.tENDELEMENT);
     }
     
-    public void n_class(){
-        mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+    public void n_class(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_class()");
+        
+        AbstractViewableMachineNode node = new ClassNode();
+        parentNode.addChild(node);
         
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
         
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((ClassNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        
+        mustbe(sym.tATTRIBUTE_NAME);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((ClassNode) node).setAttribute_implements(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        printDebugInfo("n_class() end");
         mustbe(sym.tENDELEMENT);
     }
     
-    public void n_machine(){
-        mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+    public void n_machine(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_machine()");
+        
+        AbstractViewableMachineNode node = new MachineNode();
+        parentNode.addChild(node);
         
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((MachineNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        
+        mustbe(sym.tATTRIBUTE_NAME);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((MachineNode) node).setAttribute_extends(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
 
         mustbe(sym.tENDTAG);
         
         while(have(sym.tEVENTDEF)){
-            n_eventdef();
+            n_eventdef(node);
         }
         
         mustbe(sym.tSTATE);
-        n_state();
+        n_state(node);
         
         while(have(sym.tSTATE)){
-            n_state();
+            n_state(node);
         }
         
         while(have(sym.tTRANSITION)){
-            n_transition();
+            n_transition(node);
         }
-        
+        printDebugInfo("n_machine() end");
         mustbe(sym.tEND_MACHINE);
     }
     
-    public void n_eventdef(){
+    public void n_eventdef(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_eventdef()");
+        
+        AbstractViewableMachineNode node = new EventdefNode();
+        parentNode.addChild(node);
+
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((EventdefNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
  
         mustbe(sym.tENDTAG);
         
         while(have(sym.tPARAMETER)){
-            n_parameter();
+            n_parameter(node);
         }
-    
+        printDebugInfo("n_eventdef()");
         mustbe(sym.tEND_EVENTDEF);
     }
     
-    public void n_state(){
+    public void n_state(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_state()");
+        
+        AbstractViewableMachineNode node = new StateNode();
+        parentNode.addChild(node);
+
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((StateNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
  
         mustbe(sym.tENDTAG);
         
         while(have(sym.tACTION)){
-            n_action();
+            n_action(node);
         }
         
         while(have(sym.tOUTGOING)){
-            n_outgoing();
+            n_outgoing(node);
         }
-        
+        printDebugInfo("n_state() end");
         mustbe(sym.tEND_STATE);
     }
     
-    public void n_action(){
+    public void n_action(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_action()");
+        
+        AbstractViewableMachineNode node = new ActionNode();
+        parentNode.addChild(node);
+
+        if(mustbe_noAdvance(sym.tPCDATA)){
+            ((ActionNode) node).setPCDATA(currentToken.m_text);
+        }
         mustbe(sym.tPCDATA);
+        printDebugInfo("n_action() end");
         mustbe(sym.tEND_ACTION);
     }
     
-    public void n_outgoing(){
+    public void n_outgoing(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_outgoing()");
+        
+        AbstractViewableMachineNode node = new OutgoingNode();
+        parentNode.addChild(node);
+
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
- 
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((OutgoingNode) node).setAttribute_trans(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        
+        printDebugInfo("n_outgoing() end");
         mustbe(sym.tENDELEMENT);
+        
     }
     
-    public void n_transition(){
+    public void n_transition(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_transition()");
+        
+        AbstractViewableMachineNode node = new TransitionNode();
+        parentNode.addChild(node);
+
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((TransitionNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
  
         mustbe(sym.tENDTAG);
         
         mustbe(sym.tSOURCE);
-        n_source();
+        n_source(node);
         
         mustbe(sym.tTARGET);
-        n_target();
+        n_target(node);
         
         mustbe(sym.tEVENT);
-        n_event();
+        n_event(node);
         
         mustbe(sym.tGUARD);
-        n_guard();
+        n_guard(node);
         
         while(have(sym.tACTION)){
-            n_action();
+            n_action(node);
         }
         
+        printDebugInfo("n_transition() end");
         mustbe(sym.tEND_TRANSITION);
+        
     }
     
-    public void n_source(){
-        mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
- 
-        mustbe(sym.tENDELEMENT);
-    }
-    
-    public void n_target(){
-        mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
- 
-        mustbe(sym.tENDELEMENT);
+    public void n_source(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_source()");
+        
+        AbstractViewableMachineNode node = new SourceNode();
+        parentNode.addChild(node);
 
-    }
-    
-    public void n_event(){
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
- 
-        mustbe(sym.tENDELEMENT);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((SourceNode) node).setAttribute_state(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
 
+        
+        printDebugInfo("n_source() end");
+        mustbe(sym.tENDELEMENT);
+        
     }
     
-    public void n_guard(){
+    public void n_target(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_target()");
+        
+        AbstractViewableMachineNode node = new TargetNode();
+        parentNode.addChild(node);
+
+        mustbe(sym.tATTRIBUTE_NAME);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((TargetNode) node).setAttribute_state(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        
+        printDebugInfo("n_target() end");
+        mustbe(sym.tENDELEMENT);
+        
+    }
+    
+    public void n_event(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_event()");
+        
+        AbstractViewableMachineNode node = new EventNode();
+        parentNode.addChild(node);
+
+        mustbe(sym.tATTRIBUTE_NAME);
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((EventNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
+        
+        printDebugInfo("n_event() end");
+        mustbe(sym.tENDELEMENT);
+        
+    }
+    
+    public void n_guard(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_guard()");
+        
+        AbstractViewableMachineNode node = new GuardNode();
+        parentNode.addChild(node);
+
+        if(mustbe_noAdvance(sym.tPCDATA)){
+            ((GuardNode) node).setPCDATA(currentToken.m_text);
+        }
         mustbe(sym.tPCDATA);
-        mustbe(sym.tEND_GUARD);
+        
+        printDebugInfo("n_guard() end");
+        mustbe(sym.tEND_GUARD); 
     }
     
-    public void n_instance(){
+    public void n_instance(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_instance()");
+        
+        AbstractViewableMachineNode node = new InstanceNode();
+        parentNode.addChild(node);
+
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((InstanceNode) node).setAttribute_name(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
  
         mustbe(sym.tATTRIBUTE_NAME);
-        n_attribute();
+        mustbe(sym.tEQUALS);
+        
+        if(mustbe_noAdvance(sym.tATTRIBUTE_VALUE)){
+            ((InstanceNode) node).setAttribute_kind(currentToken.m_text);
+        }
+        mustbe(sym.tATTRIBUTE_VALUE);
+
  
         mustbe(sym.tENDTAG);
 
         while(have(sym.tARGUMENT)){
-            n_argument();
+            n_argument(node);
         }
         
+        printDebugInfo("n_instance() end");
         mustbe(sym.tEND_INSTANCE);
+        
     }
     
-    public void n_argument(){
+    public void n_argument(AbstractViewableMachineNode parentNode){
+        printDebugInfo("n_argument()");
+        
+        AbstractViewableMachineNode node = new ArgumentNode();
+        parentNode.addChild(node);
+
+        if(mustbe_noAdvance(sym.tPCDATA)){
+            ((ArgumentNode) node).setPCDATA(currentToken.m_text);
+        }
         mustbe(sym.tPCDATA);
+        
+        printDebugInfo("n_argument() end");
         mustbe(sym.tEND_ARGUMENT);
+        
     }
 }
