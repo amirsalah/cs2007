@@ -52,11 +52,11 @@ public class XSLTProcessor {
     }
 
     /**
-     * Generate a file containning ELC wrapper functions
+     * Generate a file containing ELC wrapper functions
      */
     public void genELCWrappers(){
 //        File styleSheet = new File("DefinitionFile/ELCTemplate.xsl");
-        File styleSheet = new File("DefinitionFile/codeGen.xsl");
+        File styleSheet = new File("DefinitionFile/ELCTemplate.xsl");
         try {
         // Use a Transformer for output
         TransformerFactory tFactory = TransformerFactory.newInstance();

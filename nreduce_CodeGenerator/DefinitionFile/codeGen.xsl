@@ -14,7 +14,6 @@
       <xsl:apply-templates select="/FUNCDEF"></xsl:apply-templates>
       <xsl:apply-templates select="/FUNCDEF/INTERFACE/METHOD"></xsl:apply-templates></xsl:template>
 	
-
 	<!--Gen: struct definition, e.g. typedef struct FileInfo FileInfo-->
     <xsl:template match="/FUNCDEF" >
     <xsl:call-template name="genStructTypedef">
