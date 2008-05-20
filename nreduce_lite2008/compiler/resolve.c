@@ -53,7 +53,7 @@ static void resolve_refs_r(source *src, snode *c, stack *bound, list **unbound,
     char *sym = c->name;
     int found = 0;
     int i;
-    for (i = 0; (i < bound->count) && !found; i++)
+    for (i = 0; (bound->count > i) && !found; i++)
       if (!strcmp((char*)bound->data[i],sym))
         found = 1;
     if (!found) {
@@ -61,7 +61,7 @@ static void resolve_refs_r(source *src, snode *c, stack *bound, list **unbound,
       int bif;
       char *scname;
 
-      if (modname && (NULL == strstr(sym,"::"))) {
+      if (modname && (strstr(sym,"::") == NULL) ) {
         scname = (char*)malloc(strlen(modname)+2+strlen(sym)+1);
         sprintf(scname,"%s::%s",modname,sym);
         sc = get_scomb(src,scname);

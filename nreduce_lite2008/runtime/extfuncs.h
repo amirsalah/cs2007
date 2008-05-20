@@ -25,6 +25,7 @@
 #include "runtime/rngs.h"
 #include "runtime/rvgs.h"
 #include <zzip/zzip.h>
+#include <wand/MagickWand.h>
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -32,7 +33,7 @@
 
 /*** head files end ***/
 
-#define NUM_EXTFUNCS     6
+#define NUM_EXTFUNCS     14
 
 
 extern const extfunc extfunc_info[NUM_EXTFUNCS];
