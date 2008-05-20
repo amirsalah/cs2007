@@ -1,15 +1,13 @@
 import zzip
 
-getName fn gn = (append fn gn)
-g = (mkgray "China" 99)
-oriRectangle = (mkRectangle 10 "CoC" 15 (mkColor 100 150 200 g))
-newRect = (enlargeRect oriRectangle 2)
+//ccc = (append "Ch" "ina")
+//g = (zzip::mkgray ccc 99)
+//oriRectangle = (zzip::mkRectangle 10 "CoC" 15 (zzip::mkColor 100 150 200 g))
+//newRect = (zzip::enlargeRect oriRectangle 2)
 
-main =   (gray_country (Color_cg (Rectangle_col newRect)))
+
+//main =   (zzip::gray_country (zzip::Color_cg (zzip::Rectangle_col newRect)))
 //main = (numtostring (plus 1 2 3))
-//main = (numtostring (drawRectangles (getName "S" "mAxlL") 1.5 2 (cons 10 (cons 15 (cons (cons 100 (cons 150 (cons 200 nil))) nil)))))
-//main = (_stringtonum (cons 10 (cons "m" (cons (cons "S" (cons "E" (cons "X" nil))) nil))))
-//main = (stringtonum (cons "s" (cons "o" (cons (cons "X" (cons "Y" nil)) nil))))
-//main = (stringtonum (cons "s"  (cons "o" (cons "x" (cons "y" nil)))))
-//main = (_stringtonum (append "so" "xy"))
+//main = (numtostring (zzip::drawRectangles "SmAxlL" 1.5 2 (cons 10 (cons 15 (cons (cons 100 (cons 150 (cons 200 nil))) nil)))))
+//main = (lcase "HELLO")
 
