@@ -128,7 +128,6 @@ public class XMLSemantics {
         if(allJavaTypes.contains(type)){
             return true;
         }else{
-            semanticWarning("invalid type > " + type);
             return false;
         }
     }
@@ -166,7 +165,7 @@ public class XMLSemantics {
             if(node.getNodeType().equals("INTERFACE")){
                 interfaceNames.add( ((InterfaceNode)node).getAttribute_name() );
                 initInterfaceParent((InterfaceNode)node);
-                initInterfaceMethod((InterfaceNode)node);
+//                initInterfaceMethod((InterfaceNode)node);
             }
             
             /* Initialize class name, implementation */
@@ -425,7 +424,7 @@ public class XMLSemantics {
         /* Check the result and parameter types */
         for(int i=1; i<interfaceMethod.size(); i++){
             if( !isValidType(interfaceMethod.get(i)) ){
-                semanticWarning("wrong data type >" + interfaceMethod.get(i));
+                semanticWarning("wrong data type > " + interfaceMethod.get(i) + " in method " + interfaceMethod.get(0));
                 noError = false;
             }
         }
@@ -434,7 +433,7 @@ public class XMLSemantics {
         String duplicatedParam = null;
         duplicatedParam = firstDuplicate(methodParameterNames);
         if(duplicatedParam != null){
-            semanticWarning("duplicated parameters > " + duplicatedParam);
+            semanticWarning("duplicated parameters > " + duplicatedParam + " in method " + interfaceMethod.get(0));
         }
         
         return noError;
