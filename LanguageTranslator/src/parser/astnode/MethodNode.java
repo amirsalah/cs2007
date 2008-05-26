@@ -17,6 +17,10 @@ public class MethodNode extends AbstractViewableMachineNode {
         System.out.println("</METHOD>");
     }
     
+    public String getNodeType(){
+        return "METHOD";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }

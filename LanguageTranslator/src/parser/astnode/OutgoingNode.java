@@ -8,6 +8,10 @@ public class OutgoingNode extends AbstractViewableMachineNode {
         System.out.println("<OUTGOING trans=\"" + att_trans + "\"/>");
     }
     
+    public String getNodeType(){
+        return "OUTGOING";
+    }
+    
     public void setAttribute_trans(String trans){
         this.att_trans = trans;
     }

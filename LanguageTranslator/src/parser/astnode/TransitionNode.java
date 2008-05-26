@@ -17,6 +17,10 @@ public class TransitionNode extends AbstractViewableMachineNode {
         System.out.println("</TRANSITION>");
     }
     
+    public String getNodeType(){
+        return "TRANSITION";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }

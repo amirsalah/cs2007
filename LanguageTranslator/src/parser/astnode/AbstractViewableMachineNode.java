@@ -10,4 +10,8 @@ public abstract class AbstractViewableMachineNode
             System.out.print(" ");
         }
     }
+    
+    public String getNodeType(){
+        return "Abstract viewable machine node";
+    }
 }

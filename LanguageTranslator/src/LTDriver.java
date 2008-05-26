@@ -1,12 +1,11 @@
-/* 
- * Author: Bo CHEN
+/** 
+ * @author: Bo CHEN
  * student ID: 1139520
  */
 
 import lexer.XMLLexer;
-import lexer.Yytoken;
-import lexer.symbol.sym;
 import parser.XMLParser;
+import semantics.XMLSemantics;
 
 public class LTDriver {
 
@@ -48,6 +47,18 @@ public class LTDriver {
             parser = new XMLParser(sourceFile);
             parser.parsing();
         }
+        
+        XMLSemantics semantics;
+        if(args[0].equals("-semantics")){
+            parser = new XMLParser(sourceFile);
+            if(parser.parsing()){
+                System.out.println("***********************************************");
+                System.out.println("Start semantic analysis");
+            }
+            
+            semantics = new XMLSemantics(parser.getASTRoot());
+            semantics.semanticChecking();
+        }
 
     }
     
@@ -60,6 +71,7 @@ public class LTDriver {
       System.out.println("  Options:");
       System.out.println("          -lexer        generate output from the lexer");
       System.out.println("          -parser       generate output from the parser");
+      System.out.println("          -semantics    semantic analysis");
       System.out.println("  SOURCE FILE           the XML file to be translated");
     }
     
@@ -74,6 +86,10 @@ public class LTDriver {
         }
         
         if(option.equals("-parser")){
+            return true;
+        }
+        
+        if(option.equals("-semantics")){
             return true;
         }
         

@@ -8,6 +8,10 @@ public class SourceNode extends AbstractViewableMachineNode {
         System.out.println("<SOURCE state=\"" + att_state + "\"/>");
     }
     
+    public String getNodeType(){
+        return "SOURCE";
+    }
+    
     public void setAttribute_state(String state){
         this.att_state = state;
     }

@@ -18,6 +18,11 @@ public class InstanceNode extends AbstractViewableMachineNode {
         System.out.println("</INSTANCE>");
     }
     
+    public String getNodeType(){
+        return "INSTANCE";
+    }
+    
+    
     public void setAttribute_kind(String att_kind){
         this.att_kind = att_kind;
     }

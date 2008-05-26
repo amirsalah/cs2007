@@ -8,6 +8,10 @@ public class GuardNode extends AbstractViewableMachineNode {
         System.out.println("<GUARD>" + pcdata + "</GUARD>");
     }
     
+    public String getNodeType(){
+        return "GUARD";
+    }
+    
     public void setPCDATA(String pcdata){
         this.pcdata = pcdata;
     }

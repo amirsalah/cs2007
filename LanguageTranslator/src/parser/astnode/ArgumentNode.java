@@ -8,6 +8,10 @@ public class ArgumentNode extends AbstractViewableMachineNode {
         System.out.println("<ARGUMENT>" + pcdata + "</ARGUMENT>");
     }
     
+    public String getNodeType(){
+        return "ARGUMENT";
+    }
+    
     public void setPCDATA(String pcdata){
         this.pcdata = pcdata;
     }

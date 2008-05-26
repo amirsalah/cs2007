@@ -30,6 +30,10 @@ public class XMLParser {
         }
     }
     
+    public AbstractViewableMachineNode getASTRoot(){
+        return rootNode;
+    }
+    
     /**
      * parse the source file
      * @return

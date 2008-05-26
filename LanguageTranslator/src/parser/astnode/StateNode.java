@@ -17,6 +17,10 @@ public class StateNode extends AbstractViewableMachineNode {
         System.out.println("</STATE>");
     }
     
+    public String getNodeType(){
+        return "STATE";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }
