@@ -58,6 +58,8 @@ public class LTDriver {
             
             semantics = new XMLSemantics(parser.getASTRoot());
             semantics.semanticChecking();
+            System.out.println("***********************************************");
+            System.out.println("Semantic analysis finished");
         }
 
     }
