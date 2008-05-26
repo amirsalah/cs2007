@@ -6,7 +6,7 @@
   <INTERFACE name="Process" >  	<!-- generic process - do we hide this? -->
     <METHOD name="occurrence">		<!-- occurrence of an EVENT -->
       <RESULT type="void"/>
-      <PARAMETER name="when" type="float"/>   	<!-- the time of the EVENT -->
+      <PARAMETER name="when" type="floatfloat"/>   	<!-- the time of the EVENT -->
       <PARAMETER name="evt" type="Event"/>		<!-- the EVENT type -->
     </METHOD>
   </INTERFACE>
