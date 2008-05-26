@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import parser.astnode.AbstractViewableMachineNode;
+import parser.astnode.ArgumentNode;
 import parser.astnode.ClassNode;
 import parser.astnode.InstanceNode;
 import parser.astnode.InterfaceNode;
@@ -32,6 +33,8 @@ public class XMLSemantics {
     // method, result type, parameter types (1 method ONLY)
     private Vector<String> interfaceMethod = new Vector<String>();
     private Vector<String> methodParameterNames = new Vector<String>();
+    // all instances
+    private Vector<String> instances = new Vector<String>();
     
     private int numInterface = 0, numClass = 0, numMachine = 0, numInstance = 0;
     
@@ -52,7 +55,7 @@ public class XMLSemantics {
         validSemantics = checkInterfaceParent();
         checkInterfaceMethods(); // check the java data types
         checkStateMachines();
-        System.out.println();
+        checkInstances();
     }
     
     public void semanticWarning(String msg){
@@ -464,7 +467,10 @@ public class XMLSemantics {
         }
     }
     
-    
+    /**
+     * Check the semantics of the state machines
+     * @return
+     */
     private boolean checkStateMachines(){
         boolean noError = true;
         Iterator i;
@@ -480,6 +486,62 @@ public class XMLSemantics {
         
         return noError;
  
+    }
+    
+    /**
+     * Check if all the arguments in the instance have been defined
+     * @return
+     */
+    private boolean checkInstances(){
+        boolean noError = true;
+        Iterator i;
+        AbstractViewableMachineNode node;
+        
+        /* Initialize all the instances, which may be used as arguments later */
+        for(i=rootNode.childIterator(); i.hasNext(); ){
+            node = (AbstractViewableMachineNode)i.next();
+            if(node.getNodeType().equals("INSTANCE")){
+                instances.add( ((InstanceNode)node).getAttribute_name() );
+            }
+        }
+        
+        for(i=rootNode.childIterator(); i.hasNext(); ){
+            node = (AbstractViewableMachineNode)i.next();
+            if(node.getNodeType().equals("INSTANCE")){
+                noError = checkSingleInstance((InstanceNode)node);
+            }
+        }
+        
+        return noError;
+    }
+    
+    /**
+     * Check the arguments needed by this instance have already been defined 
+     * @param iNode the instance node to be checked
+     * @return true if all the arguments have been defined.
+     */
+    private boolean checkSingleInstance(InstanceNode iNode){
+        boolean noError = true;
+        Vector<String> arguments = new Vector<String>();
+        
+        /* Initialize the arguments list */
+        Iterator itr;
+        AbstractViewableMachineNode argNode;
+        for(itr=iNode.childIterator(); itr.hasNext(); ){
+            argNode = (AbstractViewableMachineNode)itr.next();
+            
+            if(argNode.getNodeType().equals("ARGUMENT")){
+                arguments.add( ((ArgumentNode)argNode).getPCDATA().trim() );
+            }
+        }
+        
+        for(int i=0; i<arguments.size(); i++){
+            if( !instances.contains(arguments.get(i)) ){
+                semanticWarning("argument not defined > " + arguments.get(i) + " in instance " + iNode.getAttribute_name());
+            }
+        }
+        
+        return noError;
     }
 
 }
