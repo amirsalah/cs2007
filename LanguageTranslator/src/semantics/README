@@ -1,0 +1,13 @@
+Semantic Analysis:
+1. the interfaces to be implemented by classes should be declared.
+2. the classes to be extended by machines should be declared. 
+3. validity of interface names, classes' names, machine names, instance names
+4. parent of interface should be declared.
+5. validity of return type, parameter types of methods
+6. validity of method names
+7. instance arguments should be defined then to be used.
+8. no duplicated class names, interface names, method names, machine names, instance names.
+
+Semantic Analysis for State Machines
+1. all states have valid outgoing transitions.
+2. transitions have valid source state, target state, and event.
