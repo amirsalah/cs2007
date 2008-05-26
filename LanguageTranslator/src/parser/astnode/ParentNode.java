@@ -8,6 +8,10 @@ public class ParentNode extends AbstractViewableMachineNode {
         System.out.println("<PARENT name=\"" + att_name + "\"/>");
     }
     
+    public String getNodeType(){
+        return "PARENT";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }

@@ -17,6 +17,10 @@ public class InterfaceNode extends AbstractViewableMachineNode {
         System.out.println("</INTERFACE>");
     }
     
+    public String getNodeType(){
+        return "INTERFACE";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }

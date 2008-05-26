@@ -8,6 +8,10 @@ public class TargetNode extends AbstractViewableMachineNode {
         System.out.println("<TARGET state=\"" + att_state + "\"/>");
     }
     
+    public String getNodeType(){
+        return "TARGET";
+    }
+    
     public void setAttribute_state(String state){
         this.att_state = state;
     }

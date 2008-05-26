@@ -16,6 +16,10 @@ public class EventdefNode extends AbstractViewableMachineNode {
         System.out.println("</EVENTDEF>");
     }
     
+    public String getNodeType(){
+        return "EVENTDEF";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }

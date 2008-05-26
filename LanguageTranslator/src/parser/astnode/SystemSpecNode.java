@@ -15,4 +15,8 @@ public class SystemSpecNode extends AbstractViewableMachineNode {
         System.out.println("</SYSTEM-SPEC>");
     }
     
+    public String getNodeType(){
+        return "SYSTEMSPEC";
+    }
+    
 }

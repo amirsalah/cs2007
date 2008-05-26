@@ -8,6 +8,10 @@ public class EventNode extends AbstractViewableMachineNode {
         System.out.println("<EVENT name=\"" + att_name + "\"/>");
     }
     
+    public String getNodeType(){
+        return "EVENT";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }

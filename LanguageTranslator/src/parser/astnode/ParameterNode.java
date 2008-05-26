@@ -9,6 +9,11 @@ public class ParameterNode extends AbstractViewableMachineNode {
         System.out.println("<PARAMETER name=\"" + att_name + "\" type=\"" + att_type + "\"/>");
     }
     
+    public String getNodeType(){
+        return "PARAMETER";
+    }
+    
+    
     public void setAttribute_type(String type){
         this.att_type = type;
     }

@@ -8,6 +8,10 @@ public class ActionNode extends AbstractViewableMachineNode {
         System.out.println("<ACTION>" + pcdata + "</ACTION>");
     }
     
+    public String getNodeType(){
+        return "ACTION";
+    }
+    
     public void setPCDATA(String pcdata){
         this.pcdata = pcdata;
     }

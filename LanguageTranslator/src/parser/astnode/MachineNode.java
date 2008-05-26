@@ -18,6 +18,10 @@ public class MachineNode extends AbstractViewableMachineNode {
         System.out.println("</MACHINE>");
     }
     
+    public String getNodeType(){
+        return "MACHINE";
+    }
+    
     public void setAttribute_extends(String att_extends){
         this.att_extends = att_extends;
     }

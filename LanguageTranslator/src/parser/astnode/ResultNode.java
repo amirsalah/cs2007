@@ -10,6 +10,10 @@ public class ResultNode extends AbstractViewableMachineNode {
         System.out.println("<RESULT type=\"" + att_type + "\"/>");
     }
     
+    public String getNodeType(){
+        return "RESULT";
+    }
+    
     public void setAttribute_type(String type){
         this.att_type = type;
     }

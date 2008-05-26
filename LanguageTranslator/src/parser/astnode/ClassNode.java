@@ -9,6 +9,10 @@ public class ClassNode extends AbstractViewableMachineNode {
         System.out.println("<CLASS name=\"" + att_name + "\" implements=\"" + att_implements + "\"/>");
     }
     
+    public String getNodeType(){
+        return "CLASS";
+    }
+    
     public void setAttribute_name(String name){
         this.att_name = name;
     }
