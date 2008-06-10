@@ -1,5 +1,6 @@
 package parser.astnode;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class InstanceNode extends AbstractViewableMachineNode {
@@ -55,5 +56,40 @@ public class InstanceNode extends AbstractViewableMachineNode {
             System.out.println("Error: INSTANCE attribute name has not been initialized");
             return null;
         }
+    }
+    
+    /**
+     * Generate instance
+     * @return
+     */
+    public String genCode(){
+        String indent = "    ";
+        String code = null;
+        ArrayList<String> arguments = new ArrayList<String>();
+        String argumentList = "";
+        
+        // obtain all the arguments to this instance
+        AbstractViewableMachineNode childNode = null;
+        for(Iterator i=this.childIterator(); i.hasNext();){
+            childNode = (AbstractViewableMachineNode)i.next();
+            if(childNode.getNodeType().equals("ARGUMENT")){
+                arguments.add(((ArgumentNode)childNode).getPCDATA());
+            }
+        }
+        
+        // create argument list 
+        for(int i=0; i<arguments.size(); i++){
+            argumentList += arguments.get(i);
+            
+            if(i != arguments.size() -1){
+                argumentList += ", ";
+            }
+        }
+        
+        code = indent + indent + att_kind + " " + att_name + " = new " + att_kind + "(" + argumentList + ");\n"; 
+        
+        
+        
+        return code;
     }
 }

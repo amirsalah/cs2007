@@ -6,6 +6,7 @@
 import lexer.XMLLexer;
 import parser.XMLParser;
 import semantics.XMLSemantics;
+import codegeneration.XMLCodeGen;
 
 public class LTDriver {
 
@@ -49,7 +50,9 @@ public class LTDriver {
         }
         
         XMLSemantics semantics;
-        if(args[0].equals("-semantics")){
+        if(args[0].equals("-semantics") || args[0].equals("-codegen")){
+            boolean noSemanticError = true;
+            // Start semantic analysis
             parser = new XMLParser(sourceFile);
             if(parser.parsing()){
                 System.out.println("***********************************************");
@@ -57,10 +60,17 @@ public class LTDriver {
             }
             
             semantics = new XMLSemantics(parser.getASTRoot());
-            semantics.semanticChecking();
+            noSemanticError = semantics.semanticChecking();
             System.out.println("***********************************************");
             System.out.println("Semantic analysis finished");
+            
+            // Start code generation if no semantic error detected
+            if(noSemanticError){
+                XMLCodeGen code = new XMLCodeGen(parser.getASTRoot());
+                code.genCode();
+            }
         }
+        
 
     }
     
@@ -74,6 +84,7 @@ public class LTDriver {
       System.out.println("          -lexer        generate output from the lexer");
       System.out.println("          -parser       generate output from the parser");
       System.out.println("          -semantics    semantic analysis");
+      System.out.println("          -codegen      code generation");
       System.out.println("  SOURCE FILE           the XML file to be translated");
     }
     
@@ -92,6 +103,10 @@ public class LTDriver {
         }
         
         if(option.equals("-semantics")){
+            return true;
+        }
+        
+        if(option.equals("-codegen")){
             return true;
         }
         
