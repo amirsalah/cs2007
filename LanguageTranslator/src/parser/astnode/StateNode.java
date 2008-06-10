@@ -1,5 +1,6 @@
 package parser.astnode;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class StateNode extends AbstractViewableMachineNode {
@@ -37,4 +38,40 @@ public class StateNode extends AbstractViewableMachineNode {
             return null;
         }
     }
+    
+    /**
+     * Generate code for entering this state
+     * @return
+     */
+    public String genCode(){
+        String code = null;
+        ArrayList<String> actions = new ArrayList<String>();
+        String action = null;
+        String indent = "    ";
+        
+        /* obtain action statement */
+        AbstractViewableMachineNode actionNode = null;
+        for(Iterator i=this.childIterator(); i.hasNext();){
+            actionNode = (AbstractViewableMachineNode)i.next();
+            if(actionNode.getNodeType().equals("ACTION")){
+                action = ((ActionNode)actionNode).getPCDATA();
+                actions.add(action);
+            }
+        }
+        
+        
+        code = indent + "void enter_" + att_name + "() {\n";
+        
+        // there may be more than one action
+        for(int i=0; i<actions.size(); i++){
+            code = code + indent + indent + actions.get(i) + "\n";
+        }
+             
+        code = code
+             + indent + indent + "theState = States." + att_name + ";\n"
+             + indent + "}\n";
+        
+        return code;
+    }
+    
 }

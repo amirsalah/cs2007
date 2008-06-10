@@ -42,20 +42,48 @@ public class XMLSemantics {
         this.rootNode = rootNode;
     }
     
-    public void semanticChecking(){
-        boolean validSemantics;
+    public boolean semanticChecking(){
+        boolean validSemantics = true;
         initValidTypes();
         initSymbolTables();
         /* Check names */
-        validSemantics = checkNames();
-        validSemantics = checkInterfaceExistence();
-        validSemantics = checkClassExistence();
-        validSemantics = checkInstanceExistence();
-        validSemantics = checkDuplicatedEntries();
-        validSemantics = checkInterfaceParent();
-        checkInterfaceMethods(); // check the java data types
-        checkStateMachines();
-        checkInstances();
+        if(!checkNames()){
+            validSemantics = false;
+        }
+
+        if(!checkInterfaceExistence()){
+            validSemantics = false;
+        }
+        
+        if(!checkClassExistence()){
+            validSemantics = false;
+        }
+        
+        if(!checkInstanceExistence()){
+            validSemantics = false;
+        }
+        
+        if(!checkDuplicatedEntries()){
+            validSemantics = false;
+        }
+        
+        if(!checkInterfaceParent()){
+            validSemantics = false;
+        }
+        
+        if(!checkInterfaceMethods()){ // check the java data types
+            validSemantics = false;
+        }
+        
+        if(!checkStateMachines()){
+            validSemantics = false;
+        }
+        
+        if(!checkInstances()){
+            validSemantics = false;
+        }
+        
+        return validSemantics;
     }
     
     public void semanticWarning(String msg){
@@ -202,7 +230,12 @@ public class XMLSemantics {
     }
     
     
-    private void initInterfaceMethod(InterfaceNode node){
+    /**
+     * Initialization of the data structure to store methods' etc.
+     * @param node
+     */
+    private boolean initInterfaceMethod(InterfaceNode node){
+        boolean noError = true;
         Iterator i;
         AbstractViewableMachineNode mNode = (AbstractViewableMachineNode)node.getChildAt(0);
         
@@ -228,11 +261,15 @@ public class XMLSemantics {
                     }
                 }
                 
-                checkInterfaceMethod();
+                if(!checkInterfaceMethod()){
+                    noError = false;
+                }
                 interfaceMethod.clear();
                 methodParameterNames.clear();
             }
         }
+        
+        return noError;
     }
     
     
@@ -434,6 +471,7 @@ public class XMLSemantics {
         duplicatedParam = firstDuplicate(methodParameterNames);
         if(duplicatedParam != null){
             semanticWarning("duplicated parameters > " + duplicatedParam + " in method " + interfaceMethod.get(0));
+            noError = false;
         }
         
         return noError;
@@ -443,14 +481,14 @@ public class XMLSemantics {
      * Check all the methods' result type, parameter types
      * @return
      */
-    private void checkInterfaceMethods(){
-     
+    private boolean checkInterfaceMethods(){
+        boolean noError = true;
         Iterator i;
         AbstractViewableMachineNode node;
         for(i=rootNode.childIterator(); i.hasNext(); ){
             node = (AbstractViewableMachineNode)i.next();
             if(node.getNodeType().equals("INTERFACE")){
-                initInterfaceMethod((InterfaceNode)node);
+                noError = initInterfaceMethod((InterfaceNode)node);
                 /*
                 AbstractViewableMachineNode mNode;  // METHOD node
                 
@@ -464,6 +502,8 @@ public class XMLSemantics {
             }
             
         }
+        
+        return noError;
     }
     
     /**
