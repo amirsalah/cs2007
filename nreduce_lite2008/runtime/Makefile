@@ -72,14 +72,14 @@ HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/smaxll/workspace/nreduce_lite2008/missing --run aclocal-1.10
+ACLOCAL = ${SHELL} /home/smaxll/workspace/NReduceLite/missing --run aclocal-1.10
 ALL_LIBS = -lpthread
-AMTAR = ${SHELL} /home/smaxll/workspace/nreduce_lite2008/missing --run tar
+AMTAR = ${SHELL} /home/smaxll/workspace/NReduceLite/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/smaxll/workspace/nreduce_lite2008/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/smaxll/workspace/nreduce_lite2008/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/smaxll/workspace/nreduce_lite2008/missing --run automake-1.10
-AWK = gawk
+AUTOCONF = ${SHELL} /home/smaxll/workspace/NReduceLite/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/smaxll/workspace/NReduceLite/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/smaxll/workspace/NReduceLite/missing --run automake-1.10
+AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -ggdb3 -Wall -O0
@@ -113,7 +113,7 @@ LIBS = -lm
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/smaxll/workspace/nreduce_lite2008/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/smaxll/workspace/NReduceLite/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 NMEDIT = 
 OBJEXT = o
@@ -130,10 +130,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /home/smaxll/workspace/nreduce_lite2008/runtime
-abs_srcdir = /home/smaxll/workspace/nreduce_lite2008/runtime
-abs_top_builddir = /home/smaxll/workspace/nreduce_lite2008
-abs_top_srcdir = /home/smaxll/workspace/nreduce_lite2008
+abs_builddir = /home/smaxll/workspace/NReduceLite/runtime
+abs_srcdir = /home/smaxll/workspace/NReduceLite/runtime
+abs_top_builddir = /home/smaxll/workspace/NReduceLite
+abs_top_srcdir = /home/smaxll/workspace/NReduceLite
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_F77 = 
@@ -162,7 +162,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = $(SHELL) /home/smaxll/workspace/nreduce_lite2008/install-sh
+install_sh = $(SHELL) /home/smaxll/workspace/NReduceLite/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -192,8 +192,8 @@ libruntime_la_SOURCES = task.c \
 	zzip.h \
 	extfuncs.c extfuncs.h
 
-libruntime_la_LDFLAGS = -lzzip -fopenmp -lfreetype -lz -lMagickWand -lMagickCore
-INCLUDES = -I.. -I/usr/local/include/ImageMagick -L/usr/local/lib
+libruntime_la_LDFLAGS = -lzzip -fopenmp -L/usr/local/lib -lfreetype -lz -lMagickWand -lMagickCore /usr/local/lib
+INCLUDES = -I..
 CLEANFILES = *.da *.bb *.bbg *.gcov
 all: all-am
 

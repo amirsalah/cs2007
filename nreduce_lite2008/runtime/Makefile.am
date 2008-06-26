@@ -10,7 +10,7 @@ libruntime_la_SOURCES = task.c \
 	zzip.h \
 	extfuncs.c extfuncs.h
 
-libruntime_la_LDFLAGS = -lzzip
+libruntime_la_LDFLAGS = -lzzip -fopenmp -L/usr/local/lib -lfreetype -lz -lMagickWand -lMagickCore /usr/local/lib
 
 INCLUDES = -I@top_srcdir@
 CLEANFILES = *.da *.bb *.bbg *.gcov
